@@ -13,7 +13,7 @@ function StatCard({ icon: Icon, label, value, trend, delay = 0 }) {
         <div className="w-10 h-10 rounded-xl bg-accent-primary/10 flex items-center justify-center">
           <Icon className="w-5 h-5 text-accent-primary" />
         </div>
-        {trend && (
+        {trend !== undefined && trend !== null && (
           <span className={`text-xs font-medium px-2 py-1 rounded-full ${
             trend > 0 ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400'
           }`}>

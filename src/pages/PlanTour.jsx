@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import PageHeader from '../components/PageHeader';
+import FatiguePredictor from '../components/FatiguePredictor';
 import { 
   Compass, MapPin, Calendar, Users, DollarSign, 
   Sparkles, Clock, Shield, ChevronRight, X,
-  Sun, Cloud, Umbrella
+  Sun, Cloud, Umbrella, Activity, ChevronDown, ChevronUp
 } from 'lucide-react';
 
 function PlanTour() {
@@ -19,6 +20,7 @@ function PlanTour() {
   });
   const [generated, setGenerated] = useState(false);
   const [generating, setGenerating] = useState(false);
+  const [showFatiguePredictor, setShowFatiguePredictor] = useState(false);
 
   const interests = [
     'Culture', 'Food', 'Nature', 'Adventure', 'History', 
@@ -43,29 +45,30 @@ function PlanTour() {
 
   const generatedPlan = [
     { day: 1, title: 'Arrival & Exploration', items: [
-      { time: '10:00', activity: 'Airport Arrival & Hotel Check-in', safety: 'high' },
-      { time: '12:00', activity: 'Local Lunch at Recommended Spot', safety: 'high' },
-      { time: '14:00', activity: 'Neighborhood Walking Tour', safety: 'high' },
-      { time: '18:00', activity: 'Sunset Viewpoint Visit', safety: 'medium' },
+      { time: '10:00', activity: 'Airport Arrival & Hotel Check-in', fatigue: 'low' },
+      { time: '12:00', activity: 'Local Lunch at Recommended Spot', fatigue: 'low' },
+      { time: '14:00', activity: 'Neighborhood Walking Tour', fatigue: 'medium' },
+      { time: '18:00', activity: 'Sunset Viewpoint Visit', fatigue: 'low' },
     ]},
     { day: 2, title: 'Cultural Immersion', items: [
-      { time: '09:00', activity: 'Historic Temple Complex', safety: 'high' },
-      { time: '12:00', activity: 'Street Food Experience', safety: 'high' },
-      { time: '14:00', activity: 'Local Art Gallery', safety: 'high' },
-      { time: '16:00', activity: 'Rest Break (Fatigue Alert)', safety: 'rest' },
-      { time: '19:00', activity: 'Traditional Dinner', safety: 'high' },
+      { time: '09:00', activity: 'Historic Temple Complex', fatigue: 'low' },
+      { time: '12:00', activity: 'Street Food Experience', fatigue: 'low' },
+      { time: '14:00', activity: 'Local Art Gallery', fatigue: 'medium' },
+      { time: '16:00', activity: 'Rest Break (Fatigue Alert)', fatigue: 'rest' },
+      { time: '19:00', activity: 'Traditional Dinner', fatigue: 'low' },
     ]},
     { day: 3, title: 'Adventure Day', items: [
-      { time: '07:00', activity: 'Sunrise Hike', safety: 'medium' },
-      { time: '11:00', activity: 'Nature Reserve Visit', safety: 'high' },
-      { time: '13:00', activity: 'Picnic Lunch', safety: 'high' },
-      { time: '16:00', activity: 'Local Market Shopping', safety: 'high' },
+      { time: '07:00', activity: 'Sunrise Hike', fatigue: 'high' },
+      { time: '11:00', activity: 'Nature Reserve Visit', fatigue: 'medium' },
+      { time: '13:00', activity: 'Picnic Lunch', fatigue: 'low' },
+      { time: '16:00', activity: 'Local Market Shopping', fatigue: 'low' },
     ]},
   ];
 
-  const safetyColors = {
-    high: 'bg-green-500/20 text-green-400',
-    medium: 'bg-yellow-500/20 text-yellow-400',
+  const fatigueColors = {
+    low: 'bg-green-500/20 text-green-400',
+    medium: 'bg-amber-500/20 text-amber-400',
+    high: 'bg-red-500/20 text-red-400',
     rest: 'bg-blue-500/20 text-blue-400',
   };
 
@@ -75,7 +78,7 @@ function PlanTour() {
         <PageHeader
           icon={Compass}
           title="Plan Your Tour"
-          subtitle="Let AI create the perfect itinerary tailored to your preferences and safety needs."
+          subtitle="Let AI create the perfect itinerary tailored to your preferences and fatigue management."
         />
 
         {!generated ? (
@@ -276,19 +279,42 @@ function PlanTour() {
                   <h2 className="text-xl font-bold text-text-primary mb-1">
                     {formData.destination || 'Kyoto, Japan'} — AI Generated Plan
                   </h2>
-                  <p className="text-sm text-text-secondary">3-day itinerary • Safety-optimized • {formData.budget} budget</p>
+                  <p className="text-sm text-text-secondary">3-day itinerary • Fatigue-optimized • {formData.budget} budget</p>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-green-500/10">
-                    <Shield className="w-4 h-4 text-green-400" />
-                    <span className="text-sm font-medium text-green-400">95% Safe</span>
-                  </div>
+                  <button
+                    onClick={() => setShowFatiguePredictor(!showFatiguePredictor)}
+                    className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
+                      showFatiguePredictor
+                        ? 'bg-accent-primary/15 text-accent-primary'
+                        : 'bg-white/5 text-text-secondary hover:bg-white/10'
+                    }`}
+                  >
+                    <Activity className="w-4 h-4" />
+                    Fatigue Monitor
+                    {showFatiguePredictor ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+                  </button>
                   <button onClick={() => { setGenerated(false); setStep(1); }} className="btn-secondary !px-4 !py-2 text-sm">
                     New Plan
                   </button>
                 </div>
               </div>
             </div>
+
+            {/* Fatigue Predictor Panel */}
+            <AnimatePresence>
+              {showFatiguePredictor && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0, marginBottom: 0 }}
+                  animate={{ opacity: 1, height: 'auto', marginBottom: 24 }}
+                  exit={{ opacity: 0, height: 0, marginBottom: 0 }}
+                  transition={{ duration: 0.35, ease: 'easeInOut' }}
+                  className="overflow-hidden"
+                >
+                  <FatiguePredictor />
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             {/* Weather Bar */}
             <div className="glass-card p-4 mb-6 flex items-center gap-6 overflow-x-auto">
@@ -319,8 +345,8 @@ function PlanTour() {
                         <span className="text-sm font-mono text-text-muted w-12 shrink-0">{item.time}</span>
                         <div className="w-2 h-2 rounded-full bg-accent-primary/60 shrink-0" />
                         <span className="text-sm text-text-primary flex-1">{item.activity}</span>
-                        <span className={`text-xs font-medium px-2.5 py-1 rounded-full shrink-0 ${safetyColors[item.safety]}`}>
-                          {item.safety === 'rest' ? 'Rest' : item.safety}
+                        <span className={`text-xs font-medium px-2.5 py-1 rounded-full shrink-0 ${fatigueColors[item.fatigue]}`}>
+                          {item.fatigue === 'rest' ? 'Rest' : item.fatigue}
                         </span>
                       </div>
                     ))}

@@ -4,8 +4,8 @@ import { useAuth } from '../context/AuthContext';
 import { motion } from 'framer-motion';
 import PageHeader from '../components/PageHeader';
 import { 
-  User, Mail, Calendar, Shield, Navigation, MapPin, 
-  LogOut, Settings, Bell, Moon, Globe, Lock
+  User, Mail, Calendar, Navigation, MapPin, 
+  LogOut, Settings, Bell, Moon, Globe, Lock, Activity
 } from 'lucide-react';
 
 function Profile() {
@@ -23,7 +23,7 @@ function Profile() {
   const stats = [
     { icon: Navigation, label: 'Trips Taken', value: '12' },
     { icon: MapPin, label: 'Countries', value: '8' },
-    { icon: Shield, label: 'Safety Score', value: '96%' },
+    { icon: Activity, label: 'Avg Fatigue', value: 'LOW' },
   ];
 
   const settingsItems = [
@@ -75,7 +75,9 @@ function Profile() {
             {stats.map((stat) => (
               <div key={stat.label} className="text-center">
                 <stat.icon className="w-5 h-5 text-accent-primary mx-auto mb-2" />
-                <p className="text-lg font-bold text-text-primary">{stat.value}</p>
+                <p className={`text-lg font-bold ${
+                  stat.value === 'LOW' ? 'text-green-400' : 'text-text-primary'
+                }`}>{stat.value}</p>
                 <p className="text-xs text-text-muted">{stat.label}</p>
               </div>
             ))}

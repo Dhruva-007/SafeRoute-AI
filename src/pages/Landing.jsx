@@ -7,7 +7,7 @@ import FeatureCard from '../components/FeatureCard';
 import { 
   MapPin, Brain, AlertTriangle, Radio, MessageSquare,
   ChevronRight, Shield, Clock, Route, Zap, Star,
-  Navigation, Thermometer
+  Navigation, Thermometer, Activity
 } from 'lucide-react';
 
 function Landing() {
@@ -26,10 +26,10 @@ function Landing() {
     {
       icon: Brain,
       title: 'Smart Travel Planning',
-      description: 'AI-powered itinerary generation that considers weather, local events, safety conditions, and your personal preferences.'
+      description: 'AI-powered itinerary generation that considers weather, local events, fatigue levels, and your personal preferences.'
     },
     {
-      icon: Thermometer,
+      icon: Activity,
       title: 'Travel Fatigue Predictor',
       description: 'Intelligent fatigue detection that analyzes your travel patterns and suggests optimal rest stops and activity pacing.'
     },
@@ -46,22 +46,23 @@ function Landing() {
     {
       icon: MessageSquare,
       title: 'Context-Aware Phrase Generator',
-      description: 'Smart translation that adapts to your current situation — from ordering food to communicating in emergencies.'
+      description: 'GPS-powered smart translation that adapts to your location — from ordering food to communicating in emergencies.'
     },
   ];
 
   const demoItinerary = [
-    { time: '09:00', activity: 'Arrive at Kyoto Station', safety: 'high', type: 'transit' },
-    { time: '10:00', activity: 'Fushimi Inari Shrine', safety: 'high', type: 'attraction' },
-    { time: '12:30', activity: 'Nishiki Market — Lunch', safety: 'high', type: 'food' },
-    { time: '14:00', activity: 'Kinkaku-ji Temple', safety: 'medium', type: 'attraction' },
-    { time: '16:00', activity: 'Rest Break — Fatigue Alert', safety: 'rest', type: 'rest' },
-    { time: '17:30', activity: 'Arashiyama Bamboo Grove', safety: 'high', type: 'attraction' },
+    { time: '09:00', activity: 'Arrive at Kyoto Station', fatigue: 'low', type: 'transit' },
+    { time: '10:00', activity: 'Fushimi Inari Shrine', fatigue: 'low', type: 'attraction' },
+    { time: '12:30', activity: 'Nishiki Market — Lunch', fatigue: 'low', type: 'food' },
+    { time: '14:00', activity: 'Kinkaku-ji Temple', fatigue: 'medium', type: 'attraction' },
+    { time: '16:00', activity: 'Rest Break — Fatigue Alert', fatigue: 'rest', type: 'rest' },
+    { time: '17:30', activity: 'Arashiyama Bamboo Grove', fatigue: 'low', type: 'attraction' },
   ];
 
-  const safetyLevelColors = {
-    high: 'bg-green-500/20 text-green-400',
-    medium: 'bg-yellow-500/20 text-yellow-400',
+  const fatigueLevelColors = {
+    low: 'bg-green-500/20 text-green-400',
+    medium: 'bg-amber-500/20 text-amber-400',
+    high: 'bg-red-500/20 text-red-400',
     rest: 'bg-blue-500/20 text-blue-400',
   };
 
@@ -69,36 +70,31 @@ function Landing() {
     <div className="overflow-hidden">
       {/* HERO */}
       <section className="relative min-h-[90vh] flex items-center">
-        {/* Background effects */}
-        <div className="absolute inset-0 bg-gradient-to-br from-transparent via-accent-primary/5 to-transparent">
+        <div className="absolute inset-0 overflow-hidden">
           <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-accent-primary/5 rounded-full blur-3xl" />
           <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-accent-primary/3 rounded-full blur-3xl" />
         </div>
 
         <div className="container-max px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="max-w-5xl mx-auto text-center">
+          <div className="max-w-4xl mx-auto text-center">
             <motion.div
               initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7, ease: 'easeOut' }}
             >
-              {/* Badge */}
               <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent-primary/10 border border-accent-primary/20 mb-8">
                 <Shield className="w-4 h-4 text-accent-primary" />
                 <span className="text-xs font-medium text-accent-primary tracking-wide">AI-POWERED TRAVEL SAFETY</span>
               </div>
 
-              {/* Title */}
               <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold text-text-primary leading-tight mb-6">
                 Safe<span className="text-gradient">Route</span> AI
               </h1>
 
-              {/* Tagline */}
               <p className="text-lg sm:text-xl md:text-2xl text-text-secondary font-light max-w-2xl mx-auto mb-10 leading-relaxed">
                 An Intelligent Travel Planning and Safety System
               </p>
 
-              {/* Buttons */}
               <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
                 <button
                   onClick={handleStartPlanning}
@@ -118,7 +114,6 @@ function Landing() {
               </div>
             </motion.div>
 
-            {/* Stats */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -174,7 +169,7 @@ function Landing() {
               See It In Action
             </h2>
             <p className="text-text-secondary max-w-xl mx-auto">
-              A glimpse of how SafeRoute AI plans your journey with safety at its core.
+              A glimpse of how SafeRoute AI plans your journey with fatigue management at its core.
             </p>
           </AnimatedSection>
 
@@ -199,8 +194,8 @@ function Landing() {
                       <span className="text-sm font-mono text-text-muted w-12 shrink-0">{item.time}</span>
                       <div className="w-2 h-2 rounded-full bg-accent-primary/60 shrink-0" />
                       <span className="text-sm text-text-primary flex-1">{item.activity}</span>
-                      <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${safetyLevelColors[item.safety]}`}>
-                        {item.safety === 'rest' ? 'Rest' : item.safety}
+                      <span className={`text-xs font-medium px-2.5 py-1 rounded-full ${fatigueLevelColors[item.fatigue]}`}>
+                        {item.fatigue === 'rest' ? 'Rest' : item.fatigue}
                       </span>
                     </motion.div>
                   ))}
@@ -210,17 +205,17 @@ function Landing() {
 
             {/* Side Panels */}
             <div className="flex flex-col gap-6">
-              {/* Fatigue Indicator */}
+              {/* Fatigue Monitor */}
               <AnimatedSection delay={0.2}>
                 <div className="glass-card p-6">
                   <div className="flex items-center gap-3 mb-5">
-                    <Zap className="w-5 h-5 text-accent-primary" />
+                    <Activity className="w-5 h-5 text-accent-primary" />
                     <h3 className="text-base font-semibold text-text-primary">Fatigue Monitor</h3>
                   </div>
                   <div className="space-y-4">
                     {[
                       { label: 'Energy Level', value: 72, color: 'bg-green-500' },
-                      { label: 'Walking Strain', value: 45, color: 'bg-yellow-500' },
+                      { label: 'Walking Strain', value: 45, color: 'bg-amber-500' },
                       { label: 'Mental Fatigue', value: 30, color: 'bg-blue-500' },
                     ].map((item) => (
                       <div key={item.label}>
@@ -240,7 +235,7 @@ function Landing() {
                       </div>
                     ))}
                   </div>
-                  <p className="text-xs text-yellow-400/80 mt-4 flex items-center gap-1.5">
+                  <p className="text-xs text-amber-400/80 mt-4 flex items-center gap-1.5">
                     <Clock className="w-3.5 h-3.5" />
                     Rest suggested at 4:00 PM
                   </p>
@@ -255,7 +250,6 @@ function Landing() {
                     <h3 className="text-base font-semibold text-text-primary">Safety Map</h3>
                   </div>
                   <div className="aspect-[4/3] rounded-xl bg-white/[0.03] border border-border-subtle flex items-center justify-center relative overflow-hidden">
-                    {/* Grid pattern */}
                     <div className="absolute inset-0 opacity-10">
                       <div className="grid grid-cols-8 grid-rows-6 h-full">
                         {Array.from({ length: 48 }).map((_, i) => (
@@ -263,10 +257,9 @@ function Landing() {
                         ))}
                       </div>
                     </div>
-                    {/* Dots */}
                     <div className="absolute top-1/4 left-1/3 w-3 h-3 rounded-full bg-green-500/50 animate-pulse-soft" />
                     <div className="absolute top-1/2 left-1/2 w-3 h-3 rounded-full bg-green-500/50 animate-pulse-soft" style={{ animationDelay: '0.5s' }} />
-                    <div className="absolute top-3/4 right-1/3 w-3 h-3 rounded-full bg-yellow-500/50 animate-pulse-soft" style={{ animationDelay: '1s' }} />
+                    <div className="absolute top-3/4 right-1/3 w-3 h-3 rounded-full bg-amber-500/50 animate-pulse-soft" style={{ animationDelay: '1s' }} />
                     <div className="absolute top-1/3 right-1/4 w-2.5 h-2.5 rounded-full bg-red-500/40" />
                     
                     <div className="text-center relative z-10">
