@@ -73,6 +73,18 @@ class OverpassClient:
                         timeout=self.timeout,
                         headers={"User-Agent": self.user_agent},
                     )
+                    
+                    # ─── Special handling for 429 Rate Limit ───
+                    if response.status_code == 429:
+                        # Overpass uses 'Retry-After' header (in seconds)
+                        retry_after = int(response.headers.get("Retry-After", 60))
+                        self.logger.warning(
+                            f"  ⚠ Rate limited (429). Server says wait {retry_after}s. "
+                            f"Sleeping..."
+                        )
+                        time.sleep(retry_after + 2)  # +2s safety margin
+                        continue  # Retry without counting as a failed attempt
+                    
                     response.raise_for_status()
                     data = response.json()
                     
@@ -84,6 +96,9 @@ class OverpassClient:
                         cache_path = self.cache_dir / f"{cache_key}.json"
                         save_json(data, cache_path, compact=True)
                         self.logger.info(f"  ✓ Cached to: {cache_path.name}")
+                    
+                    # Polite delay between successful requests
+                    time.sleep(2)
                     
                     return data
                 
@@ -98,6 +113,7 @@ class OverpassClient:
                     last_error = str(e)
                 
                 if attempt < self.max_retries:
+                    self.logger.info(f"  → Waiting {self.retry_delay}s before retry...")
                     time.sleep(self.retry_delay)
             
             self.logger.warning(f"  ⚠ All retries failed for {endpoint}, trying next...")

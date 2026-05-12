@@ -32,13 +32,24 @@ queries:
   poorly_lit_roads: |
     [out:json][timeout:180][bbox:{bbox}];
     (
-      way["lit"="no"]["highway"];
-      way["lit"="disused"]["highway"];
-      way["highway"="track"];
-      way["highway"="path"];
-      way["surface"="unpaved"]["highway"];
-      way["surface"="dirt"]["highway"];
-      way["smoothness"="very_bad"]["highway"];
+      // Roads explicitly tagged as not lit (highest confidence signal)
+      way["highway"~"^(primary|secondary|tertiary|residential|unclassified|service)$"]["lit"="no"];
+      way["highway"~"^(primary|secondary|tertiary|residential|unclassified|service)$"]["lit"="disused"];
+      
+      // Residential & through-roads with poor surface
+      // EXCLUDES service=driveway/parking_aisle (private property)
+      way["highway"="residential"]["surface"~"^(unpaved|dirt|ground|mud|gravel)$"];
+      way["highway"="unclassified"]["surface"~"^(unpaved|dirt|ground|mud|gravel)$"];
+      way["highway"="tertiary"]["surface"~"^(unpaved|dirt|ground|mud|gravel)$"];
+      
+      // Service roads with poor surface, but EXCLUDE private driveways
+      way["highway"="service"]["surface"~"^(unpaved|dirt|ground)$"]["service"!~"driveway|parking_aisle|drive-through"];
+      
+      // Roads with explicitly bad smoothness
+      way["highway"~"^(primary|secondary|tertiary|residential|unclassified)$"]["smoothness"~"^(very_bad|horrible|very_horrible)$"];
+      
+      // Tunnels without lighting (specific safety hazard)
+      way["tunnel"="yes"]["lit"="no"];
     );
     out body geom;
   
@@ -66,9 +77,21 @@ queries:
   accident_junction: |
     [out:json][timeout:120][bbox:{bbox}];
     (
+      // Traffic signals on major roads only (not residential/service)
+      // Note: We need a 2-step approach since OSM doesn't directly link 
+      // junction nodes to road classes. We'll get all signals and 
+      // filter by spatial proximity in processing if needed.
       node["highway"="traffic_signals"];
-      node["highway"="crossing"];
+      
+      // All roundabouts (these are inherently major junctions)
       way["junction"="roundabout"];
+      
+      // Pedestrian crossings WITH safety markings (more significant)
+      // EXCLUDES casual residential zebra crossings
+      node["highway"="crossing"]["crossing"~"^(traffic_signals|uncontrolled|marked)$"];
+      
+      // Mini roundabouts (also significant)
+      node["highway"="mini_roundabout"];
     );
     out body geom;
   

@@ -91,10 +91,10 @@ categories:
     point_buffer_meters: 100
 
   accident_junction:
-    description: "Accident-prone road junctions"
-    base_risk_score: 0.60
+    description: "Major road junctions (proxy for accident-prone areas; cross-ref with NHAI data in production)"
+    base_risk_score: 0.45  # Reduced from 0.60 — it's a proxy, not verified
     default_severity: 2
-    source_confidence: 0.65
+    source_confidence: 0.55  # Reduced — proxy quality
     is_time_dependent: false
     osm_filters:
       - { key: "highway", value: "traffic_signals", element: "node" }
