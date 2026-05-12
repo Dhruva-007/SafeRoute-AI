@@ -1,0 +1,86 @@
+# ════════════════════════════════════════════════════════════════
+# OVERPASS QUERY REFERENCE (Documentation)
+# These are the canonical queries for each risk category.
+# Useful for reviewers and for testing in Overpass Turbo manually.
+# ════════════════════════════════════════════════════════════════
+
+queries:
+  
+  industrial: |
+    [out:json][timeout:120][bbox:{bbox}];
+    (
+      way["landuse"="industrial"];
+      relation["landuse"="industrial"];
+      way["landuse"="quarry"];
+      way["industrial"="factory"];
+      way["man_made"="works"];
+    );
+    out body geom;
+  
+  abandoned: |
+    [out:json][timeout:120][bbox:{bbox}];
+    (
+      way["building"="ruins"];
+      way["abandoned"="yes"];
+      way["disused"="yes"];
+      way["building:condition"="bad"];
+      way["landuse"="brownfield"];
+      relation["landuse"="brownfield"];
+    );
+    out body geom;
+  
+  poorly_lit_roads: |
+    [out:json][timeout:180][bbox:{bbox}];
+    (
+      way["lit"="no"]["highway"];
+      way["lit"="disused"]["highway"];
+      way["highway"="track"];
+      way["highway"="path"];
+      way["surface"="unpaved"]["highway"];
+      way["surface"="dirt"]["highway"];
+      way["smoothness"="very_bad"]["highway"];
+    );
+    out body geom;
+  
+  restricted: |
+    [out:json][timeout:120][bbox:{bbox}];
+    (
+      way["access"="no"];
+      relation["access"="no"];
+      way["landuse"="military"];
+      relation["landuse"="military"];
+      way["military"="danger_area"];
+    );
+    out body geom;
+  
+  unsafe_transit: |
+    [out:json][timeout:120][bbox:{bbox}];
+    (
+      node["highway"="bus_stop"]["lit"="no"];
+      node["highway"="bus_stop"]["shelter"="no"];
+      node["railway"="halt"];
+      node["amenity"="bus_station"]["lit"="no"];
+    );
+    out body geom;
+  
+  accident_junction: |
+    [out:json][timeout:120][bbox:{bbox}];
+    (
+      node["highway"="traffic_signals"];
+      node["highway"="crossing"];
+      way["junction"="roundabout"];
+    );
+    out body geom;
+  
+  emergency_services: |
+    [out:json][timeout:120][bbox:{bbox}];
+    (
+      node["amenity"="hospital"];
+      way["amenity"="hospital"];
+      node["amenity"="police"];
+      way["amenity"="police"];
+      node["amenity"="fire_station"];
+      way["amenity"="fire_station"];
+      node["amenity"="clinic"];
+    );
+    out body geom;

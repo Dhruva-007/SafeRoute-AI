@@ -1,0 +1,40 @@
+# ════════════════════════════════════════════════════════════════
+# RISK SCORING CONFIGURATION
+# Weights for the composite risk scoring formula
+# ════════════════════════════════════════════════════════════════
+
+scoring:
+  # Component weights (must sum to 1.0)
+  weights:
+    category_base: 0.40
+    tag_modifiers: 0.20
+    emergency_distance: 0.20
+    lighting_condition: 0.10
+    isolation_score: 0.10
+  
+  # Tag-based score modifiers (added to score)
+  tag_modifiers:
+    "lit=no": 0.15
+    "access=no": 0.10
+    "abandoned=yes": 0.10
+    "industrial=chemical": 0.20
+    "surface=dirt": 0.05
+    "smoothness=horrible": 0.10
+    "building=ruins": 0.08
+  
+  # Maximum total tag modifier (cap)
+  max_tag_modifier: 0.30
+  
+  # Emergency distance scoring (km thresholds)
+  emergency_distance_modifiers:
+    - { max_km: 1.0, modifier: 0.00 }
+    - { max_km: 2.0, modifier: 0.10 }
+    - { max_km: 5.0, modifier: 0.20 }
+    - { max_km: 999.0, modifier: 0.30 }
+  
+  # Severity level thresholds
+  severity_thresholds:
+    1: { min: 0.00, max: 0.35, label: "Low",      color: "#28a745" }
+    2: { min: 0.35, max: 0.55, label: "Medium",   color: "#ffc107" }
+    3: { min: 0.55, max: 0.75, label: "High",     color: "#fd7e14" }
+    4: { min: 0.75, max: 1.01, label: "Critical", color: "#dc3545" }

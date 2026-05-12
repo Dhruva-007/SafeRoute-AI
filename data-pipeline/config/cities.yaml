@@ -1,0 +1,37 @@
+# ════════════════════════════════════════════════════════════════
+# CITY CONFIGURATION
+# Bounding boxes for cities supported by the pipeline
+# Format: [south_lat, west_lon, north_lat, east_lon]
+# ════════════════════════════════════════════════════════════════
+
+cities:
+  HYD:
+    name: "Hyderabad"
+    state: "Telangana"
+    country: "India"
+    bbox:
+      south: 17.2
+      west: 78.2
+      north: 17.6
+      east: 78.7
+    center:
+      lat: 17.3850
+      lon: 78.4867
+    timezone: "Asia/Kolkata"
+    osm_relation_id: 7868209  # Greater Hyderabad Municipal Corporation
+    
+  # Future cities (placeholders for scaling)
+  BLR:
+    name: "Bengaluru"
+    state: "Karnataka"
+    country: "India"
+    bbox:
+      south: 12.8
+      west: 77.4
+      north: 13.2
+      east: 77.8
+    center:
+      lat: 12.9716
+      lon: 77.5946
+    timezone: "Asia/Kolkata"
+    enabled: false  # Not active yet

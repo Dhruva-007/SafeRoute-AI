@@ -1,0 +1,54 @@
+# ════════════════════════════════════════════════════════════════
+# PIPELINE EXECUTION CONFIGURATION
+# ════════════════════════════════════════════════════════════════
+
+pipeline:
+  version: "1.0.0"
+  
+  # Overpass API configuration
+  overpass:
+    endpoints:
+      - "https://overpass-api.de/api/interpreter"
+      - "https://overpass.kumi.systems/api/interpreter"
+      - "https://overpass.openstreetmap.ru/api/interpreter"
+    timeout_seconds: 180
+    max_retries: 3
+    retry_delay_seconds: 5
+    user_agent: "SafeRouteAI/1.0 (academic-project)"
+  
+  # Caching
+  cache:
+    enabled: true
+    directory: "data/raw/osm_cache"
+    expiry_days: 30
+  
+  # Geometry processing
+  geometry:
+    # UTM zone for accurate metric calculations
+    # Hyderabad is in UTM zone 44N (EPSG:32644)
+    # But also check 43N for western parts (EPSG:32643)
+    utm_epsg: 32644
+    wgs84_epsg: 4326
+    
+    # Polygon simplification tolerance (degrees)
+    simplification_tolerance: 0.00005
+    
+    # Minimum polygon area (m²) — smaller zones discarded
+    min_polygon_area_m2: 100
+    
+    # Maximum polygon area (m²) — likely errors
+    max_polygon_area_m2: 50000000
+  
+  # Deduplication
+  deduplication:
+    enabled: true
+    iou_threshold: 0.85  # Intersection-over-Union for merging
+  
+  # Output
+  output:
+    formats:
+      - geojson
+      - geojson_gzip
+      - sqlite
+    include_manifest: true
+    compute_checksums: true

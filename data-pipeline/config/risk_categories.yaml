@@ -1,0 +1,121 @@
+# ════════════════════════════════════════════════════════════════
+# RISK CATEGORY DEFINITIONS
+# Each category maps to OSM tags and base risk parameters
+# ════════════════════════════════════════════════════════════════
+
+categories:
+  
+  industrial:
+    description: "Industrial and manufacturing zones"
+    base_risk_score: 0.70
+    default_severity: 3
+    source_confidence: 0.75
+    is_time_dependent: false
+    osm_filters:
+      - { key: "landuse", value: "industrial", element: "way" }
+      - { key: "landuse", value: "industrial", element: "relation" }
+      - { key: "landuse", value: "quarry", element: "way" }
+      - { key: "industrial", value: "factory", element: "way" }
+      - { key: "man_made", value: "works", element: "way" }
+    alert_template: "⚠️ Entering industrial zone. Hazardous materials may be present."
+    geometry_strategy: "polygon"
+    point_buffer_meters: null
+
+  abandoned:
+    description: "Abandoned or derelict structures"
+    base_risk_score: 0.65
+    default_severity: 2
+    source_confidence: 0.70
+    is_time_dependent: false
+    osm_filters:
+      - { key: "building", value: "ruins", element: "way" }
+      - { key: "abandoned", value: "yes", element: "way" }
+      - { key: "disused", value: "yes", element: "way" }
+      - { key: "building:condition", value: "bad", element: "way" }
+      - { key: "landuse", value: "brownfield", element: "way" }
+    alert_template: "⚠️ Abandoned structure nearby. Stay on main paths."
+    geometry_strategy: "polygon"
+    point_buffer_meters: 50
+
+  poorly_lit_roads:
+    description: "Poorly lit or isolated road corridors"
+    base_risk_score: 0.55
+    default_severity: 2
+    source_confidence: 0.65
+    is_time_dependent: true
+    risk_hours:
+      start: "19:00"
+      end: "06:00"
+    osm_filters:
+      - { key: "lit", value: "no", element: "way", requires: "highway" }
+      - { key: "lit", value: "disused", element: "way", requires: "highway" }
+      - { key: "highway", value: "track", element: "way" }
+      - { key: "highway", value: "path", element: "way" }
+      - { key: "surface", value: "unpaved", element: "way", requires: "highway" }
+      - { key: "smoothness", value: "very_bad", element: "way" }
+    alert_template: "⚠️ Poorly lit road ahead. Use caution after dark."
+    geometry_strategy: "buffered_line"
+    line_buffer_meters: 30
+
+  restricted:
+    description: "Restricted or military access areas"
+    base_risk_score: 0.85
+    default_severity: 4
+    source_confidence: 0.85
+    is_time_dependent: false
+    osm_filters:
+      - { key: "access", value: "no", element: "way" }
+      - { key: "access", value: "no", element: "relation" }
+      - { key: "landuse", value: "military", element: "way" }
+      - { key: "landuse", value: "military", element: "relation" }
+      - { key: "military", value: "danger_area", element: "way" }
+    alert_template: "⛔ Restricted area. Entry not permitted."
+    geometry_strategy: "polygon"
+    point_buffer_meters: null
+
+  unsafe_transit:
+    description: "Unsafe public transit stops"
+    base_risk_score: 0.50
+    default_severity: 2
+    source_confidence: 0.60
+    is_time_dependent: true
+    risk_hours:
+      start: "20:00"
+      end: "05:00"
+    osm_filters:
+      - { key: "highway", value: "bus_stop", element: "node", requires: "lit=no" }
+      - { key: "railway", value: "halt", element: "node" }
+      - { key: "amenity", value: "bus_station", element: "node", requires: "lit=no" }
+    alert_template: "⚠️ Unsafe transit stop area. Stay alert."
+    geometry_strategy: "circle"
+    point_buffer_meters: 100
+
+  accident_junction:
+    description: "Accident-prone road junctions"
+    base_risk_score: 0.60
+    default_severity: 2
+    source_confidence: 0.65
+    is_time_dependent: false
+    osm_filters:
+      - { key: "highway", value: "traffic_signals", element: "node" }
+      - { key: "highway", value: "crossing", element: "node" }
+      - { key: "junction", value: "roundabout", element: "way" }
+    alert_template: "⚠️ Accident-prone junction. Proceed carefully."
+    geometry_strategy: "circle"
+    point_buffer_meters: 75
+
+# ════════════════════════════════════════════════════════════════
+# EMERGENCY SERVICES (For inverse risk calculation)
+# These are NOT risk zones — they reduce risk in their vicinity
+# ════════════════════════════════════════════════════════════════
+
+emergency_services:
+  description: "Emergency service facilities (used for proximity scoring)"
+  osm_filters:
+    - { key: "amenity", value: "hospital", element: "node" }
+    - { key: "amenity", value: "hospital", element: "way" }
+    - { key: "amenity", value: "police", element: "node" }
+    - { key: "amenity", value: "police", element: "way" }
+    - { key: "amenity", value: "fire_station", element: "node" }
+    - { key: "amenity", value: "fire_station", element: "way" }
+    - { key: "amenity", value: "clinic", element: "node" }
