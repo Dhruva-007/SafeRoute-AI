@@ -15,10 +15,10 @@ function FeatureCard({ icon: Icon, title, description, index = 0 }) {
       className="glass-card p-6 sm:p-8 group relative overflow-hidden hover:-translate-y-1 transition-all duration-250"
     >
       {/* Subtle gradient overlay on hover */}
-      <div className="absolute inset-0 bg-gradient-to-br from-accent-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+      <div className="absolute inset-0 bg-gradient-to-br from-accent-primary/8 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       
       <div className="relative z-10">
-        <div className="w-12 h-12 rounded-xl bg-accent-primary/10 border border-accent-primary/20 flex items-center justify-center mb-5 group-hover:bg-accent-primary/15 transition-colors">
+        <div className="w-12 h-12 rounded-xl bg-accent-primary/10 border border-accent-primary/30 flex items-center justify-center mb-5 group-hover:bg-accent-primary/20 transition-colors">
           {!isLoggedIn ? (
             <Lock className="w-5 h-5 text-text-muted" />
           ) : (

@@ -6,23 +6,23 @@ function FatigueIndicator({ level = 'LOW', value = 25, compact = false }) {
   const config = {
     LOW: {
       bg: 'bg-green-500/10',
-      text: 'text-green-400',
+      text: 'text-green-700',
       bar: 'bg-green-500',
-      border: 'border-green-500/20',
+      border: 'border-green-500/30',
       glow: 'shadow-green-500/10',
     },
     MEDIUM: {
       bg: 'bg-amber-500/10',
-      text: 'text-amber-400',
+      text: 'text-amber-700',
       bar: 'bg-amber-500',
-      border: 'border-amber-500/20',
+      border: 'border-amber-500/30',
       glow: 'shadow-amber-500/10',
     },
     HIGH: {
       bg: 'bg-red-500/10',
-      text: 'text-red-400',
+      text: 'text-red-700',
       bar: 'bg-red-500',
-      border: 'border-red-500/20',
+      border: 'border-red-500/30',
       glow: 'shadow-red-500/10',
     },
   };
@@ -80,7 +80,7 @@ function FatigueIndicator({ level = 'LOW', value = 25, compact = false }) {
           {level}
         </motion.p>
       </AnimatePresence>
-      <div className="w-full h-2 rounded-full bg-white/10">
+      <div className="w-full h-2 rounded-full bg-accent-primary/10">
         <motion.div
           className={`h-full rounded-full ${style.bar}/70`}
           animate={{ width: `${value}%` }}
