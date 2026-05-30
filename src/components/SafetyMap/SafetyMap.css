@@ -1,0 +1,333 @@
+/* ────────────────────────────────────────────
+   SafetyMap Styles
+   ──────────────────────────────────────────── */
+
+.safety-map-container {
+  position: relative;
+  width: 100%;
+  height: calc(100vh - 80px); /* adjust based on your header height */
+  overflow: hidden;
+}
+
+.safety-map {
+  width: 100%;
+  height: 100%;
+}
+
+/* ────────────────────────────────────────────
+   Loading & Error States
+   ──────────────────────────────────────────── */
+
+.map-loading,
+.map-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 60vh;
+  text-align: center;
+  color: #ccc;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid #333;
+  border-top-color: #007bff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 16px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ────────────────────────────────────────────
+   Map Controls Panel
+   ──────────────────────────────────────────── */
+
+.map-controls {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  background: rgba(28, 28, 28, 0.95);
+  color: #fff;
+  padding: 16px;
+  border-radius: 8px;
+  min-width: 220px;
+  max-width: 260px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  z-index: 10;
+  backdrop-filter: blur(8px);
+  font-size: 13px;
+}
+
+.control-section {
+  margin-bottom: 16px;
+}
+
+.control-section:last-child {
+  margin-bottom: 0;
+}
+
+.control-section h4 {
+  margin: 0 0 8px 0;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #aaa;
+}
+
+.zone-count {
+  color: #ddd;
+  font-size: 13px;
+}
+
+.zone-count strong {
+  color: #fff;
+  font-size: 16px;
+}
+
+/* ────────────────────────────────────────────
+   Severity Selector
+   ──────────────────────────────────────────── */
+
+.severity-select {
+  width: 100%;
+  padding: 6px 8px;
+  background: #2a2a2a;
+  color: #fff;
+  border: 1px solid #444;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.severity-select:hover {
+  background: #333;
+}
+
+/* ────────────────────────────────────────────
+   Legend
+   ──────────────────────────────────────────── */
+
+.legend {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.legend-color {
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* ────────────────────────────────────────────
+   Buttons
+   ──────────────────────────────────────────── */
+
+.control-button {
+  width: 100%;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: opacity 0.2s;
+}
+
+.control-button:hover {
+  opacity: 0.9;
+}
+
+.control-button.primary {
+  background: #007bff;
+  color: #fff;
+}
+
+.control-button.danger {
+  background: #dc3545;
+  color: #fff;
+}
+
+.location-info {
+  margin-top: 8px;
+  padding: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 11px;
+  color: #ccc;
+}
+
+/* ────────────────────────────────────────────
+   User Location Marker
+   ──────────────────────────────────────────── */
+
+.user-location-marker {
+  position: relative;
+  width: 20px;
+  height: 20px;
+}
+
+.user-dot {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 14px;
+  height: 14px;
+  background: #007bff;
+  border: 3px solid #fff;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  z-index: 2;
+}
+
+.user-pulse {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 14px;
+  height: 14px;
+  background: rgba(0, 123, 255, 0.4);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  animation: pulse 2s infinite;
+  z-index: 1;
+}
+
+@keyframes pulse {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.7;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(3.5);
+    opacity: 0;
+  }
+}
+
+/* ────────────────────────────────────────────
+   Zone Detail Popup
+   ──────────────────────────────────────────── */
+
+.zone-popup {
+  position: absolute;
+  bottom: 24px;
+  right: 24px;
+  background: rgba(28, 28, 28, 0.97);
+  color: #fff;
+  padding: 16px;
+  border-radius: 8px;
+  width: 320px;
+  max-width: calc(100vw - 48px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+  z-index: 11;
+  backdrop-filter: blur(8px);
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.zone-popup-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: transparent;
+  color: #aaa;
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.zone-popup-close:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.zone-popup-severity {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.zone-popup-title {
+  margin: 0 0 4px 0;
+  font-size: 16px;
+  font-weight: 600;
+  padding-right: 30px;
+}
+
+.zone-popup-category {
+  font-size: 12px;
+  color: #aaa;
+  margin-bottom: 10px;
+}
+
+.zone-popup-message {
+  font-size: 13px;
+  color: #ddd;
+  line-height: 1.5;
+  margin-bottom: 8px;
+}
+
+.zone-popup-time {
+  font-size: 12px;
+  color: #ffc107;
+  margin-top: 8px;
+  padding: 6px 8px;
+  background: rgba(255, 193, 7, 0.1);
+  border-radius: 4px;
+}
+
+/* ────────────────────────────────────────────
+   Mobile Responsive
+   ──────────────────────────────────────────── */
+
+@media (max-width: 768px) {
+  .map-controls {
+    top: 8px;
+    left: 8px;
+    right: 8px;
+    max-width: none;
+  }
+  
+  .zone-popup {
+    bottom: 8px;
+    right: 8px;
+    left: 8px;
+    width: auto;
+  }
+}
