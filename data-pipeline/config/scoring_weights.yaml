@@ -1,40 +1,47 @@
 # ════════════════════════════════════════════════════════════════
-# RISK SCORING CONFIGURATION
-# Weights for the composite risk scoring formula
+# RISK SCORING CONFIGURATION (v2 - Calibrated)
+#
+# DESIGN PHILOSOPHY:
+# 1. Category base score is the PRIMARY signal (60% weight)
+# 2. Modifiers ADD to the base, not blend with it
+# 3. Multiple risk indicators COMPOUND (multiplicative for amplifiers)
+# 4. Emergency distance is a STRONG amplifier (urban India context)
 # ════════════════════════════════════════════════════════════════
 
 scoring:
-  # Component weights (must sum to 1.0)
+  # ─── Component weights (must sum to 1.0) ───
   weights:
-    category_base: 0.40
-    tag_modifiers: 0.20
-    emergency_distance: 0.20
-    lighting_condition: 0.10
-    isolation_score: 0.10
+    category_base: 0.60        # Increased: category IS the primary signal
+    tag_modifiers: 0.15
+    emergency_distance: 0.10
+    lighting_condition: 0.08
+    isolation_score: 0.07
   
-  # Tag-based score modifiers (added to score)
+  # ─── Tag-based score additions (added directly to score) ───
+  # These ADD to the final score after weighted formula
   tag_modifiers:
     "lit=no": 0.15
-    "access=no": 0.10
-    "abandoned=yes": 0.10
-    "industrial=chemical": 0.20
+    "access=no": 0.20            # Restricted access is serious
+    "abandoned=yes": 0.15
+    "industrial=chemical": 0.25  # Chemical hazard
+    "military=danger_area": 0.30 # Military danger zones
     "surface=dirt": 0.05
     "smoothness=horrible": 0.10
-    "building=ruins": 0.08
+    "building=ruins": 0.10
   
-  # Maximum total tag modifier (cap)
-  max_tag_modifier: 0.30
+  # Maximum total tag bonus (cap)
+  max_tag_modifier: 0.40
   
-  # Emergency distance scoring (km thresholds)
+  # ─── Emergency distance modifiers (additive) ───
   emergency_distance_modifiers:
-    - { max_km: 1.0, modifier: 0.00 }
-    - { max_km: 2.0, modifier: 0.10 }
-    - { max_km: 5.0, modifier: 0.20 }
-    - { max_km: 999.0, modifier: 0.30 }
+    - { max_km: 1.0, modifier: 0.00 }   # Well-covered
+    - { max_km: 2.0, modifier: 0.05 }   # Acceptable
+    - { max_km: 5.0, modifier: 0.15 }   # Concerning
+    - { max_km: 999.0, modifier: 0.25 } # Remote
   
-  # Severity level thresholds
+  # ─── Severity level thresholds (re-calibrated) ───
   severity_thresholds:
-    1: { min: 0.00, max: 0.35, label: "Low",      color: "#28a745" }
-    2: { min: 0.35, max: 0.55, label: "Medium",   color: "#ffc107" }
-    3: { min: 0.55, max: 0.75, label: "High",     color: "#fd7e14" }
-    4: { min: 0.75, max: 1.01, label: "Critical", color: "#dc3545" }
+    1: { min: 0.00, max: 0.45, label: "Low",      color: "#28a745" }
+    2: { min: 0.45, max: 0.65, label: "Medium",   color: "#ffc107" }
+    3: { min: 0.65, max: 0.80, label: "High",     color: "#fd7e14" }
+    4: { min: 0.80, max: 1.01, label: "Critical", color: "#dc3545" }

@@ -7,7 +7,7 @@ categories:
   
   industrial:
     description: "Industrial and manufacturing zones"
-    base_risk_score: 0.70
+    base_risk_score: 0.65
     default_severity: 3
     source_confidence: 0.75
     is_time_dependent: false
@@ -23,8 +23,8 @@ categories:
 
   abandoned:
     description: "Abandoned or derelict structures"
-    base_risk_score: 0.65
-    default_severity: 2
+    base_risk_score: 0.60
+    default_severity: 3
     source_confidence: 0.70
     is_time_dependent: false
     osm_filters:
@@ -39,7 +39,7 @@ categories:
 
   poorly_lit_roads:
     description: "Poorly lit or isolated road corridors"
-    base_risk_score: 0.55
+    base_risk_score: 0.40
     default_severity: 2
     source_confidence: 0.65
     is_time_dependent: true

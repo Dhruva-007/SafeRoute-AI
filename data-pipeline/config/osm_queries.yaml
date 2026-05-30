@@ -95,15 +95,46 @@ queries:
     );
     out body geom;
   
-  emergency_services: |
-    [out:json][timeout:120][bbox:{bbox}];
+  # ════════════════════════════════════════════════════════════
+  # EMERGENCY SERVICES — SINGLE COMBINED QUERY
+  # All emergency facilities in one efficient request
+  # ════════════════════════════════════════════════════════════
+  
+  emergency_all: |
+    [out:json][timeout:300][bbox:{bbox}];
     (
+      // Hospitals
       node["amenity"="hospital"];
       way["amenity"="hospital"];
+      
+      // Clinics with emergency
+      node["amenity"="clinic"]["emergency"="yes"];
+      way["amenity"="clinic"]["emergency"="yes"];
+      
+      // Healthcare facilities
+      node["healthcare"="hospital"];
+      way["healthcare"="hospital"];
+      
+      // Police
       node["amenity"="police"];
       way["amenity"="police"];
+      
+      // Fire stations
       node["amenity"="fire_station"];
       way["amenity"="fire_station"];
-      node["amenity"="clinic"];
+      
+      // Ambulance stations
+      node["emergency"="ambulance_station"];
+      way["emergency"="ambulance_station"];
+      
+      // 24/7 pharmacies
+      node["amenity"="pharmacy"]["opening_hours"~"24/7"];
+      
+      // Emergency shelters
+      node["amenity"="shelter"]["shelter_type"="emergency"];
+      
+      // General emergency facilities
+      node["emergency"~"^(yes|fire_station|ambulance_station|disaster_response|assembly_point)$"];
+      way["emergency"~"^(yes|fire_station|ambulance_station|disaster_response|assembly_point)$"];
     );
-    out body geom;
+    out body geom tags;
