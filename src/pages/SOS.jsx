@@ -60,7 +60,7 @@ function SOS() {
                 <p className="text-sm text-text-secondary mb-6 text-center">Press and hold for emergency alert</p>
                 <button
                   onClick={handleSOS}
-                  className="w-40 h-40 rounded-full bg-red-600 hover:bg-red-500 transition-all duration-250 flex items-center justify-center shadow-xl shadow-red-500/20 hover:shadow-red-500/30 hover:scale-105 active:scale-95 relative"
+                  className="w-40 h-40 rounded-full bg-red-600 hover:bg-red-500 transition-all duration-250 flex items-center justify-center shadow-xl shadow-red-500/30 hover:shadow-red-500/40 hover:scale-105 active:scale-95 relative"
                 >
                   <div className="absolute inset-0 rounded-full bg-red-500/30 animate-ping" />
                   <div className="relative flex flex-col items-center">
@@ -80,12 +80,12 @@ function SOS() {
                     key={countdown}
                     initial={{ scale: 0.5, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
-                    className="text-5xl font-bold text-red-400"
+                    className="text-5xl font-bold text-red-600"
                   >
                     {countdown}
                   </motion.div>
                 </div>
-                <button onClick={handleCancel} className="btn-secondary mt-6 !border-red-500/30 !text-red-400">
+                <button onClick={handleCancel} className="btn-secondary mt-6 !border-red-500/40 !text-red-600">
                   Cancel
                 </button>
               </>
@@ -97,9 +97,9 @@ function SOS() {
                   className="text-center"
                 >
                   <div className="w-20 h-20 rounded-full bg-red-500/20 flex items-center justify-center mx-auto mb-4">
-                    <Radio className="w-10 h-10 text-red-400 animate-pulse" />
+                    <Radio className="w-10 h-10 text-red-600 animate-pulse" />
                   </div>
-                  <h3 className="text-xl font-bold text-red-400 mb-2">SOS Activated</h3>
+                  <h3 className="text-xl font-bold text-red-600 mb-2">SOS Activated</h3>
                   <p className="text-sm text-text-secondary mb-1">Your location has been shared</p>
                   <p className="text-sm text-text-secondary mb-6">Emergency contacts notified</p>
 
@@ -108,7 +108,7 @@ function SOS() {
                     <span>35.6762° N, 139.6503° E</span>
                   </div>
 
-                  <button onClick={handleCancel} className="btn-secondary !border-red-500/30 !text-red-400">
+                  <button onClick={handleCancel} className="btn-secondary !border-red-500/40 !text-red-600">
                     Deactivate SOS
                   </button>
                 </motion.div>
@@ -126,12 +126,12 @@ function SOS() {
               </h3>
               <div className="space-y-3">
                 {emergencyContacts.map((contact, i) => (
-                  <div key={i} className="flex items-center justify-between p-3 rounded-xl bg-white/[0.02] hover:bg-white/[0.05] transition-colors">
+                  <div key={i} className="flex items-center justify-between p-3 rounded-xl bg-accent-primary/5 hover:bg-accent-primary/10 transition-colors">
                     <div>
                       <p className="text-sm font-medium text-text-primary">{contact.name}</p>
                       <p className="text-xs text-text-muted">{contact.type}</p>
                     </div>
-                    <a href={`tel:${contact.number}`} className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-green-500/10 text-green-400 text-sm font-medium hover:bg-green-500/20 transition-colors">
+                    <a href={`tel:${contact.number}`} className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-green-500/15 text-green-700 text-sm font-medium hover:bg-green-500/25 transition-colors">
                       <Phone className="w-3.5 h-3.5" />
                       {contact.number}
                     </a>
@@ -148,9 +148,9 @@ function SOS() {
               </h3>
               <div className="space-y-3">
                 {emergencyPhrases.map((phrase, i) => (
-                  <div key={i} className="p-3 rounded-xl bg-white/[0.02] border border-border-subtle">
+                  <div key={i} className="p-3 rounded-xl bg-accent-primary/5 border border-border-subtle">
                     <p className="text-sm font-medium text-text-primary mb-1">{phrase.en}</p>
-                    <p className="text-sm text-accent-primary">{phrase.local}</p>
+                    <p className="text-sm text-accent-deep">{phrase.local}</p>
                   </div>
                 ))}
               </div>
