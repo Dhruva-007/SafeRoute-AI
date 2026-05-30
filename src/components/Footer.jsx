@@ -4,13 +4,13 @@ import { Shield, Github, Twitter, Mail } from 'lucide-react';
 
 function Footer() {
   return (
-    <footer className="border-t border-border-subtle bg-bg-primary/80">
+    <footer className="border-t border-border-subtle bg-white/60 backdrop-blur-sm">
       <div className="container-max px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand */}
           <div className="md:col-span-2">
             <Link to="/" className="flex items-center gap-2.5 mb-4">
-              <div className="w-8 h-8 rounded-lg bg-accent-primary/10 border border-accent-primary/20 flex items-center justify-center">
+              <div className="w-8 h-8 rounded-lg bg-accent-primary/10 border border-accent-primary/30 flex items-center justify-center">
                 <Shield className="w-4 h-4 text-accent-primary" />
               </div>
               <span className="text-lg font-bold text-text-primary">
@@ -21,13 +21,13 @@ function Footer() {
               An Intelligent Travel Planning and Safety System. Making every journey safer, smarter, and more enjoyable with AI-powered insights.
             </p>
             <div className="flex items-center gap-3 mt-5">
-              <a href="#" className="w-9 h-9 rounded-lg bg-white/5 border border-border-subtle flex items-center justify-center hover:bg-white/10 transition-colors">
+              <a href="#" className="w-9 h-9 rounded-lg bg-white border border-border-subtle flex items-center justify-center hover:bg-accent-primary/5 hover:border-accent-primary/40 transition-all">
                 <Github className="w-4 h-4 text-text-secondary" />
               </a>
-              <a href="#" className="w-9 h-9 rounded-lg bg-white/5 border border-border-subtle flex items-center justify-center hover:bg-white/10 transition-colors">
+              <a href="#" className="w-9 h-9 rounded-lg bg-white border border-border-subtle flex items-center justify-center hover:bg-accent-primary/5 hover:border-accent-primary/40 transition-all">
                 <Twitter className="w-4 h-4 text-text-secondary" />
               </a>
-              <a href="#" className="w-9 h-9 rounded-lg bg-white/5 border border-border-subtle flex items-center justify-center hover:bg-white/10 transition-colors">
+              <a href="#" className="w-9 h-9 rounded-lg bg-white border border-border-subtle flex items-center justify-center hover:bg-accent-primary/5 hover:border-accent-primary/40 transition-all">
                 <Mail className="w-4 h-4 text-text-secondary" />
               </a>
             </div>

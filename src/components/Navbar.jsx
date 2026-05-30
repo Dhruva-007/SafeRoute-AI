@@ -1,9 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { 
-  Menu, X, Shield, LayoutDashboard, Map, Navigation, 
-  AlertTriangle, Languages, User, Compass, LogOut
+import {
+  Menu,
+  X,
+  Shield,
+  LayoutDashboard,
+  Map,
+  Navigation,
+  AlertTriangle,
+  Languages,
+  User,
+  Compass,
+  LogOut,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -18,7 +27,9 @@ function Navbar() {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
     };
+
     window.addEventListener('scroll', handleScroll, { passive: true });
+
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
@@ -32,7 +43,10 @@ function Navbar() {
     } else {
       document.body.style.overflow = '';
     }
-    return () => { document.body.style.overflow = ''; };
+
+    return () => {
+      document.body.style.overflow = '';
+    };
   }, [mobileMenuOpen]);
 
   const handleLogout = () => {
@@ -57,17 +71,18 @@ function Navbar() {
       <nav
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           isScrolled
-            ? 'bg-bg-primary/90 backdrop-blur-xl shadow-lg shadow-black/20 border-b border-border-subtle'
+            ? 'bg-white/80 backdrop-blur-xl shadow-soft border-b border-[#DDD3C5]'
             : 'bg-transparent'
         }`}
       >
         <div className="container-max px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16 lg:h-18">
+          <div className="flex items-center justify-between h-16 lg:h-[72px]">
             {/* Logo */}
             <Link to="/" className="flex items-center gap-2.5 group">
-              <div className="w-9 h-9 rounded-lg bg-accent-primary/10 border border-accent-primary/20 flex items-center justify-center group-hover:bg-accent-primary/20 transition-colors duration-250">
+              <div className="w-10 h-10 rounded-xl bg-white/75 border border-[#DDD3C5] flex items-center justify-center shadow-glass transition-all duration-300 group-hover:border-accent-primary">
                 <Shield className="w-5 h-5 text-accent-primary" />
               </div>
+
               <span className="text-lg font-bold text-text-primary tracking-tight">
                 Safe<span className="text-accent-primary">Route</span> AI
               </span>
@@ -81,23 +96,24 @@ function Navbar() {
                     <Link
                       key={link.to}
                       to={link.to}
-                      className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-250 ${
+                      className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium transition-all duration-250 ${
                         link.highlight
                           ? isActive(link.to)
-                            ? 'bg-red-500/20 text-red-400'
-                            : 'text-red-400 hover:bg-red-500/10'
+                            ? 'bg-danger-soft text-danger'
+                            : 'text-danger hover:bg-danger-soft'
                           : isActive(link.to)
-                          ? 'bg-accent-primary/15 text-accent-primary'
-                          : 'text-text-secondary hover:text-text-primary hover:bg-white/5'
+                          ? 'bg-[#F3E9D9] text-accent-hover'
+                          : 'text-text-secondary hover:text-text-primary hover:bg-white/70'
                       }`}
                     >
                       <link.icon className="w-4 h-4" />
                       {link.label}
                     </Link>
                   ))}
+
                   <button
                     onClick={handleLogout}
-                    className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-white/5 transition-all duration-250 ml-1"
+                    className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-white/70 transition-all duration-250 ml-1"
                   >
                     <LogOut className="w-4 h-4" />
                   </button>
@@ -114,6 +130,7 @@ function Navbar() {
                   >
                     Login
                   </Link>
+
                   <Link
                     to="/signup"
                     className="btn-primary text-sm !px-5 !py-2"
@@ -126,7 +143,7 @@ function Navbar() {
 
             {/* Mobile Hamburger */}
             <button
-              className="lg:hidden p-2 rounded-lg hover:bg-white/5 transition-colors"
+              className="lg:hidden p-2 rounded-xl hover:bg-white/60 transition-colors"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               aria-label="Toggle menu"
             >
@@ -149,27 +166,34 @@ function Navbar() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.2 }}
-              className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden"
+              className="fixed inset-0 z-40 bg-black/20 backdrop-blur-sm lg:hidden"
               onClick={() => setMobileMenuOpen(false)}
             />
+
             <motion.div
               initial={{ x: '100%' }}
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
-              transition={{ type: 'tween', duration: 0.3, ease: 'easeOut' }}
-              className="fixed top-0 right-0 z-50 h-full w-72 bg-bg-primary border-l border-border-subtle shadow-2xl lg:hidden"
+              transition={{
+                type: 'tween',
+                duration: 0.3,
+                ease: 'easeOut',
+              }}
+              className="fixed top-0 right-0 z-50 h-full w-72 bg-bg-elevated border-l border-[#DDD3C5] shadow-strong lg:hidden"
             >
-              <div className="flex items-center justify-between p-4 border-b border-border-subtle">
+              <div className="flex items-center justify-between p-4 border-b border-[#DDD3C5]">
                 <span className="text-lg font-bold text-text-primary">
                   Safe<span className="text-accent-primary">Route</span> AI
                 </span>
+
                 <button
                   onClick={() => setMobileMenuOpen(false)}
-                  className="p-2 rounded-lg hover:bg-white/5"
+                  className="p-2 rounded-lg hover:bg-white/60"
                 >
                   <X className="w-5 h-5 text-text-primary" />
                 </button>
               </div>
+
               <div className="p-4 flex flex-col gap-1 overflow-y-auto h-[calc(100%-65px)]">
                 {isLoggedIn ? (
                   <>
@@ -180,21 +204,22 @@ function Navbar() {
                         className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-250 ${
                           link.highlight
                             ? isActive(link.to)
-                              ? 'bg-red-500/20 text-red-400'
-                              : 'text-red-400 hover:bg-red-500/10'
+                              ? 'bg-danger-soft text-danger'
+                              : 'text-danger hover:bg-danger-soft'
                             : isActive(link.to)
-                            ? 'bg-accent-primary/15 text-accent-primary'
-                            : 'text-text-secondary hover:text-text-primary hover:bg-white/5'
+                            ? 'bg-[#F3E9D9] text-accent-hover'
+                            : 'text-text-secondary hover:text-text-primary hover:bg-white/60'
                         }`}
                       >
                         <link.icon className="w-5 h-5" />
                         {link.label}
                       </Link>
                     ))}
-                    <div className="border-t border-border-subtle mt-4 pt-4">
+
+                    <div className="border-t border-[#DDD3C5] mt-4 pt-4">
                       <button
                         onClick={handleLogout}
-                        className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-white/5 transition-all duration-250 w-full"
+                        className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-white/60 transition-all duration-250 w-full"
                       >
                         <LogOut className="w-5 h-5" />
                         Log Out
@@ -205,10 +230,11 @@ function Navbar() {
                   <>
                     <Link
                       to="/login"
-                      className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-white/5 transition-all"
+                      className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-white/60 transition-all"
                     >
                       Login
                     </Link>
+
                     <Link
                       to="/signup"
                       className="btn-primary text-center text-sm mt-2"
@@ -223,8 +249,7 @@ function Navbar() {
         )}
       </AnimatePresence>
 
-      {/* Spacer */}
-      <div className="h-16 lg:h-18" />
+      <div className="h-16 lg:h-[72px]" />
     </>
   );
 }

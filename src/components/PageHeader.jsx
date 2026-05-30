@@ -11,7 +11,7 @@ function PageHeader({ icon: Icon, title, subtitle }) {
     >
       <div className="flex items-center gap-3 mb-3">
         {Icon && (
-          <div className="w-10 h-10 rounded-xl bg-accent-primary/10 border border-accent-primary/20 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-xl bg-accent-primary/10 border border-accent-primary/30 flex items-center justify-center">
             <Icon className="w-5 h-5 text-accent-primary" />
           </div>
         )}
