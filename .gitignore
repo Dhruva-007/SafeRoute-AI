@@ -1,3 +1,7 @@
+# ============================================
+# Frontend (React/Vite/Node)
+# ============================================
+
 # Logs
 logs
 *.log
@@ -7,7 +11,10 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Dependencies
 node_modules
+
+# Build outputs
 dist
 dist-ssr
 *.local
@@ -17,10 +24,21 @@ dist-ssr
 !.vscode/extensions.json
 .idea
 .DS_Store
+Thumbs.db
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
 
+# Environment files (NEVER commit secrets)
 .env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Temp / scratch
+models.json
+*.tmp
+*.bak
