@@ -1,75 +1,165 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import PageHeader from '../components/PageHeader';
 import FatiguePredictor from '../components/FatiguePredictor';
-import { 
-  Compass, MapPin, Calendar, Users, DollarSign, 
-  Sparkles, Clock, Shield, ChevronRight, X,
-  Sun, Cloud, Umbrella, Activity, ChevronDown, ChevronUp
+import {
+  Compass,
+  MapPin,
+  Calendar,
+  Users,
+  Sparkles,
+  ChevronRight,
+  Sun,
+  Cloud,
+  Umbrella,
+  Activity,
+  ChevronDown,
+  ChevronUp,
+  Loader2,
+  AlertCircle,
+  Save,
+  CheckCircle,
+  TrendingUp,
 } from 'lucide-react';
+import { planTrip, validateFormData } from '../services/planner';
+import { saveTrip } from '../services/trips';
+import {
+  FATIGUE_BADGE,
+  FATIGUE_DOT,
+  scoreToLevel,
+} from '../utils/fatigueStyles';
+
+const INTERESTS = [
+  'Culture',
+  'Food',
+  'Nature',
+  'Nightlife',
+  'Shopping',
+  'History',
+  'Photography',
+  'Adventure',
+  'Relaxation',
+];
+
+const WEATHER_DATA = [
+  { icon: Sun, temp: '28°C', condition: 'Sunny' },
+  { icon: Cloud, temp: '26°C', condition: 'Cloudy' },
+  { icon: Umbrella, temp: '24°C', condition: 'Light Rain' },
+  { icon: Sun, temp: '30°C', condition: 'Clear' },
+  { icon: Cloud, temp: '25°C', condition: 'Overcast' },
+];
+
 
 function PlanTour() {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
-    destination: '',
+    destination: 'Hyderabad',
     startDate: '',
     endDate: '',
-    travelers: '1',
-    budget: 'moderate',
+    travelers: 2,
+    budget: 'mid-range',
     interests: [],
   });
+
   const [generated, setGenerated] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [showFatiguePredictor, setShowFatiguePredictor] = useState(false);
-
-  const interests = [
-    'Culture', 'Food', 'Nature', 'Adventure', 'History', 
-    'Shopping', 'Nightlife', 'Relaxation'
-  ];
+  const [error, setError] = useState(null);
+  const [result, setResult] = useState(null);
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [savedTripId, setSavedTripId] = useState(null);
 
   const toggleInterest = (interest) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       interests: prev.interests.includes(interest)
-        ? prev.interests.filter(i => i !== interest)
-        : [...prev.interests, interest]
+        ? prev.interests.filter((i) => i !== interest)
+        : [...prev.interests, interest],
     }));
   };
 
   const handleGenerate = async () => {
+    const validationErrors = validateFormData(formData);
+    if (validationErrors.length > 0) {
+      setError(validationErrors.join(' '));
+      return;
+    }
+
+    const destLower = formData.destination.toLowerCase().trim();
+    if (!destLower.includes('hyderabad')) {
+      if (
+        !window.confirm(
+          `AI planner currently supports Hyderabad only.\n\nYou entered "${formData.destination}". Proceed anyway?`
+        )
+      ) {
+        return;
+      }
+    }
+
     setGenerating(true);
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    setGenerated(true);
-    setGenerating(false);
+    setError(null);
+    setResult(null);
+    setSaved(false);
+    setSavedTripId(null);
+
+    try {
+      const data = await planTrip(formData);
+      setResult(data);
+      setGenerated(true);
+    } catch (err) {
+      setError(err.message || 'Failed to generate itinerary.');
+    } finally {
+      setGenerating(false);
+    }
   };
 
-  const generatedPlan = [
-    { day: 1, title: 'Arrival & Exploration', items: [
-      { time: '10:00', activity: 'Airport Arrival & Hotel Check-in', fatigue: 'low' },
-      { time: '12:00', activity: 'Local Lunch at Recommended Spot', fatigue: 'low' },
-      { time: '14:00', activity: 'Neighborhood Walking Tour', fatigue: 'medium' },
-      { time: '18:00', activity: 'Sunset Viewpoint Visit', fatigue: 'low' },
-    ]},
-    { day: 2, title: 'Cultural Immersion', items: [
-      { time: '09:00', activity: 'Historic Temple Complex', fatigue: 'low' },
-      { time: '12:00', activity: 'Street Food Experience', fatigue: 'low' },
-      { time: '14:00', activity: 'Local Art Gallery', fatigue: 'medium' },
-      { time: '16:00', activity: 'Rest Break (Fatigue Alert)', fatigue: 'rest' },
-      { time: '19:00', activity: 'Traditional Dinner', fatigue: 'low' },
-    ]},
-    { day: 3, title: 'Adventure Day', items: [
-      { time: '07:00', activity: 'Sunrise Hike', fatigue: 'high' },
-      { time: '11:00', activity: 'Nature Reserve Visit', fatigue: 'medium' },
-      { time: '13:00', activity: 'Picnic Lunch', fatigue: 'low' },
-      { time: '16:00', activity: 'Local Market Shopping', fatigue: 'low' },
-    ]},
-  ];
+  const handleSaveTrip = async () => {
+    if (!result) return;
 
-  const fatigueColors = {
-    low: 'bg-green-500/20 text-green-400',
-    medium: 'bg-amber-500/20 text-amber-400',
-    high: 'bg-red-500/20 text-red-400',
-    rest: 'bg-blue-500/20 text-blue-400',
+    setSaving(true);
+    setError(null);
+    try {
+      const savedTrip = await saveTrip({
+        destination: result.destination,
+        start_date: result.days?.[0]?.date || formData.startDate,
+        end_date:
+          result.days?.[result.days.length - 1]?.date || formData.endDate,
+        number_of_travelers: result.number_of_travelers,
+        budget_level: result.budget_level,
+        interests: result.interests,
+        summary: result.summary,
+        estimated_budget: result.estimated_budget,
+        duration_days: result.duration_days,
+        days: result.days,
+        status: 'planned',
+      });
+      setSaved(true);
+      setSavedTripId(savedTrip.id);
+    } catch (err) {
+      setError('Failed to save trip: ' + err.message);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const resetForm = () => {
+    setGenerated(false);
+    setStep(1);
+    setResult(null);
+    setError(null);
+    setSaved(false);
+    setSavedTripId(null);
+    setShowFatiguePredictor(false);
+    setFormData({
+      destination: 'Hyderabad',
+      startDate: '',
+      endDate: '',
+      travelers: 2,
+      budget: 'mid-range',
+      interests: [],
+    });
   };
 
   return (
@@ -81,159 +171,282 @@ function PlanTour() {
           subtitle="Let AI create the perfect itinerary tailored to your preferences and fatigue management."
         />
 
+        {/* Error Banner */}
+        <AnimatePresence>
+          {error && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="max-w-2xl mx-auto mb-6 p-4 rounded-2xl bg-danger-soft border border-danger/20 flex items-start gap-3"
+            >
+              <AlertCircle className="w-5 h-5 text-danger shrink-0 mt-0.5" />
+              <p className="text-sm text-danger flex-1">{error}</p>
+              <button
+                onClick={() => setError(null)}
+                className="text-danger/60 hover:text-danger text-lg leading-none"
+              >
+                ×
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* ===== FORM VIEW ===== */}
         {!generated ? (
           <div className="max-w-2xl mx-auto">
-            <div className="glass-card p-6 sm:p-8">
-              {/* Progress */}
+            <div className="glass-card shadow-soft p-6 sm:p-8 border border-[#DDD3C5]">
+              {/* Step Indicator */}
               <div className="flex items-center gap-2 mb-8">
                 {[1, 2, 3].map((s) => (
                   <React.Fragment key={s}>
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors ${
-                      step >= s ? 'bg-accent-primary text-bg-primary' : 'bg-white/5 text-text-muted'
-                    }`}>
+                    <div
+                      className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-semibold transition-all ${
+                        step >= s
+                          ? 'bg-accent-primary text-white shadow-soft'
+                          : 'bg-[#F6F0E8] text-text-muted border border-[#DDD3C5]'
+                      }`}
+                    >
                       {s}
                     </div>
                     {s < 3 && (
-                      <div className={`flex-1 h-0.5 rounded ${step > s ? 'bg-accent-primary' : 'bg-white/10'}`} />
+                      <div
+                        className={`flex-1 h-1 rounded-full ${
+                          step > s ? 'bg-accent-primary' : 'bg-[#E7DED2]'
+                        }`}
+                      />
                     )}
                   </React.Fragment>
                 ))}
               </div>
 
               <AnimatePresence mode="wait">
+                {/* STEP 1 */}
                 {step === 1 && (
                   <motion.div
                     key="step1"
-                    initial={{ opacity: 0, x: 20 }}
+                    initial={{ opacity: 0, x: 24 }}
                     animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -20 }}
+                    exit={{ opacity: 0, x: -24 }}
                     transition={{ duration: 0.3 }}
-                    className="space-y-5"
+                    className="space-y-6"
                   >
-                    <h3 className="text-lg font-semibold text-text-primary">Where to?</h3>
-                    
+                    <h3 className="text-xl font-semibold text-text-primary">
+                      Where to?
+                    </h3>
+
                     <div>
-                      <label className="block text-sm font-medium text-text-secondary mb-2">Destination</label>
+                      <label className="block text-sm font-medium text-text-secondary mb-2">
+                        Destination
+                      </label>
                       <div className="relative">
-                        <MapPin className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
+                        <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
                         <input
                           type="text"
                           value={formData.destination}
-                          onChange={(e) => setFormData(p => ({ ...p, destination: e.target.value }))}
-                          placeholder="e.g., Kyoto, Japan"
-                          className="w-full pl-10 pr-4 py-3 bg-white/[0.04] border border-border-subtle rounded-xl text-text-primary text-sm placeholder:text-text-muted focus:outline-none focus:border-accent-primary/40 transition-all"
+                          onChange={(e) =>
+                            setFormData((p) => ({
+                              ...p,
+                              destination: e.target.value,
+                            }))
+                          }
+                          placeholder="e.g., Hyderabad"
+                          className="w-full pl-11 pr-4 py-3.5 bg-white/85 border border-[#DDD3C5] rounded-2xl text-text-primary text-sm placeholder:text-text-muted focus:outline-none focus:border-accent-primary/50 focus:ring-4 focus:ring-accent-primary/10 transition-all"
                         />
                       </div>
+                      <p className="text-xs text-text-muted mt-2">
+                        <span className="text-accent-primary font-semibold">
+                          Note:
+                        </span>{' '}
+                        AI planning currently optimized for Hyderabad. More
+                        cities coming soon.
+                      </p>
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-medium text-text-secondary mb-2">Start Date</label>
+                        <label className="block text-sm font-medium text-text-secondary mb-2">
+                          Start Date
+                        </label>
                         <div className="relative">
-                          <Calendar className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
+                          <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
                           <input
                             type="date"
                             value={formData.startDate}
-                            onChange={(e) => setFormData(p => ({ ...p, startDate: e.target.value }))}
-                            className="w-full pl-10 pr-4 py-3 bg-white/[0.04] border border-border-subtle rounded-xl text-text-primary text-sm focus:outline-none focus:border-accent-primary/40 transition-all"
+                            min={new Date().toISOString().split('T')[0]}
+                            onChange={(e) =>
+                              setFormData((p) => ({
+                                ...p,
+                                startDate: e.target.value,
+                              }))
+                            }
+                            className="w-full pl-11 pr-4 py-3.5 bg-white/85 border border-[#DDD3C5] rounded-2xl text-text-primary text-sm focus:outline-none focus:border-accent-primary/50 focus:ring-4 focus:ring-accent-primary/10 transition-all"
                           />
                         </div>
                       </div>
+
                       <div>
-                        <label className="block text-sm font-medium text-text-secondary mb-2">End Date</label>
+                        <label className="block text-sm font-medium text-text-secondary mb-2">
+                          End Date
+                        </label>
                         <div className="relative">
-                          <Calendar className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
+                          <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
                           <input
                             type="date"
                             value={formData.endDate}
-                            onChange={(e) => setFormData(p => ({ ...p, endDate: e.target.value }))}
-                            className="w-full pl-10 pr-4 py-3 bg-white/[0.04] border border-border-subtle rounded-xl text-text-primary text-sm focus:outline-none focus:border-accent-primary/40 transition-all"
+                            min={
+                              formData.startDate ||
+                              new Date().toISOString().split('T')[0]
+                            }
+                            onChange={(e) =>
+                              setFormData((p) => ({
+                                ...p,
+                                endDate: e.target.value,
+                              }))
+                            }
+                            className="w-full pl-11 pr-4 py-3.5 bg-white/85 border border-[#DDD3C5] rounded-2xl text-text-primary text-sm focus:outline-none focus:border-accent-primary/50 focus:ring-4 focus:ring-accent-primary/10 transition-all"
                           />
                         </div>
                       </div>
                     </div>
 
-                    <button onClick={() => setStep(2)} className="btn-primary w-full flex items-center justify-center gap-2 !py-3.5">
-                      Continue <ChevronRight className="w-4 h-4" />
+                    <button
+                      onClick={() => setStep(2)}
+                      className="btn-primary w-full flex items-center justify-center gap-2 !py-3.5"
+                    >
+                      Continue
+                      <ChevronRight className="w-4 h-4" />
                     </button>
                   </motion.div>
                 )}
 
+                {/* STEP 2 */}
                 {step === 2 && (
                   <motion.div
                     key="step2"
-                    initial={{ opacity: 0, x: 20 }}
+                    initial={{ opacity: 0, x: 24 }}
                     animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -20 }}
+                    exit={{ opacity: 0, x: -24 }}
                     transition={{ duration: 0.3 }}
-                    className="space-y-5"
+                    className="space-y-6"
                   >
-                    <h3 className="text-lg font-semibold text-text-primary">Travel Details</h3>
-                    
+                    <h3 className="text-xl font-semibold text-text-primary">
+                      Travel Details
+                    </h3>
+
                     <div>
-                      <label className="block text-sm font-medium text-text-secondary mb-2">Number of Travelers</label>
+                      <label className="block text-sm font-medium text-text-secondary mb-2">
+                        Number of Travelers
+                      </label>
                       <div className="relative">
-                        <Users className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
-                        <select
+                        <Users className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
+                        <input
+                          type="number"
+                          min="1"
+                          max="50"
                           value={formData.travelers}
-                          onChange={(e) => setFormData(p => ({ ...p, travelers: e.target.value }))}
-                          className="w-full pl-10 pr-4 py-3 bg-white/[0.04] border border-border-subtle rounded-xl text-text-primary text-sm focus:outline-none focus:border-accent-primary/40 transition-all appearance-none"
-                        >
-                          {[1, 2, 3, 4, 5, '6+'].map(n => (
-                            <option key={n} value={n} className="bg-bg-card">{n} {n === 1 ? 'traveler' : 'travelers'}</option>
-                          ))}
-                        </select>
+                          onChange={(e) => {
+                            const val = parseInt(e.target.value, 10);
+                            setFormData((p) => ({
+                              ...p,
+                              travelers: isNaN(val)
+                                ? 1
+                                : Math.min(50, Math.max(1, val)),
+                            }));
+                          }}
+                          className="w-full pl-11 pr-4 py-3.5 bg-white/85 border border-[#DDD3C5] rounded-2xl text-text-primary text-sm focus:outline-none focus:border-accent-primary/50 focus:ring-4 focus:ring-accent-primary/10 transition-all"
+                        />
                       </div>
+                      <p className="text-xs text-text-muted mt-2">
+                        Max 50 travelers per group.
+                      </p>
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-text-secondary mb-2">Budget</label>
+                      <label className="block text-sm font-medium text-text-secondary mb-3">
+                        Budget Level
+                      </label>
                       <div className="grid grid-cols-3 gap-3">
-                        {['budget', 'moderate', 'luxury'].map((b) => (
+                        {[
+                          { id: 'budget', label: 'Budget', desc: 'Save money' },
+                          {
+                            id: 'mid-range',
+                            label: 'Mid-Range',
+                            desc: 'Balanced',
+                          },
+                          {
+                            id: 'premium',
+                            label: 'Premium',
+                            desc: 'Best experience',
+                          },
+                        ].map((b) => (
                           <button
-                            key={b}
-                            onClick={() => setFormData(p => ({ ...p, budget: b }))}
-                            className={`p-3 rounded-xl text-sm font-medium capitalize transition-all ${
-                              formData.budget === b
-                                ? 'bg-accent-primary/15 text-accent-primary border border-accent-primary/30'
-                                : 'bg-white/[0.04] text-text-secondary border border-border-subtle hover:bg-white/[0.06]'
+                            key={b.id}
+                            onClick={() =>
+                              setFormData((p) => ({ ...p, budget: b.id }))
+                            }
+                            className={`p-3.5 rounded-2xl text-sm font-semibold transition-all ${
+                              formData.budget === b.id
+                                ? 'bg-accent-primary/15 text-accent-primary border border-accent-primary/40 shadow-soft'
+                                : 'bg-white/85 text-text-secondary border border-[#DDD3C5] hover:bg-[#FAF7F2]'
                             }`}
                           >
-                            {b}
+                            <div>{b.label}</div>
+                            <div className="text-xs font-normal mt-1 opacity-60">
+                              {b.desc}
+                            </div>
                           </button>
                         ))}
                       </div>
                     </div>
 
                     <div className="flex gap-3">
-                      <button onClick={() => setStep(1)} className="btn-secondary flex-1 !py-3.5">Back</button>
-                      <button onClick={() => setStep(3)} className="btn-primary flex-1 flex items-center justify-center gap-2 !py-3.5">
-                        Continue <ChevronRight className="w-4 h-4" />
+                      <button
+                        onClick={() => setStep(1)}
+                        className="btn-secondary flex-1 !py-3.5"
+                      >
+                        Back
+                      </button>
+                      <button
+                        onClick={() => setStep(3)}
+                        className="btn-primary flex-1 flex items-center justify-center gap-2 !py-3.5"
+                      >
+                        Continue
+                        <ChevronRight className="w-4 h-4" />
                       </button>
                     </div>
                   </motion.div>
                 )}
 
+                {/* STEP 3 */}
                 {step === 3 && (
                   <motion.div
                     key="step3"
-                    initial={{ opacity: 0, x: 20 }}
+                    initial={{ opacity: 0, x: 24 }}
                     animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -20 }}
+                    exit={{ opacity: 0, x: -24 }}
                     transition={{ duration: 0.3 }}
-                    className="space-y-5"
+                    className="space-y-6"
                   >
-                    <h3 className="text-lg font-semibold text-text-primary">Your Interests</h3>
-                    
-                    <div className="flex flex-wrap gap-2.5">
-                      {interests.map((interest) => (
+                    <div>
+                      <h3 className="text-xl font-semibold text-text-primary">
+                        What Interests You?
+                      </h3>
+                      <p className="text-sm text-text-secondary mt-1">
+                        Select at least one. We will find the best places for
+                        you.
+                      </p>
+                    </div>
+
+                    <div className="flex flex-wrap gap-3">
+                      {INTERESTS.map((interest) => (
                         <button
                           key={interest}
                           onClick={() => toggleInterest(interest)}
-                          className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                          className={`px-4 py-2.5 rounded-full text-sm font-semibold transition-all ${
                             formData.interests.includes(interest)
-                              ? 'bg-accent-primary/15 text-accent-primary border border-accent-primary/30'
-                              : 'bg-white/[0.04] text-text-secondary border border-border-subtle hover:bg-white/[0.06]'
+                              ? 'bg-accent-primary/15 text-accent-primary border border-accent-primary/40 shadow-soft'
+                              : 'bg-white/85 text-text-secondary border border-[#DDD3C5] hover:bg-[#FAF7F2]'
                           }`}
                         >
                           {interest}
@@ -241,17 +454,30 @@ function PlanTour() {
                       ))}
                     </div>
 
+                    {formData.interests.length > 0 && (
+                      <p className="text-xs text-accent-primary font-medium">
+                        {formData.interests.length} selected
+                      </p>
+                    )}
+
                     <div className="flex gap-3">
-                      <button onClick={() => setStep(2)} className="btn-secondary flex-1 !py-3.5">Back</button>
+                      <button
+                        onClick={() => setStep(2)}
+                        className="btn-secondary flex-1 !py-3.5"
+                      >
+                        Back
+                      </button>
                       <button
                         onClick={handleGenerate}
-                        disabled={generating}
-                        className="btn-primary flex-1 flex items-center justify-center gap-2 !py-3.5 disabled:opacity-60"
+                        disabled={
+                          generating || formData.interests.length === 0
+                        }
+                        className="btn-primary flex-1 flex items-center justify-center gap-2 !py-3.5 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         {generating ? (
                           <>
-                            <div className="w-5 h-5 border-2 border-bg-primary border-t-transparent rounded-full animate-spin" />
-                            Generating...
+                            <Loader2 className="w-5 h-5 animate-spin" />
+                            Planning your trip...
                           </>
                         ) : (
                           <>
@@ -267,41 +493,85 @@ function PlanTour() {
             </div>
           </div>
         ) : (
+          /* ===== RESULTS VIEW ===== */
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
+            transition={{ duration: 0.45 }}
           >
-            {/* Generated Header */}
-            <div className="glass-card p-6 mb-6">
+            {/* Header */}
+            <div className="glass-card shadow-soft border border-[#DDD3C5] p-6 mb-6">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div>
-                  <h2 className="text-xl font-bold text-text-primary mb-1">
-                    {formData.destination || 'Kyoto, Japan'} — AI Generated Plan
+                  <h2 className="text-2xl font-bold text-text-primary mb-1">
+                    {formData.destination} — AI Generated Plan
                   </h2>
-                  <p className="text-sm text-text-secondary">3-day itinerary • Fatigue-optimized • {formData.budget} budget</p>
+                  <p className="text-sm text-text-secondary">
+                    {result?.duration_days} day
+                    {result?.duration_days !== 1 ? 's' : ''} •{' '}
+                    {formData.budget} budget •{' '}
+                    {result?.number_of_travelers || formData.travelers}{' '}
+                    traveler
+                    {(result?.number_of_travelers || formData.travelers) !== 1
+                      ? 's'
+                      : ''}
+                  </p>
                 </div>
-                <div className="flex items-center gap-3">
+
+                <div className="flex items-center gap-3 flex-wrap">
+                  {!saved ? (
+                    <button
+                      onClick={handleSaveTrip}
+                      disabled={saving}
+                      className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold bg-accent-primary/10 text-accent-primary hover:bg-accent-primary/15 transition-all disabled:opacity-60"
+                    >
+                      {saving ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <Save className="w-4 h-4" />
+                      )}
+                      Save Trip
+                    </button>
+                  ) : (
+                    <Link
+                      to="/my-trips"
+                      className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold bg-success/15 text-success hover:bg-success/25 transition-all"
+                    >
+                      <CheckCircle className="w-4 h-4" />
+                      Saved · View in My Trips
+                    </Link>
+                  )}
+
                   <button
-                    onClick={() => setShowFatiguePredictor(!showFatiguePredictor)}
-                    className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
+                    onClick={() =>
+                      setShowFatiguePredictor(!showFatiguePredictor)
+                    }
+                    className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition-all ${
                       showFatiguePredictor
                         ? 'bg-accent-primary/15 text-accent-primary'
-                        : 'bg-white/5 text-text-secondary hover:bg-white/10'
+                        : 'bg-accent-primary/5 text-text-secondary hover:bg-accent-primary/10'
                     }`}
                   >
                     <Activity className="w-4 h-4" />
-                    Fatigue Monitor
-                    {showFatiguePredictor ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+                    <span className="hidden sm:inline">Fatigue Monitor</span>
+                    {showFatiguePredictor ? (
+                      <ChevronUp className="w-3.5 h-3.5" />
+                    ) : (
+                      <ChevronDown className="w-3.5 h-3.5" />
+                    )}
                   </button>
-                  <button onClick={() => { setGenerated(false); setStep(1); }} className="btn-secondary !px-4 !py-2 text-sm">
+
+                  <button
+                    onClick={resetForm}
+                    className="btn-secondary !px-4 !py-2 text-sm"
+                  >
                     New Plan
                   </button>
                 </div>
               </div>
             </div>
 
-            {/* Fatigue Predictor Panel */}
+            {/* Fatigue Predictor (live) */}
             <AnimatePresence>
               {showFatiguePredictor && (
                 <motion.div
@@ -311,48 +581,152 @@ function PlanTour() {
                   transition={{ duration: 0.35, ease: 'easeInOut' }}
                   className="overflow-hidden"
                 >
-                  <FatiguePredictor />
+                  <FatiguePredictor
+                    tripId={savedTripId}
+                    days={result?.days || []}
+                  />
                 </motion.div>
               )}
             </AnimatePresence>
 
-            {/* Weather Bar */}
-            <div className="glass-card p-4 mb-6 flex items-center gap-6 overflow-x-auto">
-              {[
-                { day: 'Day 1', icon: Sun, temp: '24°C', condition: 'Sunny' },
-                { day: 'Day 2', icon: Cloud, temp: '21°C', condition: 'Cloudy' },
-                { day: 'Day 3', icon: Umbrella, temp: '19°C', condition: 'Light Rain' },
-              ].map((w) => (
-                <div key={w.day} className="flex items-center gap-3 shrink-0">
-                  <w.icon className="w-5 h-5 text-accent-primary" />
-                  <div>
-                    <p className="text-sm font-medium text-text-primary">{w.day}</p>
-                    <p className="text-xs text-text-muted">{w.temp} • {w.condition}</p>
+            {/* Weather */}
+            <div className="glass-card shadow-soft border border-[#DDD3C5] p-4 mb-6 flex items-center gap-6 overflow-x-auto">
+              {WEATHER_DATA.slice(
+                0,
+                Math.min(result?.duration_days || 1, 5)
+              ).map((w, idx) => {
+                const Icon = w.icon;
+                return (
+                  <div
+                    key={idx}
+                    className="flex items-center gap-3 shrink-0"
+                  >
+                    <Icon className="w-5 h-5 text-accent-primary" />
+                    <div>
+                      <p className="text-sm font-semibold text-text-primary">
+                        Day {idx + 1}
+                      </p>
+                      <p className="text-xs text-text-muted">
+                        {w.temp} • {w.condition}
+                      </p>
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
 
-            {/* Days */}
+            {/* Itinerary Days */}
             <div className="space-y-6">
-              {generatedPlan.map((day) => (
-                <div key={day.day} className="glass-card p-6">
-                  <h3 className="text-lg font-semibold text-text-primary mb-1">Day {day.day}</h3>
-                  <p className="text-sm text-text-secondary mb-5">{day.title}</p>
-                  <div className="space-y-3">
-                    {day.items.map((item, i) => (
-                      <div key={i} className="flex items-center gap-4 p-3 rounded-xl bg-white/[0.02] hover:bg-white/[0.05] transition-colors">
-                        <span className="text-sm font-mono text-text-muted w-12 shrink-0">{item.time}</span>
-                        <div className="w-2 h-2 rounded-full bg-accent-primary/60 shrink-0" />
-                        <span className="text-sm text-text-primary flex-1">{item.activity}</span>
-                        <span className={`text-xs font-medium px-2.5 py-1 rounded-full shrink-0 ${fatigueColors[item.fatigue]}`}>
-                          {item.fatigue === 'rest' ? 'Rest' : item.fatigue}
+              {result?.days?.map((dayObj) => (
+                <motion.div
+                  key={dayObj.day}
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{
+                    duration: 0.4,
+                    delay: (dayObj.day - 1) * 0.1,
+                  }}
+                  className="glass-card shadow-soft border border-[#DDD3C5] p-6"
+                >
+                  <div className="flex items-baseline justify-between mb-5 gap-4 flex-wrap">
+                    <div className="flex items-baseline gap-3">
+                      <h3 className="text-lg font-semibold text-text-primary">
+                        Day {dayObj.day}
+                      </h3>
+                      <span className="text-sm text-text-muted font-mono">
+                        {dayObj.date}
+                      </span>
+                    </div>
+
+                    {/* Day fatigue average */}
+                    {dayObj.day_fatigue_average !== undefined && (
+                      <div className="flex items-center gap-2">
+                        <TrendingUp className="w-3.5 h-3.5 text-text-muted" />
+                        <span className="text-xs text-text-muted">
+                          Day fatigue avg:
                         </span>
+                        <span
+                          className={`text-xs font-semibold px-2.5 py-1 rounded-full border inline-flex items-center gap-1.5 ${
+                            FATIGUE_BADGE[scoreToLevel(dayObj.day_fatigue_average)]
+                          }`}
+                        >
+                          <span
+                            className={`w-1.5 h-1.5 rounded-full ${
+                              FATIGUE_DOT[scoreToLevel(dayObj.day_fatigue_average)]
+                            }`}
+                          />
+                          {dayObj.day_fatigue_average}/100
+                        </span>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="space-y-3">
+                    {dayObj.activities.map((activity, i) => (
+                      <div
+                        key={i}
+                        className="flex items-start gap-4 p-4 rounded-2xl bg-white/50 hover:bg-accent-primary/5 transition-colors border border-transparent hover:border-accent-primary/20"
+                      >
+                        <span className="text-sm font-mono text-text-muted w-20 shrink-0 pt-0.5">
+                          {activity.time}
+                        </span>
+
+                        <div className="w-2 h-2 rounded-full bg-accent-primary shrink-0 mt-2" />
+
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-start justify-between gap-3 flex-wrap">
+                            <p className="text-sm font-semibold text-text-primary">
+                              {activity.place}
+                            </p>
+
+                            {/* Fatigue Badge */}
+                            {activity.fatigue_level && (
+                              <span
+                                className={`text-xs font-semibold px-2.5 py-1 rounded-full border inline-flex items-center gap-1.5 shrink-0 ${
+                                  FATIGUE_BADGE[activity.fatigue_level]
+                                }`}
+                                title={`Fatigue score: ${activity.fatigue_score}/100`}
+                              >
+                                <span
+                                  className={`w-1.5 h-1.5 rounded-full ${
+                                    FATIGUE_DOT[activity.fatigue_level]
+                                  }`}
+                                />
+                                {activity.fatigue_level} · {activity.fatigue_score}
+                              </span>
+                            )}
+                          </div>
+
+                          <p className="text-xs text-text-secondary mt-1 leading-relaxed">
+                            {activity.description}
+                          </p>
+                          <span className="inline-block text-xs text-accent-primary font-medium mt-2">
+                            {activity.estimated_cost}
+                          </span>
+                        </div>
                       </div>
                     ))}
                   </div>
-                </div>
+                </motion.div>
               ))}
+            </div>
+
+            {/* Summary */}
+            <div className="glass-card shadow-soft border border-[#DDD3C5] p-6 mt-6">
+              <h4 className="text-sm font-semibold text-text-primary mb-2">
+                Trip Summary
+              </h4>
+              <p className="text-sm text-text-secondary leading-relaxed">
+                {result?.summary || 'Enjoy your trip!'}
+              </p>
+              <div className="mt-4 pt-4 border-t border-[#DDD3C5] flex justify-between items-center">
+                <span className="text-sm text-text-muted">
+                  Estimated Total Cost
+                </span>
+                <span className="text-lg font-bold text-accent-primary">
+                  {result?.estimated_budget || '—'}
+                </span>
+              </div>
             </div>
           </motion.div>
         )}
