@@ -12,8 +12,8 @@ export default defineConfig({
         name: 'SafeRoute AI',
         short_name: 'SafeRoute',
         description: 'An Intelligent Travel Planning and Safety System',
-        theme_color: '#1c1c1c',
-        background_color: '#1c1c1c',
+        theme_color: '#a8895a',
+        background_color: '#faf8f4',
         display: 'standalone',
         scope: '/',
         start_url: '/',
@@ -37,7 +37,8 @@ export default defineConfig({
         ]
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2,wasm}'],
+        maximumFileSizeToCacheInBytes: 10 * 1024 * 1024, 
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
@@ -66,9 +67,67 @@ export default defineConfig({
                 statuses: [0, 200]
               }
             }
+          },
+          {
+            urlPattern: /\/data\/.*\.(db|geojson|geojson\.gz|json)$/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'saferoute-datasets',
+              expiration: {
+                maxEntries: 20,
+                maxAgeSeconds: 60 * 60 * 24 * 90
+              },
+              cacheableResponse: {
+                statuses: [0, 200]
+              }
+            }
+          },
+          {
+            urlPattern: /\/sql-wasm\/.*\.wasm$/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'sqljs-wasm',
+              expiration: {
+                maxEntries: 5,
+                maxAgeSeconds: 60 * 60 * 24 * 365
+              },
+              cacheableResponse: {
+                statuses: [0, 200]
+              }
+            }
+          },
+          {
+            urlPattern: /^https:\/\/[a-c]\.tile\.openstreetmap\.org\/.*/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'osm-tiles',
+              expiration: {
+                maxEntries: 500,
+                maxAgeSeconds: 60 * 60 * 24 * 30
+              },
+              cacheableResponse: {
+                statuses: [0, 200]
+              }
+            }
           }
         ]
       }
     })
-  ]
+  ],
+  
+  assetsInclude: ['**/*.wasm', '**/*.db'],
+  
+  optimizeDeps: {
+    exclude: ['sql.js']
+  },
+
+  server: {
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8000',
+        changeOrigin: true,
+        secure: false,
+      }
+    }
+  }
 });
