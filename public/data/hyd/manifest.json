@@ -1,0 +1,55 @@
+{
+  "schema_version": "1.0.0",
+  "dataset_version": "1.0.0",
+  "city": {
+    "code": "HYD",
+    "name": "Hyderabad"
+  },
+  "generated_at": "2026-05-12T20:36:26.560861",
+  "statistics": {
+    "total_zones": 3349,
+    "by_severity": {
+      "1_low": 2989,
+      "2_medium": 184,
+      "3_high": 128,
+      "4_critical": 48
+    },
+    "by_category": {
+      "industrial": 253,
+      "abandoned": 10,
+      "poorly_lit_roads": 2226,
+      "restricted": 203,
+      "unsafe_transit": 52,
+      "accident_junction": 605
+    }
+  },
+  "coverage_bbox": {
+    "min_lat": 17.1961548,
+    "min_lon": 78.1696129,
+    "max_lat": 17.602574583264218,
+    "max_lon": 78.70051591591076
+  },
+  "files": {
+    "hyd_risk_zones.geojson": {
+      "path": "hyd_risk_zones.geojson",
+      "size_bytes": 5771929,
+      "size_kb": 5636.6,
+      "sha256": "d8b5b0e00aaecec4d0e0c92fa60939c2076678673300d5e7df6342634d890629",
+      "modified_at": "2026-05-13T02:06:24.967753"
+    },
+    "hyd_risk_zones.geojson.gz": {
+      "path": "hyd_risk_zones.geojson.gz",
+      "size_bytes": 801911,
+      "size_kb": 783.1,
+      "sha256": "71c9fccb7fc95ab97b63df3272ab65e423db45f1e0233ca219c94f5a33aab223",
+      "modified_at": "2026-05-13T02:06:25.599169"
+    },
+    "hyd_risk_zones.db": {
+      "path": "hyd_risk_zones.db",
+      "size_bytes": 4222976,
+      "size_kb": 4124.0,
+      "sha256": "21656b9c68148387a0b4af16892f72502e3d73b85c545b66a561e7c18d95db2a",
+      "modified_at": "2026-05-13T02:06:26.404863"
+    }
+  }
+}
