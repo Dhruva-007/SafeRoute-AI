@@ -1,0 +1,74 @@
+[
+  {
+    "name": "Golconda Fort Trek",
+    "category": "adventure",
+    "description": "Golconda Fort offers one of the best urban trekking experiences in South India. The trek to the Bala Hissar — the highest point of the fort at 120 metres above the surrounding plain — involves climbing 400 uneven stone steps through multiple layers of fortification, bastions, and gateways. The route passes through the remains of royal apartments, granaries, and temples. The view from the top encompasses the entire city of Hyderabad, the Qutb Shahi Tombs, and on clear days the distant Hussain Sagar Lake. The descent through a different route passes the famous acoustics demonstration point and the arsenal. Best done in early morning to avoid both heat and crowds.",
+    "budget_level": "budget",
+    "recommended_duration_hours": 3.0,
+    "best_time": "Early morning 8am-11am, avoid summer afternoons",
+    "tags": ["adventure", "trekking", "history", "photography", "fitness", "fort", "morning", "views"]
+  },
+  {
+    "name": "Rock Climbing at Boulder Hills",
+    "category": "adventure",
+    "description": "The Hyderabad region sits on the ancient Deccan plateau which is characterised by massive granite boulder formations. Boulder Hills near Jubilee Hills and the surrounding rocky outcrops in Khajaguda and Nanakramguda offer natural rock climbing and bouldering terrain used by local climbing clubs. The Hyderabad Mountain Bikers and Hyderabad Rock Climbing Club organise weekend sessions with professional instructors and safety equipment for beginners. The granite boulders range from 5 to 25 metres in height with routes rated from beginner to advanced. A thrilling and accessible adventure activity within city limits.",
+    "budget_level": "budget",
+    "recommended_duration_hours": 3.0,
+    "best_time": "Early morning 6am-10am or evening 4pm-7pm to avoid heat",
+    "tags": ["adventure", "rock climbing", "bouldering", "fitness", "outdoor", "morning", "evening"]
+  },
+  {
+    "name": "Hyderabad Cycling Trail — HMDA Cycling Track",
+    "category": "adventure",
+    "description": "The Hyderabad Metropolitan Development Authority has developed dedicated cycling infrastructure along several corridors. The most popular is the 11-kilometre cycling track along the Financial District and Nanakramguda Lake route, offering a scenic and traffic-free ride through greenery alongside the lake and the striking skyline of financial district towers. Rental cycles are available at the starting point. The Durgam Cheruvu to KBR Park cycling loop is another popular urban route. Several cycling groups organise early morning group rides departing from HICC Novotel and KBR Park on weekends with distances ranging from 15 to 50 kilometres.",
+    "budget_level": "budget",
+    "recommended_duration_hours": 2.5,
+    "best_time": "Early morning 6am-9am on weekends",
+    "tags": ["adventure", "cycling", "fitness", "nature", "morning", "lake", "outdoor", "group activity"]
+  },
+  {
+    "name": "Ameenpur Lake Kayaking",
+    "category": "adventure",
+    "description": "Ameenpur Lake near Patancheru, 25 kilometres from Hyderabad, offers kayaking and canoeing activities organised by adventure sports operators on weekends. The lake's calm waters surrounded by open grassland and rocky terrain make it ideal for beginner kayakers. Sessions typically last two hours and include safety briefing, life jacket provision, and instructor accompaniment. The lake is also an excellent birding location with flamingos and painted storks visible from the kayak, making it a unique combination of adventure and wildlife experience. Prior booking with operators like Hyderabad Adventures or Rock and River is recommended.",
+    "budget_level": "budget",
+    "recommended_duration_hours": 3.0,
+    "best_time": "Morning 7am-10am, weekends only",
+    "tags": ["adventure", "kayaking", "water sports", "nature", "birding", "morning", "weekend", "outdoor"]
+  },
+  {
+    "name": "Ananthagiri Hills Trekking",
+    "category": "adventure",
+    "description": "Ananthagiri Hills in Vikarabad, 90 kilometres from Hyderabad, is the premier trekking destination within day-trip distance of the city. Multiple trekking trails wind through dense teak forest, coffee plantations, and rocky ridgelines reaching 677 metres altitude. The Ananthagiri to Kotepally forest trail is 12 kilometres one way through pristine forest with sightings of deer, wild boar, and numerous bird species. The Ananthagiri Falls trail is shorter at 4 kilometres and leads to a scenic waterfall that is most impressive between August and November. Local guides from Vikarabad are available and recommended for the longer trails.",
+    "budget_level": "budget",
+    "recommended_duration_hours": 7.0,
+    "best_time": "Post-monsoon August to November for greenery and waterfalls, early morning start recommended",
+    "tags": ["adventure", "trekking", "waterfall", "forest", "wildlife", "day trip", "hills", "nature"]
+  },
+  {
+    "name": "Zip Lining at Della Adventure Park",
+    "category": "adventure",
+    "description": "While Hyderabad's primary adventure park options are concentrated around the outskirts, several operators near Shamirpet and Chevella Road offer zip lining, rappelling, Burma bridge, and wall climbing activities. The Funky Monkey Adventure Park near Kompally and Eaglenest Adventure near Chevella are the most established operators offering professionally certified multi-activity adventure packages. Activities include zip lines of up to 200 metres, 15-metre rappelling walls, a 120-metre Burma bridge, and team building obstacle courses. Packages are inclusive of safety equipment and instructors. Prior online booking is required.",
+    "budget_level": "mid-range",
+    "recommended_duration_hours": 4.0,
+    "best_time": "Morning 9am-1pm to avoid afternoon heat",
+    "tags": ["adventure", "zip line", "rappelling", "outdoor", "thrill", "group activity", "mid-range", "family"]
+  },
+  {
+    "name": "Hyderabad Go-Karting at MMTS Circuit",
+    "category": "adventure",
+    "description": "Hyderabad has several professional go-karting tracks for motorsport enthusiasts. Chicane Karting in Begumpet near the MMTS railway line is the most established indoor go-karting facility with a 350-metre track, rental karts, timing systems, and racing suits. Katariya Motorsports near Hitec City offers an outdoor circuit with longer track layouts suitable for more experienced drivers. Both venues offer sessions for complete beginners with briefings on racing lines and safety. Group racing sessions and corporate packages are available. An accessible adrenaline activity for visitors of all ages above 12 years.",
+    "budget_level": "mid-range",
+    "recommended_duration_hours": 2.0,
+    "best_time": "Evening 5pm-9pm on weekdays to avoid weekend crowds",
+    "tags": ["adventure", "motorsport", "go-karting", "indoor", "thrill", "group activity", "mid-range", "evening"]
+  },
+  {
+    "name": "Nagarjuna Sagar Dam and Reservoir",
+    "category": "adventure",
+    "description": "Nagarjuna Sagar Dam, located 165 kilometres from Hyderabad, is one of the world's largest masonry dams and the reservoir it creates spans 285 square kilometres. The site offers boat rides across the reservoir to Nagarjunakonda island, which houses a remarkable museum containing Buddhist antiquities and reconstructed monasteries salvaged before the valley was flooded. The dam viewpoint during monsoon season when all 26 spillways are open is a spectacular and powerful natural sight. The area around the reservoir is also excellent for crocodile spotting, with large mugger crocodiles often seen basking on the banks. A full day trip from Hyderabad.",
+    "budget_level": "budget",
+    "recommended_duration_hours": 10.0,
+    "best_time": "Monsoon July-September for spectacular dam overflow, boat rides available year round except monsoon peak",
+    "tags": ["adventure", "dam", "boating", "history", "wildlife", "day trip", "photography", "crocodile"]
+  }
+]

@@ -1,0 +1,83 @@
+[
+  {
+    "name": "Taj Falaknuma Palace Spa",
+    "category": "relaxation",
+    "description": "The Jiva Spa at Taj Falaknuma Palace is the most luxurious spa experience in Hyderabad, set within the restored 19th century Nizam palace perched on a hilltop with panoramic city views. The spa offers a full range of Ayurvedic and international treatments including hot stone massages, deep tissue therapy, Hyderabadi rose and saffron body wraps, and traditional Panchakarma treatments. The treatment rooms are housed in the original palace chambers with period furniture and frescoed ceilings. Non-hotel guests can book spa treatments independently. The post-treatment relaxation lounge overlooks the palace gardens and the city below, making the entire experience deeply restorative.",
+    "budget_level": "premium",
+    "recommended_duration_hours": 3.0,
+    "best_time": "Morning 10am-1pm or afternoon 2pm-5pm, advance booking mandatory",
+    "tags": ["relaxation", "spa", "luxury", "ayurveda", "wellness", "premium", "palace", "massage"]
+  },
+  {
+    "name": "KBR National Park Morning Walk",
+    "category": "relaxation",
+    "description": "A morning walk through Kasu Brahmananda Reddy National Park is among the most peaceful and restorative experiences available in urban Hyderabad. The 390-acre forest in the heart of the city creates a complete sensory escape from the surrounding metropolis. The 2.5-kilometre forest trail winds through dense canopy with birdsong from over 140 species replacing city noise. The park is particularly beautiful in the early morning light when mist still hangs between the trees. Regular walkers and yoga practitioners use the park daily and the atmosphere is calm and community-oriented. The park opens at 5:30am allowing entry before sunrise for the most atmospheric experience.",
+    "budget_level": "budget",
+    "recommended_duration_hours": 1.5,
+    "best_time": "Early morning 5:30am-8am",
+    "tags": ["relaxation", "nature", "walking", "birding", "morning", "urban forest", "fitness", "peaceful"]
+  },
+  {
+    "name": "Hussain Sagar Lake Boat Ride at Sunset",
+    "category": "relaxation",
+    "description": "A late afternoon boat ride on Hussain Sagar Lake is one of the most genuinely relaxing experiences Hyderabad offers. APTDC operates regular boat services from Lumbini Park and NTR Gardens to the Buddha statue island and back. The 30-minute ride across the open lake with the city skyline receding behind and the setting sun painting the water orange and gold is deeply calming. The island around the Buddha statue is quiet, with cool breezes and excellent views back toward the city. Speed boat and cruise boat options are both available. The return evening boat ride with the city lights beginning to reflect on the water is particularly beautiful.",
+    "budget_level": "budget",
+    "recommended_duration_hours": 1.5,
+    "best_time": "Evening 5pm-7pm for sunset boat ride",
+    "tags": ["relaxation", "boating", "lake", "sunset", "photography", "peaceful", "family", "budget"]
+  },
+  {
+    "name": "Lumbini Park Evening",
+    "category": "relaxation",
+    "description": "Lumbini Park is a well-maintained public garden on the banks of Hussain Sagar Lake in the heart of Hyderabad, named after the birthplace of the Buddha. The park features manicured lawns, flower beds, a musical fountain show in the evenings, and a laser show projected onto a water screen. The park is a favourite with families and couples who come to sit by the lake in the evenings, watch the fountain show, and enjoy the cool breeze from the water. The APTDC boat service to the Buddha statue departs from within the park. It is one of the most pleasant public spaces in central Hyderabad for an unhurried evening.",
+    "budget_level": "budget",
+    "recommended_duration_hours": 2.0,
+    "best_time": "Evening 5pm-9pm",
+    "tags": ["relaxation", "park", "lake", "family", "evening", "fountain", "peaceful", "budget"]
+  },
+  {
+    "name": "Hyderabad Hammam — Traditional Bath Experience",
+    "category": "relaxation",
+    "description": "Hyderabad's old city has a surviving tradition of hammams — traditional Turkish-style bathhouses — that have operated for centuries. The Hyderabad Hammam near Charminar is one of the few surviving traditional bathhouses in South India, offering the authentic experience of a steam room, kessa exfoliation scrub, and a full body massage with aromatic oils. The hammam experience has been part of Hyderabadi culture since the Qutb Shahi period and is distinct from modern spa treatments in its communal, ritualistic character. It is an extremely affordable wellness experience with deep cultural roots. Best experienced early in the morning.",
+    "budget_level": "budget",
+    "recommended_duration_hours": 1.5,
+    "best_time": "Morning 7am-10am",
+    "tags": ["relaxation", "wellness", "culture", "hammam", "traditional", "budget", "old city", "authentic"]
+  },
+  {
+    "name": "Lotus Pond Park — Jubilee Hills",
+    "category": "relaxation",
+    "description": "Lotus Pond is a tranquil public park centred on a small lake in the upscale Jubilee Hills neighbourhood, popular with the residential community for morning and evening leisure. The park has a well-maintained jogging track around the lake, a children's play area, open lawns, and benches overlooking the water where lotus flowers bloom between July and October. The park is significantly less crowded than the major tourist attractions, offering a genuine local neighbourhood experience. The surrounding Jubilee Hills area has excellent cafes and restaurants for a post-walk breakfast. The combination of the lake, the lotus blooms, and the peaceful atmosphere makes it a genuinely restful stop.",
+    "budget_level": "budget",
+    "recommended_duration_hours": 1.0,
+    "best_time": "Early morning 6am-9am or evening 5pm-7pm",
+    "tags": ["relaxation", "park", "lake", "morning", "peaceful", "jogging", "local", "budget"]
+  },
+  {
+    "name": "Ananthagiri Hills Coffee Estate Stay",
+    "category": "relaxation",
+    "description": "Several coffee estates in the Ananthagiri Hills near Vikarabad, 90 kilometres from Hyderabad, offer homestay experiences set within working coffee plantations surrounded by dense forest. Properties like Haritha Hill Resort operated by Telangana Tourism and multiple private estate homestays provide accommodation in cottages with forest views, fresh estate coffee, home-cooked meals, and complete quiet. The combination of cool hill air, the sound of forest birds, coffee fragrance, and the absence of city noise makes this the most complete relaxation experience within day-trip or overnight-trip distance of Hyderabad. Ideal for travellers who need genuine decompression.",
+    "budget_level": "budget",
+    "recommended_duration_hours": 12.0,
+    "best_time": "Overnight stay recommended, post-monsoon October to February for best weather",
+    "tags": ["relaxation", "nature", "hills", "coffee", "homestay", "overnight", "forest", "peaceful"]
+  },
+  {
+    "name": "O2 Spa Hyderabad — Banjara Hills",
+    "category": "relaxation",
+    "description": "O2 Spa is a professionally operated spa chain with multiple locations across Hyderabad including branches in Banjara Hills, Jubilee Hills, and Gachibowli. The spa offers a comprehensive menu of relaxation treatments including Swedish massage, Thai massage, deep tissue therapy, aromatherapy, foot reflexology, and various body scrubs and wraps. The facilities are clean, professional, and use internationally sourced oils and products. Therapists are certified and the experience is consistent. Price points are significantly lower than hotel spas while maintaining high treatment quality. The Banjara Hills branch is the most conveniently located for visitors staying in the hotel district.",
+    "budget_level": "mid-range",
+    "recommended_duration_hours": 2.0,
+    "best_time": "Afternoon 2pm-5pm, booking recommended on weekends",
+    "tags": ["relaxation", "spa", "massage", "wellness", "mid-range", "professional", "Banjara Hills"]
+  },
+  {
+    "name": "Public Gardens Hyderabad — Bagh-e-Aam",
+    "category": "relaxation",
+    "description": "The Public Gardens, formally known as Bagh-e-Aam meaning Garden for the Public, are Hyderabad's oldest public park, established in 1846 during the reign of the fifth Nizam. The 40-acre garden is a green oasis in the city centre near Nampally railway station featuring enormous rain trees that are over 100 years old, a Japanese garden section, a children's park, the State Museum, and the Ravindra Bharathi auditorium within its grounds. The park is popular with retirees, school children, and office workers on lunch breaks. The ancient trees create a cathedral-like canopy that keeps the park cool even in summer. Entry is free.",
+    "budget_level": "budget",
+    "recommended_duration_hours": 1.5,
+    "best_time": "Morning 7am-10am or late afternoon 4pm-6pm",
+    "tags": ["relaxation", "park", "nature", "history", "family", "budget", "morning", "peaceful"]
+  }
+]

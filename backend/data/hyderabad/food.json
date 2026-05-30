@@ -1,0 +1,92 @@
+[
+  {
+    "name": "Hyderabadi Dum Biryani at Cafe Bahar",
+    "category": "food",
+    "description": "Cafe Bahar in Himayatnagar is one of the oldest and most beloved restaurants in Hyderabad, operating since 1973. It serves the authentic Hyderabadi dum biryani cooked in the traditional method of slow-cooking marinated mutton with aged basmati rice in a sealed clay pot over charcoal. The mutton biryani is rich, aromatic with saffron and kewra, and served with mirchi ka salan and raita. The restaurant also serves excellent haleem, kebabs, and traditional Hyderabadi breakfast. It is a no-frills local institution frequented by locals and is extremely affordable.",
+    "budget_level": "budget",
+    "recommended_duration_hours": 1.0,
+    "best_time": "Lunch 12pm-2pm or dinner 7pm-9pm",
+    "tags": ["food", "biryani", "local", "hyderabadi", "lunch", "dinner", "budget", "must-try"]
+  },
+  {
+    "name": "Shah Ghouse Cafe and Restaurant",
+    "category": "food",
+    "description": "Shah Ghouse is an iconic Hyderabadi restaurant located near Tolichowki and Shalibanda with multiple branches across the city. It is famous for its dum ka murgh, haleem, and biryani cooked in authentic Hyderabadi style. The haleem here is considered among the best in the city — a slow-cooked paste of meat, lentils, and wheat spiced with caramelized onions and ghee. The restaurant operates from early morning serving Irani chai and bun maska through to late night biryani service. Budget-friendly with very generous portions.",
+    "budget_level": "budget",
+    "recommended_duration_hours": 1.0,
+    "best_time": "Dinner 8pm-11pm for the best biryani experience",
+    "tags": ["food", "biryani", "haleem", "local", "hyderabadi", "dinner", "budget", "must-try"]
+  },
+  {
+    "name": "Paradise Restaurant",
+    "category": "food",
+    "description": "Paradise Restaurant is arguably the most famous biryani restaurant in Hyderabad, established in 1953 in Secunderabad. The restaurant chain has over 40 outlets across the city and serves its signature biryani which uses a unique spice blend developed over 70 years. The biryani portions are large and come with shorba, mirchi ka salan, and onion raita. Paradise is a sit-down restaurant with air conditioning, making it comfortable for groups and families. It also serves starters, kebabs, and Indian desserts. A benchmark experience for any visitor to Hyderabad.",
+    "budget_level": "budget",
+    "recommended_duration_hours": 1.5,
+    "best_time": "Lunch 1pm-3pm or dinner 7pm-10pm",
+    "tags": ["food", "biryani", "iconic", "family", "lunch", "dinner", "budget", "must-try"]
+  },
+  {
+    "name": "Nimrah Cafe and Bakery",
+    "category": "food",
+    "description": "Nimrah Cafe is a legendary Irani chai establishment located directly opposite Charminar, operating since 1953. It is the best place in Hyderabad to experience the traditional Irani chai ritual — thick, sweet tea brewed with condensed milk served in a small glass alongside Osmania biscuits, a buttery soft biscuit unique to Hyderabad. The cafe is tiny and always crowded, with a simple interior that has not changed in decades. The bun maska served here is fresh from their bakery. It perfectly complements a visit to Charminar and the surrounding old city bazaars.",
+    "budget_level": "budget",
+    "recommended_duration_hours": 0.5,
+    "best_time": "Morning 8am-10am or evening 5pm-7pm",
+    "tags": ["food", "chai", "breakfast", "irani", "old city", "budget", "must-try", "culture"]
+  },
+  {
+    "name": "Haleem at Pista House",
+    "category": "food",
+    "description": "Pista House is the most famous haleem brand in Hyderabad and arguably in India, with outlets across the city and exports reaching over 50 countries. Hyderabadi haleem received the GI Geographical Indication tag in 2010, the first meat product in India to receive this certification. Pista House haleem is a slow-cooked preparation of minced meat, broken wheat, and lentils cooked for 8-12 hours with a specific blend of spices, garnished with fried onions, fresh lime, coriander, and ghee. It is especially popular during Ramadan but available year-round. A mandatory food experience in Hyderabad.",
+    "budget_level": "budget",
+    "recommended_duration_hours": 0.5,
+    "best_time": "Lunch 12pm-3pm",
+    "tags": ["food", "haleem", "local", "hyderabadi", "must-try", "budget", "culture", "GI tagged"]
+  },
+  {
+    "name": "Eat Street at Necklace Road",
+    "category": "food",
+    "description": "Eat Street is an open-air food court located on the banks of Hussain Sagar Lake along Necklace Road, offering a wide variety of street food from across India alongside lake and Buddha statue views. Stalls serve Hyderabadi snacks like mirchi bajji, lukhmi, and double ka meetha alongside chaat, grills, ice creams, and fresh juices. The atmosphere is lively in the evenings with families, couples, and groups enjoying food by the waterside. It is an excellent place to sample multiple Hyderabadi street foods without committing to a single restaurant.",
+    "budget_level": "budget",
+    "recommended_duration_hours": 1.5,
+    "best_time": "Evening 6pm-10pm",
+    "tags": ["food", "street food", "evening", "family", "lake view", "budget", "snacks", "social"]
+  },
+  {
+    "name": "Jewel of Nizam at Taj Falaknuma Palace",
+    "category": "food",
+    "description": "The Jewel of Nizam is the signature fine dining restaurant at the Taj Falaknuma Palace, the most luxurious hotel in Hyderabad, once the palace of the Nizam. The restaurant offers a curated menu of royal Hyderabadi cuisine including dishes that were once served at the Nizam's banquets — shikampur kebabs, murgh khushka, and dum ka raan. The dining experience includes butler service, Nizam-era cutlery and crockery, and views of Hyderabad city from the hilltop palace. A once-in-a-lifetime dining experience for those with a premium budget.",
+    "budget_level": "premium",
+    "recommended_duration_hours": 2.5,
+    "best_time": "Dinner 7:30pm-10pm, advance reservation mandatory",
+    "tags": ["food", "fine dining", "luxury", "nizam", "hyderabadi", "premium", "special occasion"]
+  },
+  {
+    "name": "Chutneys Restaurant",
+    "category": "food",
+    "description": "Chutneys is one of the most popular South Indian vegetarian restaurant chains in Hyderabad, with branches across the city in Banjara Hills, Jubilee Hills, and Gachibowli. It serves an extensive menu of South Indian breakfast and meals including pesarattu, upma, idli, dosa varieties, pongal, and the popular Andhra meals thali. The unlimited Andhra thali is a feast of rice, sambhar, rasam, multiple curries, papads, and dessert. The restaurant is known for its fresh chutneys and the quality of its ingredients. Very popular with families and professionals.",
+    "budget_level": "budget",
+    "recommended_duration_hours": 1.0,
+    "best_time": "Breakfast 8am-11am or lunch 12pm-3pm",
+    "tags": ["food", "south indian", "vegetarian", "breakfast", "lunch", "family", "budget", "andhra"]
+  },
+  {
+    "name": "Banjara Hills Restaurant Row",
+    "category": "food",
+    "description": "Banjara Hills Road Number 12 and the surrounding streets in Banjara Hills and Jubilee Hills form Hyderabad's premier dining and cafe district. The area hosts hundreds of restaurants ranging from regional Indian cuisines to international options including Italian, Japanese, Mediterranean, and American. Notable establishments include Cream Stone ice cream parlour, Ohri's group restaurants, and multiple rooftop cafes. The area is particularly vibrant on weekend evenings. It is the best area for travellers who want variety and modern dining experiences.",
+    "budget_level": "mid-range",
+    "recommended_duration_hours": 2.0,
+    "best_time": "Evening 7pm-11pm",
+    "tags": ["food", "dining", "variety", "evening", "upscale", "mid-range", "social", "cafes"]
+  },
+  {
+    "name": "Laad Bazaar Street Food",
+    "category": "food",
+    "description": "Laad Bazaar, the market street surrounding Charminar, is as much a food destination as a shopping one. The narrow lanes are lined with vendors selling Hyderabadi street snacks including lukhmi (a deep-fried minced meat pastry), double ka meetha (a bread pudding dessert), kheer, falooda, and fresh fruit chaats. The area has multiple small Irani cafes serving authentic chai and bakery items. Evening visits are recommended when the street comes alive with food stalls illuminated by warm lights. Best paired with shopping for bangles and pearls in the same area.",
+    "budget_level": "budget",
+    "recommended_duration_hours": 1.0,
+    "best_time": "Evening 5pm-8pm",
+    "tags": ["food", "street food", "old city", "budget", "culture", "shopping", "evening", "snacks"]
+  }
+]
