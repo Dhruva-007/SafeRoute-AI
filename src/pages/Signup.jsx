@@ -2,7 +2,15 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { motion } from 'framer-motion';
-import { Shield, Mail, Lock, User, Eye, EyeOff, ArrowRight } from 'lucide-react';
+import {
+  Shield,
+  Mail,
+  Lock,
+  User,
+  Eye,
+  EyeOff,
+  ArrowRight,
+} from 'lucide-react';
 
 function Signup() {
   const [name, setName] = useState('');
@@ -11,6 +19,7 @@ function Signup() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+
   const { signup } = useAuth();
   const navigate = useNavigate();
 
@@ -29,119 +38,153 @@ function Signup() {
     }
 
     setLoading(true);
-    await new Promise(resolve => setTimeout(resolve, 800));
+
+    await new Promise((resolve) => setTimeout(resolve, 800));
 
     const success = signup(name, email, password);
+
     if (success) {
       navigate('/dashboard', { replace: true });
     } else {
       setError('Signup failed. Please try again.');
     }
+
     setLoading(false);
   };
 
   return (
     <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center px-4 py-12">
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 22 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
         className="w-full max-w-md"
       >
+        {/* Header */}
         <div className="text-center mb-8">
-          <div className="w-14 h-14 rounded-2xl bg-accent-primary/10 border border-accent-primary/20 flex items-center justify-center mx-auto mb-5">
+          <div className="w-16 h-16 rounded-2xl bg-white border border-[#DDD3C5] flex items-center justify-center mx-auto mb-5 shadow-soft">
             <Shield className="w-7 h-7 text-accent-primary" />
           </div>
-          <h1 className="text-2xl font-bold text-text-primary mb-2">Create Account</h1>
-          <p className="text-text-secondary text-sm">Join SafeRoute AI for safer travels</p>
+
+          <h1 className="text-3xl font-bold text-text-primary mb-2">
+            Create Account
+          </h1>
+
+          <p className="text-text-secondary text-sm">
+            Join SafeRoute AI for safer travels
+          </p>
         </div>
 
+        {/* Form */}
         <div className="glass-card p-6 sm:p-8">
           <form onSubmit={handleSubmit} className="space-y-5">
             {error && (
-              <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
+              <div className="p-4 rounded-2xl bg-danger-soft border border-danger/20 text-danger text-sm font-medium">
                 {error}
               </div>
             )}
 
+            {/* Full Name */}
             <div>
-              <label className="block text-sm font-medium text-text-secondary mb-2">Full Name</label>
+              <label className="block text-sm font-medium text-text-secondary mb-2">
+                Full Name
+              </label>
+
               <div className="relative">
                 <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
+
                 <input
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="John Doe"
-                  className="w-full pl-10 pr-4 py-3 bg-white/[0.04] border border-border-subtle rounded-xl text-text-primary text-sm placeholder:text-text-muted focus:outline-none focus:border-accent-primary/40 focus:ring-1 focus:ring-accent-primary/20 transition-all"
+                  className="w-full pl-11 pr-4 py-3.5 rounded-2xl bg-white/80 border border-[#DDD3C5] text-text-primary text-sm placeholder:text-text-muted focus:outline-none focus:border-accent-primary/50 focus:ring-4 focus:ring-accent-primary/10 transition-all"
                 />
               </div>
             </div>
 
+            {/* Email */}
             <div>
-              <label className="block text-sm font-medium text-text-secondary mb-2">Email</label>
+              <label className="block text-sm font-medium text-text-secondary mb-2">
+                Email
+              </label>
+
               <div className="relative">
                 <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
+
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="you@example.com"
-                  className="w-full pl-10 pr-4 py-3 bg-white/[0.04] border border-border-subtle rounded-xl text-text-primary text-sm placeholder:text-text-muted focus:outline-none focus:border-accent-primary/40 focus:ring-1 focus:ring-accent-primary/20 transition-all"
+                  className="w-full pl-11 pr-4 py-3.5 rounded-2xl bg-white/80 border border-[#DDD3C5] text-text-primary text-sm placeholder:text-text-muted focus:outline-none focus:border-accent-primary/50 focus:ring-4 focus:ring-accent-primary/10 transition-all"
                 />
               </div>
             </div>
 
+            {/* Password */}
             <div>
-              <label className="block text-sm font-medium text-text-secondary mb-2">Password</label>
+              <label className="block text-sm font-medium text-text-secondary mb-2">
+                Password
+              </label>
+
               <div className="relative">
                 <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted" />
+
                 <input
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Min 6 characters"
-                  className="w-full pl-10 pr-11 py-3 bg-white/[0.04] border border-border-subtle rounded-xl text-text-primary text-sm placeholder:text-text-muted focus:outline-none focus:border-accent-primary/40 focus:ring-1 focus:ring-accent-primary/20 transition-all"
+                  placeholder="Minimum 6 characters"
+                  className="w-full pl-11 pr-12 py-3.5 rounded-2xl bg-white/80 border border-[#DDD3C5] text-text-primary text-sm placeholder:text-text-muted focus:outline-none focus:border-accent-primary/50 focus:ring-4 focus:ring-accent-primary/10 transition-all"
                 />
+
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-text-muted hover:text-text-secondary transition-colors"
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-text-muted hover:text-text-primary transition-colors"
                 >
-                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  {showPassword ? (
+                    <EyeOff className="w-4 h-4" />
+                  ) : (
+                    <Eye className="w-4 h-4" />
+                  )}
                 </button>
               </div>
             </div>
 
+            {/* Submit */}
             <button
               type="submit"
               disabled={loading}
-              className="btn-primary w-full flex items-center justify-center gap-2 !py-3.5 disabled:opacity-60 disabled:cursor-not-allowed"
+              className="btn-primary w-full flex items-center justify-center gap-2 py-3.5 disabled:opacity-70 disabled:cursor-not-allowed"
             >
               {loading ? (
-                <div className="w-5 h-5 border-2 border-bg-primary border-t-transparent rounded-full animate-spin" />
+                <>
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  Creating Account...
+                </>
               ) : (
                 <>
-                  Create Account
+                  Sign Up
                   <ArrowRight className="w-4 h-4" />
                 </>
               )}
             </button>
           </form>
 
-          <div className="mt-6 text-center">
-            <p className="text-sm text-text-muted">
+          <div className="mt-6 pt-6 border-t border-[#DDD3C5] text-center">
+            <p className="text-sm text-text-secondary">
               Already have an account?{' '}
-              <Link to="/login" className="text-accent-primary hover:text-accent-soft transition-colors font-medium">
+              <Link
+                to="/login"
+                className="font-semibold text-accent-primary hover:text-accent-hover transition-colors"
+              >
                 Sign in
               </Link>
             </p>
           </div>
         </div>
-
-        <p className="text-xs text-text-muted text-center mt-6">
-          Demo: Enter any details to create an account.
-        </p>
       </motion.div>
     </div>
   );
