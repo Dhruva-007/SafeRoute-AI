@@ -1,7 +1,11 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { ArrowUpRight, ArrowDownRight } from 'lucide-react';
 
 function StatCard({ icon: Icon, label, value, trend, delay = 0 }) {
+  const hasTrend = trend !== undefined && trend !== null;
+  const isPositive = trend > 0;
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 16 }}
@@ -13,11 +17,21 @@ function StatCard({ icon: Icon, label, value, trend, delay = 0 }) {
         <div className="w-10 h-10 rounded-xl bg-accent-primary/10 flex items-center justify-center">
           <Icon className="w-5 h-5 text-accent-primary" />
         </div>
-        {trend !== undefined && trend !== null && (
-          <span className={`text-xs font-medium px-2 py-1 rounded-full ${
-            trend > 0 ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400'
-          }`}>
-            {trend > 0 ? '+' : ''}{trend}%
+        {hasTrend && (
+          <span
+            className={`text-xs font-semibold px-2.5 py-1 rounded-full inline-flex items-center gap-1 border ${
+              isPositive
+                ? 'bg-success-soft text-success border-success/20'
+                : 'bg-danger-soft text-danger border-danger/20'
+            }`}
+          >
+            {isPositive ? (
+              <ArrowUpRight className="w-3 h-3" />
+            ) : (
+              <ArrowDownRight className="w-3 h-3" />
+            )}
+            {isPositive ? '+' : ''}
+            {trend}%
           </span>
         )}
       </div>
