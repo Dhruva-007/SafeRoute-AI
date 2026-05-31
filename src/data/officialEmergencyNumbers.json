@@ -1,0 +1,116 @@
+{
+  "country": "India",
+  "country_code": "IN",
+  "primary_emergency": "112",
+  "primary_description": "All-in-one emergency (Police, Fire, Ambulance) — works on any phone, even without SIM",
+  "services": [
+    {
+      "id": "all_emergency",
+      "name": "All Emergencies",
+      "number": "112",
+      "type": "emergency",
+      "description": "Single emergency number for Police, Fire, Ambulance",
+      "icon": "siren",
+      "priority": 1
+    },
+    {
+      "id": "police",
+      "name": "Police",
+      "number": "100",
+      "type": "police",
+      "description": "Police emergency",
+      "icon": "shield",
+      "priority": 1
+    },
+    {
+      "id": "ambulance",
+      "name": "Ambulance",
+      "number": "108",
+      "type": "medical",
+      "description": "Free ambulance service (works across India)",
+      "icon": "ambulance",
+      "priority": 1
+    },
+    {
+      "id": "fire",
+      "name": "Fire Brigade",
+      "number": "101",
+      "type": "fire",
+      "description": "Fire emergency",
+      "icon": "flame",
+      "priority": 1
+    },
+    {
+      "id": "women_helpline",
+      "name": "Women Helpline",
+      "number": "1091",
+      "type": "women_safety",
+      "description": "Women in distress (24/7)",
+      "icon": "user",
+      "priority": 2
+    },
+    {
+      "id": "women_helpline_domestic",
+      "name": "Women Helpline (Domestic Abuse)",
+      "number": "181",
+      "type": "women_safety",
+      "description": "Domestic violence and abuse",
+      "icon": "user",
+      "priority": 2
+    },
+    {
+      "id": "child_helpline",
+      "name": "Child Helpline",
+      "number": "1098",
+      "type": "child_safety",
+      "description": "Child in distress or need (CHILDLINE India)",
+      "icon": "baby",
+      "priority": 2
+    },
+    {
+      "id": "tourist_helpline",
+      "name": "Tourist Helpline",
+      "number": "1363",
+      "type": "tourist",
+      "description": "Ministry of Tourism 24x7 multi-lingual helpline",
+      "icon": "compass",
+      "priority": 2
+    },
+    {
+      "id": "disaster_management",
+      "name": "Disaster Management",
+      "number": "1078",
+      "type": "disaster",
+      "description": "National Disaster Management Authority",
+      "icon": "alert-triangle",
+      "priority": 3
+    },
+    {
+      "id": "railway_helpline",
+      "name": "Railway Helpline",
+      "number": "139",
+      "type": "transport",
+      "description": "Indian Railways enquiry and emergency",
+      "icon": "train",
+      "priority": 3
+    },
+    {
+      "id": "cyber_crime",
+      "name": "Cyber Crime Helpline",
+      "number": "1930",
+      "type": "cyber",
+      "description": "Report financial fraud and cyber crimes",
+      "icon": "shield-alert",
+      "priority": 3
+    },
+    {
+      "id": "senior_citizen",
+      "name": "Senior Citizen Helpline",
+      "number": "14567",
+      "type": "senior_help",
+      "description": "Elderline — 24/7 helpline for senior citizens",
+      "icon": "users",
+      "priority": 3
+    }
+  ]
+}

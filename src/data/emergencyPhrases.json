@@ -1,0 +1,269 @@
+{
+  "languages": {
+    "en": { "name": "English", "native_name": "English" },
+    "hi": { "name": "Hindi", "native_name": "हिन्दी" },
+    "te": { "name": "Telugu", "native_name": "తెలుగు" },
+    "ta": { "name": "Tamil", "native_name": "தமிழ்" },
+    "kn": { "name": "Kannada", "native_name": "ಕನ್ನಡ" },
+    "mr": { "name": "Marathi", "native_name": "मराठी" },
+    "bn": { "name": "Bengali", "native_name": "বাংলা" }
+  },
+  "phrases": [
+    {
+      "id": "help",
+      "icon": "alert-triangle",
+      "category": "urgent",
+      "translations": {
+        "en": "I need help!",
+        "hi": "मुझे मदद चाहिए!",
+        "te": "నాకు సహాయం కావాలి!",
+        "ta": "எனக்கு உதவி வேண்டும்!",
+        "kn": "ನನಗೆ ಸಹಾಯ ಬೇಕು!",
+        "mr": "मला मदत हवी आहे!",
+        "bn": "আমার সাহায্য দরকার!"
+      },
+      "pronunciations": {
+        "hi": "Mujhe madad chahiye!",
+        "te": "Naaku sahaayam kaavaali!",
+        "ta": "Enakku udhavi vendum!",
+        "kn": "Nanage sahaya beku!",
+        "mr": "Mala madat havi aahe!",
+        "bn": "Amar sahajyo dorkar!"
+      }
+    },
+    {
+      "id": "call_police",
+      "icon": "shield",
+      "category": "urgent",
+      "translations": {
+        "en": "Call the police!",
+        "hi": "पुलिस को बुलाओ!",
+        "te": "పోలీసులను పిలవండి!",
+        "ta": "காவல்துறையை அழைக்கவும்!",
+        "kn": "ಪೊಲೀಸ್ ಕರೆಯಿರಿ!",
+        "mr": "पोलिसांना बोलवा!",
+        "bn": "পুলিশ ডাকুন!"
+      },
+      "pronunciations": {
+        "hi": "Police ko bulao!",
+        "te": "Police-lanu pilavandi!",
+        "ta": "Kaaval-thurai-yai azhaikkavum!",
+        "kn": "Police kareyiri!",
+        "mr": "Police-na bolva!",
+        "bn": "Police daakun!"
+      }
+    },
+    {
+      "id": "need_doctor",
+      "icon": "heart",
+      "category": "medical",
+      "translations": {
+        "en": "I need a doctor.",
+        "hi": "मुझे डॉक्टर चाहिए।",
+        "te": "నాకు డాక్టర్ కావాలి.",
+        "ta": "எனக்கு டாக்டர் வேண்டும்.",
+        "kn": "ನನಗೆ ವೈದ್ಯ ಬೇಕು.",
+        "mr": "मला डॉक्टर हवा आहे.",
+        "bn": "আমার ডাক্তার দরকার।"
+      },
+      "pronunciations": {
+        "hi": "Mujhe doctor chahiye.",
+        "te": "Naaku doctor kaavaali.",
+        "ta": "Enakku doctor vendum.",
+        "kn": "Nanage vaidya beku.",
+        "mr": "Mala doctor hava aahe.",
+        "bn": "Amar doctor dorkar."
+      }
+    },
+    {
+      "id": "where_hospital",
+      "icon": "map-pin",
+      "category": "medical",
+      "translations": {
+        "en": "Where is the nearest hospital?",
+        "hi": "नज़दीकी अस्पताल कहाँ है?",
+        "te": "దగ్గరి ఆసుపత్రి ఎక్కడ?",
+        "ta": "அருகிலுள்ள மருத்துவமனை எங்கே?",
+        "kn": "ಹತ್ತಿರದ ಆಸ್ಪತ್ರೆ ಎಲ್ಲಿದೆ?",
+        "mr": "जवळचे रुग्णालय कुठे आहे?",
+        "bn": "নিকটতম হাসপাতাল কোথায়?"
+      },
+      "pronunciations": {
+        "hi": "Nazdeeki aspataal kahaan hai?",
+        "te": "Daggari aasupathri ekkada?",
+        "ta": "Arugil-ulla maruthuvamanai engey?",
+        "kn": "Hattirada aaspatre ellide?",
+        "mr": "Javlache rugnalay kuthe aahe?",
+        "bn": "Niktotomo haspatal kothay?"
+      }
+    },
+    {
+      "id": "lost",
+      "icon": "map",
+      "category": "navigation",
+      "translations": {
+        "en": "I am lost. Can you help me?",
+        "hi": "मैं खो गया हूँ। क्या आप मदद कर सकते हैं?",
+        "te": "నేను తప్పిపోయాను. మీరు సహాయం చేయగలరా?",
+        "ta": "நான் தொலைந்துவிட்டேன். நீங்கள் உதவ முடியுமா?",
+        "kn": "ನಾನು ಕಳೆದುಹೋಗಿದ್ದೇನೆ. ನೀವು ಸಹಾಯ ಮಾಡಬಹುದೇ?",
+        "mr": "मी हरवलो आहे. तुम्ही मदत करू शकता का?",
+        "bn": "আমি হারিয়ে গেছি। আপনি কি সাহায্য করতে পারবেন?"
+      },
+      "pronunciations": {
+        "hi": "Main kho gaya hoon. Kya aap madad kar sakte hain?",
+        "te": "Nenu tappipoyaanu. Meeru sahaayam cheyagalara?",
+        "ta": "Naan tholaindhu-vittEn. Neengal udhava mudiyumaa?",
+        "kn": "Naanu kaledu-hogiddene. Neevu sahaya maadabahuda?",
+        "mr": "Mi haravalo aahe. Tumhi madat karu shakta ka?",
+        "bn": "Ami hariye gechi. Apni ki sahajyo korte parben?"
+      }
+    },
+    {
+      "id": "thief",
+      "icon": "alert-circle",
+      "category": "crime",
+      "translations": {
+        "en": "Thief! Stop them!",
+        "hi": "चोर! रोको उन्हें!",
+        "te": "దొంగ! ఆపండి వాళ్ళని!",
+        "ta": "திருடன்! நிறுத்துங்கள் அவர்களை!",
+        "kn": "ಕಳ್ಳ! ಅವರನ್ನು ತಡೆಯಿರಿ!",
+        "mr": "चोर! त्यांना थांबवा!",
+        "bn": "চোর! তাদের থামান!"
+      },
+      "pronunciations": {
+        "hi": "Chor! Roko unhe!",
+        "te": "Donga! Aapandi vaallani!",
+        "ta": "Thirudan! Niruththungal avargalai!",
+        "kn": "Kalla! Avaranu tadeyiri!",
+        "mr": "Chor! Tyanna thaambava!",
+        "bn": "Chor! Tader thaman!"
+      }
+    },
+    {
+      "id": "accident",
+      "icon": "alert-octagon",
+      "category": "medical",
+      "translations": {
+        "en": "There has been an accident!",
+        "hi": "एक हादसा हुआ है!",
+        "te": "ఒక ప్రమాదం జరిగింది!",
+        "ta": "ஒரு விபத்து நடந்துள்ளது!",
+        "kn": "ಒಂದು ಅಪಘಾತ ಸಂಭವಿಸಿದೆ!",
+        "mr": "एक अपघात झाला आहे!",
+        "bn": "একটি দুর্ঘটনা ঘটেছে!"
+      },
+      "pronunciations": {
+        "hi": "Ek haadsa hua hai!",
+        "te": "Oka pramaadam jarigindi!",
+        "ta": "Oru vibathu nadanthul-ladhu!",
+        "kn": "Ondu apaghaata sambhavisida!",
+        "mr": "Ek apghaat zaala aahe!",
+        "bn": "Ekti durghotona ghoteche!"
+      }
+    },
+    {
+      "id": "water",
+      "icon": "droplet",
+      "category": "basic_need",
+      "translations": {
+        "en": "I need water.",
+        "hi": "मुझे पानी चाहिए।",
+        "te": "నాకు నీళ్ళు కావాలి.",
+        "ta": "எனக்கு தண்ணீர் வேண்டும்.",
+        "kn": "ನನಗೆ ನೀರು ಬೇಕು.",
+        "mr": "मला पाणी हवे आहे.",
+        "bn": "আমার জল দরকার।"
+      },
+      "pronunciations": {
+        "hi": "Mujhe paani chahiye.",
+        "te": "Naaku neellu kaavaali.",
+        "ta": "Enakku thanneer vendum.",
+        "kn": "Nanage neeru beku.",
+        "mr": "Mala paani have aahe.",
+        "bn": "Amar jol dorkar."
+      }
+    },
+    {
+      "id": "do_not_understand",
+      "icon": "help-circle",
+      "category": "communication",
+      "translations": {
+        "en": "I do not understand.",
+        "hi": "मुझे समझ नहीं आ रहा।",
+        "te": "నాకు అర్థం కావడం లేదు.",
+        "ta": "எனக்கு புரியவில்லை.",
+        "kn": "ನನಗೆ ಅರ್ಥವಾಗುತ್ತಿಲ್ಲ.",
+        "mr": "मला समजत नाही.",
+        "bn": "আমি বুঝতে পারছি না।"
+      },
+      "pronunciations": {
+        "hi": "Mujhe samajh nahi aa raha.",
+        "te": "Naaku artham kaavadam ledu.",
+        "ta": "Enakku puriyavillai.",
+        "kn": "Nanage arthavaaguttilla.",
+        "mr": "Mala samajat nahi.",
+        "bn": "Ami bujhte parchi na."
+      }
+    },
+    {
+      "id": "english_speaker",
+      "icon": "message-circle",
+      "category": "communication",
+      "translations": {
+        "en": "Does anyone speak English?",
+        "hi": "क्या कोई अंग्रेज़ी बोलता है?",
+        "te": "ఎవరైనా ఇంగ్లీష్ మాట్లాడతారా?",
+        "ta": "யாராவது ஆங்கிலம் பேசுவீர்களா?",
+        "kn": "ಯಾರಾದರೂ ಇಂಗ್ಲಿಷ್ ಮಾತನಾಡುತ್ತೀರಾ?",
+        "mr": "कोणी इंग्रजी बोलतो का?",
+        "bn": "কেউ কি ইংরেজি বলেন?"
+      },
+      "pronunciations": {
+        "hi": "Kya koi angrezi bolta hai?",
+        "te": "Evaraina English maatladuthaaraa?",
+        "ta": "Yaaravadhu Aangilam pesuveerkalaa?",
+        "kn": "Yaaraadaroo English maatanaaduttiraa?",
+        "mr": "Koni English bolto ka?",
+        "bn": "Keu ki English bolen?"
+      }
+    }
+  ],
+  "location_language_map": {
+    "description": "Maps state/region to primary local language code based on lat/lon",
+    "regions": [
+      {
+        "name": "Telangana / Andhra Pradesh",
+        "bounds": { "min_lat": 12.6, "max_lat": 19.9, "min_lon": 76.7, "max_lon": 84.7 },
+        "primary_lang": "te"
+      },
+      {
+        "name": "Tamil Nadu",
+        "bounds": { "min_lat": 8.0, "max_lat": 13.6, "min_lon": 76.2, "max_lon": 80.3 },
+        "primary_lang": "ta"
+      },
+      {
+        "name": "Karnataka",
+        "bounds": { "min_lat": 11.5, "max_lat": 18.5, "min_lon": 74.0, "max_lon": 78.6 },
+        "primary_lang": "kn"
+      },
+      {
+        "name": "Maharashtra",
+        "bounds": { "min_lat": 15.6, "max_lat": 22.0, "min_lon": 72.6, "max_lon": 80.9 },
+        "primary_lang": "mr"
+      },
+      {
+        "name": "West Bengal",
+        "bounds": { "min_lat": 21.5, "max_lat": 27.2, "min_lon": 85.8, "max_lon": 89.9 },
+        "primary_lang": "bn"
+      },
+      {
+        "name": "Hindi Belt (Default)",
+        "bounds": { "min_lat": 21.0, "max_lat": 32.0, "min_lon": 73.0, "max_lon": 89.0 },
+        "primary_lang": "hi"
+      }
+    ],
+    "fallback_lang": "en"
+  }
+}
