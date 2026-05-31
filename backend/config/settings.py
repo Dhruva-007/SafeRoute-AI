@@ -1,4 +1,5 @@
 import logging
+import secrets
 from functools import lru_cache
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import Field, field_validator
@@ -37,6 +38,17 @@ class Settings(BaseSettings):
         description="OpenRouter fallback model",
     )
 
+    # ── NEW ──────────────────────────────────────────────────────────────
+    # JWT — used to sign and verify access tokens
+    jwt_secret: str = Field(
+        default="",
+        description=(
+            "Secret key for JWT signing. "
+            "Set JWT_SECRET in backend/.env — must be a long random string."
+        ),
+    )
+    # ─────────────────────────────────────────────────────────────────────
+
     # App
     app_name: str = Field(default="SafeRoute AI Tour Planner")
     app_version: str = Field(default="1.0.0")
@@ -47,6 +59,27 @@ class Settings(BaseSettings):
         default="http://localhost:5173",
         description="Comma-separated list of allowed origins",
     )
+
+    # ── NEW ──────────────────────────────────────────────────────────────
+    @field_validator("jwt_secret", mode="after")
+    @classmethod
+    def ensure_jwt_secret(cls, v: str) -> str:
+        """
+        If JWT_SECRET is not set in .env, generate a random one.
+        This keeps the app running in development but prints a clear warning.
+        In production, always set JWT_SECRET explicitly.
+        """
+        if not v or not v.strip():
+            generated = secrets.token_hex(32)
+            logger.warning(
+                "JWT_SECRET is not set in .env. "
+                "A random secret has been generated for this session. "
+                "ALL existing tokens will be invalidated on restart. "
+                "Set JWT_SECRET in backend/.env for persistent sessions."
+            )
+            return generated
+        return v.strip()
+    # ─────────────────────────────────────────────────────────────────────
 
     @field_validator("groq_api_key")
     @classmethod
