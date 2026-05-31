@@ -2,7 +2,18 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import PageHeader from '../components/PageHeader';
-import { fetchTrips, deleteTrip, updateTripStatus } from '../services/trips';
+import {
+  fetchTrips,
+  deleteTrip,
+  updateTripStatus,
+  updateActivity,
+  addActivity,
+  deleteActivity,
+  regenerateDay,
+} from '../services/trips';
+import ActivityEditor from '../components/trip-editor/ActivityEditor';
+import DayRegenerator from '../components/trip-editor/DayRegenerator';
+import ActivitySwapper from '../components/trip-editor/ActivitySwapper';
 import {
   Navigation,
   MapPin,
@@ -19,6 +30,12 @@ import {
   CheckCircle,
   PlayCircle,
   Flag,
+  Edit2,
+  Trash,
+  Shuffle,
+  RefreshCw,
+  WifiOff,
+  Share2,
 } from 'lucide-react';
 
 import {
@@ -26,6 +43,10 @@ import {
   FATIGUE_DOT,
   scoreToLevel,
 } from '../utils/fatigueStyles';
+import WeatherStrip from '../components/WeatherStrip';
+import ExportMenu from '../components/trip-export/ExportMenu';
+import ShareModal from '../components/trip-export/ShareModal';
+import { useOnlineStatus } from '../hooks/useOnlineStatus';
 
 const STATUS_STYLES = {
   planned: 'bg-warning-soft text-warning border-warning/25',
@@ -42,9 +63,31 @@ function MyTrips() {
   const [deleting, setDeleting] = useState(null);
   const [updatingStatus, setUpdatingStatus] = useState(false);
 
+  // Editor modals state
+  const [editorOpen, setEditorOpen] = useState(false);
+  const [editorMode, setEditorMode] = useState('edit');
+  const [editorTarget, setEditorTarget] = useState(null);
+
+  const [regeneratorOpen, setRegeneratorOpen] = useState(false);
+  const [regeneratorDay, setRegeneratorDay] = useState(null);
+
+  const [swapperOpen, setSwapperOpen] = useState(false);
+  const [swapperTarget, setSwapperTarget] = useState(null);
+  const [shareModalOpen, setShareModalOpen] = useState(false);
+
+  const { isOnline } = useOnlineStatus();
+
   useEffect(() => {
     loadTrips();
   }, []);
+
+  // Refresh trips automatically when coming back online
+  useEffect(() => {
+    if (isOnline) {
+      loadTrips();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOnline]);
 
   const loadTrips = async () => {
     setLoading(true);
@@ -53,7 +96,10 @@ function MyTrips() {
       const data = await fetchTrips();
       setTrips(data);
     } catch (err) {
-      setError('Failed to load trips. Is the backend running?');
+      setError(
+        err.message ||
+          'Failed to load trips. Is the backend running?',
+      );
     } finally {
       setLoading(false);
     }
@@ -68,7 +114,7 @@ function MyTrips() {
       setTrips((prev) => prev.filter((t) => t.id !== tripId));
       if (selectedTrip?.id === tripId) setSelectedTrip(null);
     } catch (err) {
-      setError('Failed to delete trip.');
+      setError(err.message || 'Failed to delete trip.');
     } finally {
       setDeleting(null);
     }
@@ -81,13 +127,118 @@ function MyTrips() {
       const updated = await updateTripStatus(selectedTrip.id, newStatus);
       setSelectedTrip(updated);
       setTrips((prev) =>
-        prev.map((t) => (t.id === updated.id ? updated : t))
+        prev.map((t) => (t.id === updated.id ? updated : t)),
       );
     } catch (err) {
-      setError('Failed to update trip status.');
+      setError(err.message || 'Failed to update trip status.');
     } finally {
       setUpdatingStatus(false);
     }
+  };
+
+  /* -------- Editor handlers -------- */
+
+  const openEditActivity = (dayNumber, activityIndex, activity) => {
+    setEditorMode('edit');
+    setEditorTarget({ dayNumber, activityIndex, initialValue: activity });
+    setEditorOpen(true);
+  };
+
+  const openAddActivity = (dayNumber) => {
+    setEditorMode('add');
+    setEditorTarget({ dayNumber, activityIndex: null, initialValue: null });
+    setEditorOpen(true);
+  };
+
+  const handleSaveActivity = async (data) => {
+    if (!selectedTrip || !editorTarget) return;
+    const { dayNumber, activityIndex } = editorTarget;
+
+    let updated;
+    if (editorMode === 'edit') {
+      updated = await updateActivity(
+        selectedTrip.id,
+        dayNumber,
+        activityIndex,
+        data,
+      );
+    } else {
+      updated = await addActivity(selectedTrip.id, dayNumber, data);
+    }
+
+    setSelectedTrip(updated);
+    setTrips((prev) =>
+      prev.map((t) => (t.id === updated.id ? updated : t)),
+    );
+  };
+
+  const handleDeleteActivity = async (dayNumber, activityIndex) => {
+    if (!selectedTrip) return;
+    if (!window.confirm('Delete this activity?')) return;
+
+    try {
+      const updated = await deleteActivity(
+        selectedTrip.id,
+        dayNumber,
+        activityIndex,
+      );
+      setSelectedTrip(updated);
+      setTrips((prev) =>
+        prev.map((t) => (t.id === updated.id ? updated : t)),
+      );
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
+  /* -------- Regenerator handlers -------- */
+
+  const openRegenerator = (dayNumber) => {
+    setRegeneratorDay(dayNumber);
+    setRegeneratorOpen(true);
+  };
+
+  const handleRegenerateDay = async () => {
+    if (!selectedTrip || regeneratorDay == null) return;
+    const result = await regenerateDay(selectedTrip.id, regeneratorDay);
+    setSelectedTrip(result.trip);
+    setTrips((prev) =>
+      prev.map((t) => (t.id === result.trip.id ? result.trip : t)),
+    );
+  };
+
+  /* -------- Swapper handlers -------- */
+
+  const openSwapper = (dayNumber, activityIndex, activity) => {
+    setSwapperTarget({ dayNumber, activityIndex, activity });
+    setSwapperOpen(true);
+  };
+
+  const handleSwapActivity = async (alternativeDoc) => {
+    if (!selectedTrip || !swapperTarget) return;
+    const { dayNumber, activityIndex } = swapperTarget;
+
+    const updated = await updateActivity(
+      selectedTrip.id,
+      dayNumber,
+      activityIndex,
+      {
+        place: alternativeDoc.name,
+        description: alternativeDoc.description,
+      },
+    );
+
+    setSelectedTrip(updated);
+    setTrips((prev) =>
+      prev.map((t) => (t.id === updated.id ? updated : t)),
+    );
+  };
+
+  const handleShareUpdated = (updatedTrip) => {
+    setSelectedTrip(updatedTrip);
+    setTrips((prev) =>
+      prev.map((t) => (t.id === updatedTrip.id ? updatedTrip : t)),
+    );
   };
 
   const tabs = [
@@ -152,37 +303,74 @@ function MyTrips() {
                   {selectedTrip.number_of_travelers !== 1 ? 's' : ''}
                 </p>
               </div>
-              <span
-                className={`text-xs font-semibold px-3 py-1 rounded-full capitalize border self-start ${
-                  STATUS_STYLES[selectedTrip.status] || STATUS_STYLES.planned
-                }`}
-              >
-                {selectedTrip.status}
-              </span>
+
+              <div className="flex items-center gap-2 flex-wrap">
+                {/* Export menu — works offline since it's client-side */}
+                <ExportMenu trip={selectedTrip} />
+
+                {/* Share button */}
+                <button
+                  onClick={() => setShareModalOpen(true)}
+                  disabled={!isOnline}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition-all border disabled:opacity-50 disabled:cursor-not-allowed ${
+                    selectedTrip.share_token
+                      ? 'bg-success-soft text-success border-success/25 hover:bg-success/15'
+                      : 'bg-accent-primary/10 text-accent-primary border-accent-primary/25 hover:bg-accent-primary/15'
+                  }`}
+                  title={!isOnline ? 'Offline — sharing disabled' : ''}
+                >
+                  <Share2 className="w-4 h-4" />
+                  {selectedTrip.share_token ? 'Shared' : 'Share'}
+                </button>
+
+                {/* Status badge */}
+                <span
+                  className={`text-xs font-semibold px-3 py-1 rounded-full capitalize border ${
+                    STATUS_STYLES[selectedTrip.status] || STATUS_STYLES.planned
+                  }`}
+                >
+                  {selectedTrip.status}
+                </span>
+              </div>
             </div>
 
             {/* Status Actions */}
             <div className="flex flex-wrap gap-2 mb-4">
               <button
                 onClick={() => handleStatusChange('planned')}
-                disabled={updatingStatus || selectedTrip.status === 'planned'}
+                disabled={
+                  !isOnline ||
+                  updatingStatus ||
+                  selectedTrip.status === 'planned'
+                }
                 className="text-xs font-semibold px-3 py-1.5 rounded-full bg-warning-soft text-warning border border-warning/25 hover:bg-warning/15 disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center gap-1.5"
+                title={!isOnline ? 'Offline — editing disabled' : ''}
               >
                 <Flag className="w-3 h-3" />
                 Mark Planned
               </button>
               <button
                 onClick={() => handleStatusChange('active')}
-                disabled={updatingStatus || selectedTrip.status === 'active'}
+                disabled={
+                  !isOnline ||
+                  updatingStatus ||
+                  selectedTrip.status === 'active'
+                }
                 className="text-xs font-semibold px-3 py-1.5 rounded-full bg-accent-primary/10 text-accent-primary border border-accent-primary/25 hover:bg-accent-primary/15 disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center gap-1.5"
+                title={!isOnline ? 'Offline — editing disabled' : ''}
               >
                 <PlayCircle className="w-3 h-3" />
                 Start Trip
               </button>
               <button
                 onClick={() => handleStatusChange('completed')}
-                disabled={updatingStatus || selectedTrip.status === 'completed'}
+                disabled={
+                  !isOnline ||
+                  updatingStatus ||
+                  selectedTrip.status === 'completed'
+                }
                 className="text-xs font-semibold px-3 py-1.5 rounded-full bg-success-soft text-success border border-success/25 hover:bg-success/15 disabled:opacity-40 disabled:cursor-not-allowed transition-all flex items-center gap-1.5"
+                title={!isOnline ? 'Offline — editing disabled' : ''}
               >
                 <CheckCircle className="w-3 h-3" />
                 Complete
@@ -218,6 +406,29 @@ function MyTrips() {
             </div>
           </div>
 
+          {/* Offline notice for detail view */}
+          {!isOnline && (
+            <div className="glass-card shadow-soft border border-warning/25 bg-warning-soft/50 p-4 mb-6 flex items-start gap-3">
+              <WifiOff className="w-5 h-5 text-warning shrink-0 mt-0.5" />
+              <div className="flex-1">
+                <p className="text-sm font-semibold text-warning mb-0.5">
+                  Viewing offline cached version
+                </p>
+                <p className="text-xs text-text-secondary">
+                  Edit, regenerate, swap, and share are disabled until
+                  your connection returns. Export still works.
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* Weather strip */}
+          {selectedTrip.days && selectedTrip.days.length > 0 && (
+            <div className="mb-6">
+              <WeatherStrip days={selectedTrip.days} />
+            </div>
+          )}
+
           {/* Itinerary Days */}
           <div className="space-y-6">
             {selectedTrip.days?.map((dayObj) => (
@@ -235,33 +446,65 @@ function MyTrips() {
                     </span>
                   </div>
 
-                  {dayObj.day_fatigue_average !== undefined && (
-                    <div className="flex items-center gap-2">
-                      <TrendingUp className="w-3.5 h-3.5 text-text-muted" />
-                      <span className="text-xs text-text-muted">
-                        Day fatigue avg:
-                      </span>
-                      <span
-                        className={`text-xs font-semibold px-2.5 py-1 rounded-full border inline-flex items-center gap-1.5 ${
-                          FATIGUE_BADGE[scoreToLevel(dayObj.day_fatigue_average)]
-                        }`}
-                      >
+                  <div className="flex items-center gap-2 flex-wrap">
+                    {dayObj.day_fatigue_average !== undefined && (
+                      <div className="flex items-center gap-2">
+                        <TrendingUp className="w-3.5 h-3.5 text-text-muted" />
+                        <span className="text-xs text-text-muted">
+                          Day fatigue avg:
+                        </span>
                         <span
-                          className={`w-1.5 h-1.5 rounded-full ${
-                            FATIGUE_DOT[scoreToLevel(dayObj.day_fatigue_average)]
+                          className={`text-xs font-semibold px-2.5 py-1 rounded-full border inline-flex items-center gap-1.5 ${
+                            FATIGUE_BADGE[
+                              scoreToLevel(dayObj.day_fatigue_average)
+                            ]
                           }`}
-                        />
-                        {dayObj.day_fatigue_average}/100
-                      </span>
-                    </div>
-                  )}
+                        >
+                          <span
+                            className={`w-1.5 h-1.5 rounded-full ${
+                              FATIGUE_DOT[
+                                scoreToLevel(dayObj.day_fatigue_average)
+                              ]
+                            }`}
+                          />
+                          {dayObj.day_fatigue_average}/100
+                        </span>
+                      </div>
+                    )}
+
+                    {/* Day-level actions */}
+                    <button
+                      onClick={() => openAddActivity(dayObj.day)}
+                      disabled={!isOnline}
+                      className="text-xs font-semibold px-3 py-1.5 rounded-full bg-accent-primary/10 text-accent-primary border border-accent-primary/25 hover:bg-accent-primary/15 transition-all flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
+                      title={
+                        !isOnline ? 'Offline — editing disabled' : 'Add activity'
+                      }
+                    >
+                      <Plus className="w-3 h-3" />
+                      Add
+                    </button>
+                    <button
+                      onClick={() => openRegenerator(dayObj.day)}
+                      disabled={!isOnline}
+                      className="text-xs font-semibold px-3 py-1.5 rounded-full bg-accent-primary/10 text-accent-primary border border-accent-primary/25 hover:bg-accent-primary/15 transition-all flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
+                      title={
+                        !isOnline
+                          ? 'Offline — editing disabled'
+                          : 'Regenerate this day with AI'
+                      }
+                    >
+                      <RefreshCw className="w-3 h-3" />
+                      Regenerate
+                    </button>
+                  </div>
                 </div>
 
                 <div className="space-y-3">
                   {dayObj.activities?.map((activity, i) => (
                     <div
                       key={i}
-                      className="flex items-start gap-4 p-4 rounded-2xl bg-white/50 border border-transparent hover:border-accent-primary/20 transition-colors"
+                      className="group flex items-start gap-4 p-4 rounded-2xl bg-white/50 border border-transparent hover:border-accent-primary/20 transition-colors"
                     >
                       <span className="text-sm font-mono text-text-muted w-20 shrink-0 pt-0.5">
                         {activity.time}
@@ -284,16 +527,55 @@ function MyTrips() {
                                   FATIGUE_DOT[activity.fatigue_level]
                                 }`}
                               />
-                              {activity.fatigue_level} · {activity.fatigue_score}
+                              {activity.fatigue_level} ·{' '}
+                              {activity.fatigue_score}
                             </span>
                           )}
                         </div>
                         <p className="text-xs text-text-secondary mt-1 leading-relaxed">
                           {activity.description}
                         </p>
-                        <span className="inline-block text-xs text-accent-primary font-medium mt-2">
-                          {activity.estimated_cost}
-                        </span>
+                        <div className="flex items-center justify-between gap-3 mt-2 flex-wrap">
+                          <span className="text-xs text-accent-primary font-medium">
+                            {activity.estimated_cost}
+                          </span>
+
+                          {/* Inline activity actions */}
+                          <div className="flex items-center gap-1 opacity-60 group-hover:opacity-100 transition-opacity">
+                            <button
+                              onClick={() =>
+                                openEditActivity(dayObj.day, i, activity)
+                              }
+                              disabled={!isOnline}
+                              className="p-1.5 rounded-lg hover:bg-accent-primary/10 text-text-muted hover:text-accent-primary transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                              title={!isOnline ? 'Offline' : 'Edit'}
+                            >
+                              <Edit2 className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              onClick={() =>
+                                openSwapper(dayObj.day, i, activity)
+                              }
+                              disabled={!isOnline}
+                              className="p-1.5 rounded-lg hover:bg-accent-primary/10 text-text-muted hover:text-accent-primary transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                              title={
+                                !isOnline ? 'Offline' : 'Swap with alternative'
+                              }
+                            >
+                              <Shuffle className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              onClick={() =>
+                                handleDeleteActivity(dayObj.day, i)
+                              }
+                              disabled={!isOnline}
+                              className="p-1.5 rounded-lg hover:bg-danger/10 text-text-muted hover:text-danger transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                              title={!isOnline ? 'Offline' : 'Delete'}
+                            >
+                              <Trash className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   ))}
@@ -301,6 +583,37 @@ function MyTrips() {
               </div>
             ))}
           </div>
+
+          {/* Modals */}
+          <ActivityEditor
+            open={editorOpen}
+            mode={editorMode}
+            initialValue={editorTarget?.initialValue}
+            onClose={() => setEditorOpen(false)}
+            onSave={handleSaveActivity}
+          />
+
+          <DayRegenerator
+            open={regeneratorOpen}
+            dayNumber={regeneratorDay}
+            onClose={() => setRegeneratorOpen(false)}
+            onConfirm={handleRegenerateDay}
+          />
+
+          <ActivitySwapper
+            open={swapperOpen}
+            activity={swapperTarget?.activity}
+            budget={selectedTrip?.budget_level}
+            onClose={() => setSwapperOpen(false)}
+            onSwap={handleSwapActivity}
+          />
+
+          <ShareModal
+            open={shareModalOpen}
+            trip={selectedTrip}
+            onClose={() => setShareModalOpen(false)}
+            onUpdated={handleShareUpdated}
+          />
         </div>
       </div>
     );
@@ -365,6 +678,22 @@ function MyTrips() {
           </span>
         </motion.div>
 
+        {/* Offline notice for list view */}
+        {!isOnline && (
+          <div className="glass-card shadow-soft border border-warning/25 bg-warning-soft/50 p-4 mb-6 flex items-start gap-3">
+            <WifiOff className="w-5 h-5 text-warning shrink-0 mt-0.5" />
+            <div className="flex-1">
+              <p className="text-sm font-semibold text-warning mb-0.5">
+                You are offline
+              </p>
+              <p className="text-xs text-text-secondary">
+                Showing cached trips. Create, edit, and delete are paused
+                until you reconnect.
+              </p>
+            </div>
+          </div>
+        )}
+
         {/* Error */}
         <AnimatePresence>
           {error && (
@@ -376,6 +705,12 @@ function MyTrips() {
             >
               <AlertCircle className="w-5 h-5 text-danger shrink-0 mt-0.5" />
               <p className="text-sm text-danger flex-1">{error}</p>
+              <button
+                onClick={() => setError(null)}
+                className="text-danger/60 hover:text-danger text-lg leading-none"
+              >
+                ×
+              </button>
             </motion.div>
           )}
         </AnimatePresence>
@@ -473,9 +808,9 @@ function MyTrips() {
 
                   <button
                     onClick={() => handleDelete(trip.id)}
-                    disabled={deleting === trip.id}
-                    className="p-2 rounded-xl hover:bg-danger/8 transition-colors disabled:opacity-50"
-                    title="Delete"
+                    disabled={deleting === trip.id || !isOnline}
+                    className="p-2 rounded-xl hover:bg-danger/8 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    title={!isOnline ? 'Offline' : 'Delete'}
                   >
                     {deleting === trip.id ? (
                       <Loader2 className="w-4 h-4 animate-spin text-danger" />
@@ -499,17 +834,21 @@ function MyTrips() {
               No Trips Yet
             </h3>
             <p className="text-text-secondary mb-6">
-              Generate your first AI-powered itinerary to get started.
+              {isOnline
+                ? 'Generate your first AI-powered itinerary to get started.'
+                : 'No cached trips available offline.'}
             </p>
-            <Link
-              to="/plan-tour"
-              className="btn-primary inline-flex items-center gap-2"
-            >
-              <Plus className="w-4 h-4" />
-              Plan a Trip
-            </Link>
+            {isOnline && (
+              <Link
+                to="/plan-tour"
+                className="btn-primary inline-flex items-center gap-2"
+              >
+                <Plus className="w-4 h-4" />
+                Plan a Trip
+              </Link>
+            )}
           </div>
-        )} 
+        )}
       </div>
     </div>
   );

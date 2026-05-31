@@ -10,9 +10,6 @@ import {
   Users,
   Sparkles,
   ChevronRight,
-  Sun,
-  Cloud,
-  Umbrella,
   Activity,
   ChevronDown,
   ChevronUp,
@@ -21,7 +18,9 @@ import {
   Save,
   CheckCircle,
   TrendingUp,
+  WifiOff,
 } from 'lucide-react';
+import WeatherStrip from '../components/WeatherStrip';
 import { planTrip, validateFormData } from '../services/planner';
 import { saveTrip } from '../services/trips';
 import {
@@ -29,6 +28,7 @@ import {
   FATIGUE_DOT,
   scoreToLevel,
 } from '../utils/fatigueStyles';
+import { useOnlineStatus } from '../hooks/useOnlineStatus';
 
 const INTERESTS = [
   'Culture',
@@ -41,15 +41,6 @@ const INTERESTS = [
   'Adventure',
   'Relaxation',
 ];
-
-const WEATHER_DATA = [
-  { icon: Sun, temp: '28°C', condition: 'Sunny' },
-  { icon: Cloud, temp: '26°C', condition: 'Cloudy' },
-  { icon: Umbrella, temp: '24°C', condition: 'Light Rain' },
-  { icon: Sun, temp: '30°C', condition: 'Clear' },
-  { icon: Cloud, temp: '25°C', condition: 'Overcast' },
-];
-
 
 function PlanTour() {
   const [step, setStep] = useState(1);
@@ -71,6 +62,8 @@ function PlanTour() {
   const [saved, setSaved] = useState(false);
   const [savedTripId, setSavedTripId] = useState(null);
 
+  const { isOnline } = useOnlineStatus();
+
   const toggleInterest = (interest) => {
     setFormData((prev) => ({
       ...prev,
@@ -81,6 +74,13 @@ function PlanTour() {
   };
 
   const handleGenerate = async () => {
+    if (!isOnline) {
+      setError(
+        'You are offline. Generating a new trip requires an internet connection.',
+      );
+      return;
+    }
+
     const validationErrors = validateFormData(formData);
     if (validationErrors.length > 0) {
       setError(validationErrors.join(' '));
@@ -91,7 +91,7 @@ function PlanTour() {
     if (!destLower.includes('hyderabad')) {
       if (
         !window.confirm(
-          `AI planner currently supports Hyderabad only.\n\nYou entered "${formData.destination}". Proceed anyway?`
+          `AI planner currently supports Hyderabad only.\n\nYou entered "${formData.destination}". Proceed anyway?`,
         )
       ) {
         return;
@@ -117,6 +117,10 @@ function PlanTour() {
 
   const handleSaveTrip = async () => {
     if (!result) return;
+    if (!isOnline) {
+      setError('You are offline. Saving requires an internet connection.');
+      return;
+    }
 
     setSaving(true);
     setError(null);
@@ -170,6 +174,23 @@ function PlanTour() {
           title="Plan Your Tour"
           subtitle="Let AI create the perfect itinerary tailored to your preferences and fatigue management."
         />
+
+        {/* Offline notice */}
+        {!isOnline && (
+          <div className="max-w-2xl mx-auto mb-6 glass-card shadow-soft border border-warning/25 bg-warning-soft/50 p-4 flex items-start gap-3">
+            <WifiOff className="w-5 h-5 text-warning shrink-0 mt-0.5" />
+            <div className="flex-1">
+              <p className="text-sm font-semibold text-warning mb-0.5">
+                You are currently offline
+              </p>
+              <p className="text-xs text-text-secondary">
+                AI trip planning requires an internet connection.
+                Reconnect to generate new itineraries. Your saved trips
+                are still viewable in My Trips.
+              </p>
+            </div>
+          </div>
+        )}
 
         {/* Error Banner */}
         <AnimatePresence>
@@ -470,9 +491,16 @@ function PlanTour() {
                       <button
                         onClick={handleGenerate}
                         disabled={
-                          generating || formData.interests.length === 0
+                          generating ||
+                          formData.interests.length === 0 ||
+                          !isOnline
                         }
                         className="btn-primary flex-1 flex items-center justify-center gap-2 !py-3.5 disabled:opacity-50 disabled:cursor-not-allowed"
+                        title={
+                          !isOnline
+                            ? 'Offline — AI generation requires internet'
+                            : ''
+                        }
                       >
                         {generating ? (
                           <>
@@ -522,8 +550,11 @@ function PlanTour() {
                   {!saved ? (
                     <button
                       onClick={handleSaveTrip}
-                      disabled={saving}
-                      className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold bg-accent-primary/10 text-accent-primary hover:bg-accent-primary/15 transition-all disabled:opacity-60"
+                      disabled={saving || !isOnline}
+                      className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold bg-accent-primary/10 text-accent-primary hover:bg-accent-primary/15 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+                      title={
+                        !isOnline ? 'Offline — saving disabled' : ''
+                      }
                     >
                       {saving ? (
                         <Loader2 className="w-4 h-4 animate-spin" />
@@ -590,29 +621,8 @@ function PlanTour() {
             </AnimatePresence>
 
             {/* Weather */}
-            <div className="glass-card shadow-soft border border-[#DDD3C5] p-4 mb-6 flex items-center gap-6 overflow-x-auto">
-              {WEATHER_DATA.slice(
-                0,
-                Math.min(result?.duration_days || 1, 5)
-              ).map((w, idx) => {
-                const Icon = w.icon;
-                return (
-                  <div
-                    key={idx}
-                    className="flex items-center gap-3 shrink-0"
-                  >
-                    <Icon className="w-5 h-5 text-accent-primary" />
-                    <div>
-                      <p className="text-sm font-semibold text-text-primary">
-                        Day {idx + 1}
-                      </p>
-                      <p className="text-xs text-text-muted">
-                        {w.temp} • {w.condition}
-                      </p>
-                    </div>
-                  </div>
-                );
-              })}
+            <div className="mb-6">
+              <WeatherStrip days={result?.days || []} />
             </div>
 
             {/* Itinerary Days */}
@@ -647,12 +657,16 @@ function PlanTour() {
                         </span>
                         <span
                           className={`text-xs font-semibold px-2.5 py-1 rounded-full border inline-flex items-center gap-1.5 ${
-                            FATIGUE_BADGE[scoreToLevel(dayObj.day_fatigue_average)]
+                            FATIGUE_BADGE[
+                              scoreToLevel(dayObj.day_fatigue_average)
+                            ]
                           }`}
                         >
                           <span
                             className={`w-1.5 h-1.5 rounded-full ${
-                              FATIGUE_DOT[scoreToLevel(dayObj.day_fatigue_average)]
+                              FATIGUE_DOT[
+                                scoreToLevel(dayObj.day_fatigue_average)
+                              ]
                             }`}
                           />
                           {dayObj.day_fatigue_average}/100
