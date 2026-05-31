@@ -12,7 +12,9 @@
   "dependencies": {
     "comlink": "^4.4.2",
     "framer-motion": "^11.15.0",
+    "ics": "^3.7.6",
     "idb": "^8.0.3",
+    "jspdf": "^2.5.2",
     "lucide-react": "^0.468.0",
     "maplibre-gl": "^5.24.0",
     "pako": "^2.1.0",
