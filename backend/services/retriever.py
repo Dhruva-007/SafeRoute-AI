@@ -239,6 +239,57 @@ class RetrieverService:
         )
 
         return all_documents
+    
+    def get_alternatives(
+        self,
+        place_name: str,
+        category: str | None = None,
+        budget: str | None = None,
+        n_results: int = 5,
+    ) -> list[RetrievedDocument]:
+        """
+        Find alternative places similar to the given one.
+        Useful for the "swap activity" feature.
+
+        Args:
+            place_name: Current place name to find alternatives for
+            category:   Optional category to restrict alternatives to
+                        ('food', 'attractions', etc.)
+            budget:     Optional budget filter
+            n_results:  Number of alternatives to return
+
+        Returns:
+            List of RetrievedDocument excluding the original place.
+        """
+        if not place_name.strip():
+            raise ValueError("place_name cannot be empty")
+
+        logger.info(
+            "Finding alternatives | place=%r | category=%s | budget=%s",
+            place_name, category, budget,
+        )
+
+        # Build query — semantic search will find similar places
+        query = f"Hyderabad places similar to {place_name}"
+
+        categories_list = [category] if category else None
+
+        docs = self.retrieve(
+            query=query,
+            n_results=n_results + 5,  # fetch extra to filter out the original
+            filter_categories=categories_list,
+            filter_budget=budget,
+        )
+
+        # Filter out the original place (case-insensitive name match)
+        original_lower = place_name.lower().strip()
+        filtered = [
+            d for d in docs
+            if d.name.lower().strip() not in original_lower
+            and original_lower not in d.name.lower().strip()
+        ]
+
+        return filtered[:n_results]
 
     # ------------------------------------------------------------------
     # Private helpers
