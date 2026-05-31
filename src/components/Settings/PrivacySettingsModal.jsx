@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  X, Bell, Volume2, Smartphone, Shield, Battery, MapPin, 
-  Trash2, AlertTriangle, Info, BarChart3
+import {
+  X, Bell, Shield, Battery, MapPin,
+  Trash2, AlertTriangle, Info, BarChart3,
 } from 'lucide-react';
 import { useSettings } from '../../hooks/useSettings';
 import alertHistoryService from '../../services/alertHistory';
@@ -13,60 +13,64 @@ export default function PrivacySettingsModal({ isOpen, onClose }) {
   const [showConfirmClearAlerts, setShowConfirmClearAlerts] = useState(false);
   const [showConfirmClearAll, setShowConfirmClearAll] = useState(false);
   const [clearing, setClearing] = useState(false);
-  
+  const [feedback, setFeedback] = useState(null);
+
+  const showFeedback = (type, text) => {
+    setFeedback({ type, text });
+    setTimeout(() => setFeedback(null), 2500);
+  };
+
   const handleClearAlerts = async () => {
     try {
       await alertHistoryService.clearHistory();
       setShowConfirmClearAlerts(false);
-      alert('Alert history cleared successfully');
+      showFeedback('success', 'Alert history cleared.');
     } catch (e) {
-      alert('Failed to clear: ' + e.message);
+      showFeedback('error', 'Failed to clear: ' + e.message);
     }
   };
-  
+
   const handleClearAllData = async () => {
     setClearing(true);
     try {
       await clearAllData();
-      alert('All data cleared. The app will reload.');
       window.location.reload();
     } catch (e) {
-      alert('Failed to clear all data: ' + e.message);
+      showFeedback('error', 'Failed to clear: ' + e.message);
       setClearing(false);
     }
   };
-  
+
   return (
     <AnimatePresence>
       {isOpen && (
         <>
-          {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100]"
+            className="fixed inset-0 bg-accent-charcoal/40 backdrop-blur-sm z-[100]"
           />
-          
-          {/* Modal */}
+
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+            initial={{ opacity: 0, scale: 0.96, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+            exit={{ opacity: 0, scale: 0.96, y: 20 }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className="fixed inset-0 z-[101] flex items-start justify-center p-4 pt-16 overflow-y-auto"
+            className="fixed inset-0 z-[101] flex items-start justify-center px-4 pt-20 pb-8 sm:pt-24 sm:pb-12 overflow-y-auto"
             onClick={onClose}
           >
-            <div 
-              className="w-full max-w-2xl bg-bg-primary border border-border-subtle rounded-2xl shadow-2xl my-auto"
+            <div
+              className="w-full max-w-2xl flex flex-col bg-bg-elevated border border-[#DDD3C5] rounded-card shadow-strong my-auto"
+              style={{ maxHeight: 'calc(100vh - 7rem)' }}
               onClick={(e) => e.stopPropagation()}
             >
               {/* Header */}
-              <div className="flex items-center justify-between p-5 border-b border-border-subtle sticky top-0 bg-bg-primary rounded-t-2xl z-10">
+              <div className="flex items-center justify-between p-5 border-b border-[#DDD3C5] shrink-0">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
-                    <Shield className="w-5 h-5 text-blue-400" />
+                  <div className="w-10 h-10 rounded-xl bg-accent-primary/10 border border-accent-primary/25 flex items-center justify-center">
+                    <Shield className="w-5 h-5 text-accent-primary" />
                   </div>
                   <div>
                     <h2 className="text-lg font-bold text-text-primary">Privacy & Safety</h2>
@@ -75,16 +79,30 @@ export default function PrivacySettingsModal({ isOpen, onClose }) {
                 </div>
                 <button
                   onClick={onClose}
-                  className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors"
+                  className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-bg-secondary transition-colors"
                 >
                   <X className="w-5 h-5 text-text-muted" />
                 </button>
               </div>
-              
+
               {/* Content */}
-              <div className="p-5 space-y-6 max-h-[70vh] overflow-y-auto">
-                
-                {/* ─── Notifications Section ─── */}
+              <div className="flex-1 overflow-y-auto p-5 space-y-6">
+
+                {feedback && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className={`p-3 rounded-xl border text-sm font-medium ${
+                      feedback.type === 'success'
+                        ? 'bg-success-soft border-success/25 text-success'
+                        : 'bg-danger-soft border-danger/25 text-danger'
+                    }`}
+                  >
+                    {feedback.text}
+                  </motion.div>
+                )}
+
+                {/* Notifications */}
                 <Section icon={<Bell className="w-4 h-4" />} title="Notifications">
                   <ToggleRow
                     label="Push Notifications"
@@ -107,42 +125,37 @@ export default function PrivacySettingsModal({ isOpen, onClose }) {
                     disabled={!settings.notifications_enabled}
                   />
                 </Section>
-                
-                {/* ─── Alert Sensitivity ─── */}
+
+                {/* Alert sensitivity */}
                 <Section icon={<AlertTriangle className="w-4 h-4" />} title="Alert Sensitivity">
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="text-sm font-medium text-text-primary">Minimum Alert Severity</p>
-                        <p className="text-xs text-text-muted">Only alert me for zones at or above this level</p>
-                      </div>
+                  <div>
+                    <div className="mb-2">
+                      <p className="text-sm font-medium text-text-primary">Minimum Alert Severity</p>
+                      <p className="text-xs text-text-muted">Only alert me for zones at or above this level</p>
                     </div>
                     <div className="grid grid-cols-4 gap-2">
-                      {[1, 2, 3, 4].map(level => (
-                        <button
-                          key={level}
-                          onClick={() => updateSetting('min_severity_alert', level)}
-                          className={`px-2 py-2 rounded-lg text-xs font-semibold transition-all ${
-                            settings.min_severity_alert === level
-                              ? 'text-white scale-105'
-                              : 'bg-white/[0.04] text-text-muted hover:bg-white/[0.08]'
-                          }`}
-                          style={{
-                            background: settings.min_severity_alert === level 
-                              ? SEVERITY_COLORS[level] 
-                              : undefined,
-                            borderWidth: 1,
-                            borderColor: settings.min_severity_alert === level 
-                              ? SEVERITY_COLORS[level] 
-                              : 'transparent',
-                          }}
-                        >
-                          {SEVERITY_LABELS[level]}+
-                        </button>
-                      ))}
+                      {[1, 2, 3, 4].map((level) => {
+                        const active = settings.min_severity_alert === level;
+                        return (
+                          <button
+                            key={level}
+                            onClick={() => updateSetting('min_severity_alert', level)}
+                            className={`px-2 py-2 rounded-lg text-xs font-semibold transition-all border ${
+                              active
+                                ? 'text-white scale-[1.02] border-transparent shadow-soft'
+                                : 'bg-white text-text-secondary border-[#DDD3C5] hover:border-accent-primary/40'
+                            }`}
+                            style={{
+                              background: active ? SEVERITY_COLORS[level] : undefined,
+                            }}
+                          >
+                            {SEVERITY_LABELS[level]}+
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
-                  
+
                   <SliderRow
                     label="Alert Cooldown"
                     description="Minimum time between repeat alerts for same zone"
@@ -153,7 +166,7 @@ export default function PrivacySettingsModal({ isOpen, onClose }) {
                     step={1}
                     unit="minutes"
                   />
-                  
+
                   <SliderRow
                     label="Confirmation Sensitivity"
                     description="Number of GPS fixes required before triggering"
@@ -165,8 +178,8 @@ export default function PrivacySettingsModal({ isOpen, onClose }) {
                     unit="fixes"
                   />
                 </Section>
-                
-                {/* ─── GPS & Battery ─── */}
+
+                {/* GPS & Battery */}
                 <Section icon={<Battery className="w-4 h-4" />} title="GPS & Battery">
                   <ToggleRow
                     label="Battery Optimization"
@@ -181,7 +194,6 @@ export default function PrivacySettingsModal({ isOpen, onClose }) {
                     onChange={(v) => updateSetting('high_accuracy_gps', v)}
                     disabled={settings.battery_optimization}
                   />
-                  
                   <SliderRow
                     label="GPS Update Interval"
                     description="How often to check your location"
@@ -194,8 +206,8 @@ export default function PrivacySettingsModal({ isOpen, onClose }) {
                     disabled={settings.battery_optimization}
                   />
                 </Section>
-                
-                {/* ─── Location & Privacy ─── */}
+
+                {/* Location & privacy */}
                 <Section icon={<MapPin className="w-4 h-4" />} title="Location & Privacy">
                   <ToggleRow
                     label="Location Sharing"
@@ -210,12 +222,12 @@ export default function PrivacySettingsModal({ isOpen, onClose }) {
                     onChange={(v) => updateSetting('share_anonymous_analytics', v)}
                   />
                   <InfoBox>
-                    Your GPS location <strong>never leaves your device</strong>. All geofencing 
-                    happens locally for privacy.
+                    Your GPS location <strong>never leaves your device</strong>. All
+                    geofencing happens locally for privacy.
                   </InfoBox>
                 </Section>
-                
-                {/* ─── Display Preferences ─── */}
+
+                {/* Display */}
                 <Section icon={<BarChart3 className="w-4 h-4" />} title="Display Preferences">
                   <ToggleRow
                     label="Show Low Severity Zones"
@@ -230,69 +242,69 @@ export default function PrivacySettingsModal({ isOpen, onClose }) {
                     onChange={(v) => updateSetting('show_emergency_services', v)}
                   />
                 </Section>
-                
-                {/* ─── Data Management ─── */}
-                <Section icon={<Trash2 className="w-4 h-4 text-red-400" />} title="Data Management" danger>
+
+                {/* Danger */}
+                <Section icon={<Trash2 className="w-4 h-4" />} title="Data Management" danger>
                   <p className="text-xs text-text-muted mb-3">
                     These actions cannot be undone. Use with caution.
                   </p>
-                  
+
                   {!showConfirmClearAlerts ? (
                     <button
                       onClick={() => setShowConfirmClearAlerts(true)}
-                      className="w-full p-3 rounded-lg bg-red-500/5 border border-red-500/20 text-red-400 text-sm font-medium hover:bg-red-500/10 transition-colors flex items-center justify-center gap-2"
+                      className="w-full p-3 rounded-xl bg-danger-soft border border-danger/20 text-danger text-sm font-medium hover:bg-danger/10 transition-colors flex items-center justify-center gap-2"
                     >
                       <Trash2 className="w-4 h-4" />
                       Clear Alert History
                     </button>
                   ) : (
-                    <div className="p-3 bg-red-500/5 border border-red-500/30 rounded-lg">
-                      <p className="text-xs text-red-300 mb-2">
+                    <div className="p-3 bg-danger-soft border border-danger/30 rounded-xl">
+                      <p className="text-xs text-danger mb-2">
                         Permanently delete all alert history?
                       </p>
                       <div className="flex gap-2">
                         <button
                           onClick={handleClearAlerts}
-                          className="flex-1 px-3 py-2 bg-red-500 hover:bg-red-600 text-white text-xs font-medium rounded transition-colors"
+                          className="flex-1 px-3 py-2 bg-danger hover:bg-danger/90 text-white text-xs font-medium rounded-lg transition-colors"
                         >
                           Yes, Delete
                         </button>
                         <button
                           onClick={() => setShowConfirmClearAlerts(false)}
-                          className="flex-1 px-3 py-2 bg-white/[0.04] hover:bg-white/[0.08] text-text-primary text-xs font-medium rounded transition-colors"
+                          className="flex-1 px-3 py-2 bg-white hover:bg-bg-secondary border border-[#DDD3C5] text-text-primary text-xs font-medium rounded-lg transition-colors"
                         >
                           Cancel
                         </button>
                       </div>
                     </div>
                   )}
-                  
+
                   {!showConfirmClearAll ? (
                     <button
                       onClick={() => setShowConfirmClearAll(true)}
-                      className="w-full mt-2 p-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-sm font-medium hover:bg-red-500/20 transition-colors flex items-center justify-center gap-2"
+                      className="w-full mt-2 p-3 rounded-xl bg-danger-soft border border-danger/30 text-danger text-sm font-medium hover:bg-danger/15 transition-colors flex items-center justify-center gap-2"
                     >
                       <AlertTriangle className="w-4 h-4" />
                       Clear ALL App Data
                     </button>
                   ) : (
-                    <div className="mt-2 p-3 bg-red-500/10 border border-red-500/40 rounded-lg">
-                      <p className="text-xs text-red-300 mb-2">
-                        ⚠️ This will delete ALL data including settings, alerts, and cached maps. 
-                        The app will reload after clearing.
+                    <div className="mt-2 p-3 bg-danger-soft border border-danger/40 rounded-xl">
+                      <p className="text-xs text-danger mb-2">
+                        ⚠️ This will delete ALL data including settings, alerts, and
+                        cached maps. The app will reload after clearing.
                       </p>
                       <div className="flex gap-2">
                         <button
                           onClick={handleClearAllData}
                           disabled={clearing}
-                          className="flex-1 px-3 py-2 bg-red-500 hover:bg-red-600 disabled:bg-red-500/50 text-white text-xs font-medium rounded transition-colors"
+                          className="flex-1 px-3 py-2 bg-danger hover:bg-danger/90 disabled:opacity-60 text-white text-xs font-medium rounded-lg transition-colors"
                         >
                           {clearing ? 'Clearing...' : 'Yes, Delete Everything'}
                         </button>
                         <button
                           onClick={() => setShowConfirmClearAll(false)}
                           disabled={clearing}
-                          className="flex-1 px-3 py-2 bg-white/[0.04] hover:bg-white/[0.08] text-text-primary text-xs font-medium rounded transition-colors"
+                          className="flex-1 px-3 py-2 bg-white hover:bg-bg-secondary border border-[#DDD3C5] text-text-primary text-xs font-medium rounded-lg transition-colors"
                         >
                           Cancel
                         </button>
@@ -301,12 +313,12 @@ export default function PrivacySettingsModal({ isOpen, onClose }) {
                   )}
                 </Section>
               </div>
-              
+
               {/* Footer */}
-              <div className="p-4 border-t border-border-subtle flex justify-end gap-2 sticky bottom-0 bg-bg-primary rounded-b-2xl">
+              <div className="p-4 border-t border-[#DDD3C5] flex justify-end gap-2 shrink-0">
                 <button
                   onClick={onClose}
-                  className="px-4 py-2 bg-accent-primary hover:bg-accent-primary/90 text-white text-sm font-medium rounded-lg transition-colors"
+                  className="px-5 py-2 bg-accent-primary hover:bg-accent-hover text-white text-sm font-medium rounded-xl transition-colors"
                 >
                   Done
                 </button>
@@ -319,18 +331,18 @@ export default function PrivacySettingsModal({ isOpen, onClose }) {
   );
 }
 
-// ─── Helper Components ───
+// ─── Helpers ──────────────────────────────────────────
 
 function Section({ icon, title, danger, children }) {
   return (
     <div>
       <div className="flex items-center gap-2 mb-3">
-        <span className={danger ? 'text-red-400' : 'text-accent-primary'}>{icon}</span>
-        <h3 className={`text-sm font-semibold ${danger ? 'text-red-400' : 'text-text-primary'}`}>
+        <span className={danger ? 'text-danger' : 'text-accent-primary'}>{icon}</span>
+        <h3 className={`text-sm font-semibold ${danger ? 'text-danger' : 'text-text-primary'}`}>
           {title}
         </h3>
       </div>
-      <div className="space-y-3 pl-1">{children}</div>
+      <div className="space-y-3">{children}</div>
     </div>
   );
 }
@@ -348,8 +360,8 @@ function ToggleRow({ label, description, value, onChange, disabled }) {
         onClick={() => !disabled && onChange(!value)}
         disabled={disabled}
         className={`shrink-0 w-11 h-6 rounded-full transition-colors relative ${
-          value ? 'bg-accent-primary' : 'bg-white/10'
-        } ${disabled ? 'cursor-not-allowed' : ''}`}
+          value ? 'bg-accent-primary' : 'bg-[#DDD3C5]'
+        } ${disabled ? 'cursor-not-allowed' : 'cursor-pointer'}`}
       >
         <div className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform ${
           value ? 'left-[22px]' : 'left-0.5'
@@ -369,7 +381,7 @@ function SliderRow({ label, description, value, onChange, min, max, step, unit, 
             <p className="text-xs text-text-muted mt-0.5">{description}</p>
           )}
         </div>
-        <div className="text-sm font-semibold text-accent-primary ml-3">
+        <div className="text-sm font-semibold text-accent-primary ml-3 whitespace-nowrap">
           {value} {unit}
         </div>
       </div>
@@ -381,7 +393,7 @@ function SliderRow({ label, description, value, onChange, min, max, step, unit, 
         value={value}
         onChange={(e) => onChange(e.target.value)}
         disabled={disabled}
-        className="w-full h-1.5 bg-white/10 rounded-full appearance-none cursor-pointer accent-accent-primary"
+        className="saferoute-slider w-full"
       />
     </div>
   );
@@ -389,9 +401,9 @@ function SliderRow({ label, description, value, onChange, min, max, step, unit, 
 
 function InfoBox({ children }) {
   return (
-    <div className="flex items-start gap-2 p-3 rounded-lg bg-blue-500/5 border border-blue-500/20">
-      <Info className="w-4 h-4 text-blue-400 shrink-0 mt-0.5" />
-      <p className="text-xs text-text-secondary">{children}</p>
+    <div className="flex items-start gap-2 p-3 rounded-xl bg-info-soft border border-info/20">
+      <Info className="w-4 h-4 text-info shrink-0 mt-0.5" />
+      <p className="text-xs text-text-secondary leading-relaxed">{children}</p>
     </div>
   );
 }
