@@ -19,6 +19,10 @@ dist
 dist-ssr
 *.local
 
+# Vite specific
+.vite/
+dev-dist/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
@@ -38,7 +42,11 @@ Thumbs.db
 .env.test.local
 .env.production.local
 
-# Temp / scratch
+# Temp / scratch / debug dumps
 models.json
+openapi.json
 *.tmp
 *.bak
+
+# IndexedDB exports (just in case)
+*.idb
