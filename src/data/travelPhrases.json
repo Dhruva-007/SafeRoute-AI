@@ -1,0 +1,1621 @@
+{
+  "version": 1,
+  "languages": {
+    "en": { "name": "English",  "native_name": "English",   "uses_latin": true,  "tts_code": "en-IN" },
+    "hi": { "name": "Hindi",    "native_name": "हिन्दी",      "uses_latin": false, "tts_code": "hi-IN" },
+    "te": { "name": "Telugu",   "native_name": "తెలుగు",     "uses_latin": false, "tts_code": "te-IN" },
+    "ta": { "name": "Tamil",    "native_name": "தமிழ்",      "uses_latin": false, "tts_code": "ta-IN" },
+    "kn": { "name": "Kannada",  "native_name": "ಕನ್ನಡ",      "uses_latin": false, "tts_code": "kn-IN" },
+    "mr": { "name": "Marathi",  "native_name": "मराठी",      "uses_latin": false, "tts_code": "mr-IN" },
+    "bn": { "name": "Bengali",  "native_name": "বাংলা",      "uses_latin": false, "tts_code": "bn-IN" },
+    "pa": { "name": "Punjabi",  "native_name": "ਪੰਜਾਬੀ",     "uses_latin": false, "tts_code": "pa-IN" },
+    "ja": { "name": "Japanese", "native_name": "日本語",     "uses_latin": false, "tts_code": "ja-JP" },
+    "fr": { "name": "French",   "native_name": "Français",  "uses_latin": true,  "tts_code": "fr-FR" },
+    "es": { "name": "Spanish",  "native_name": "Español",   "uses_latin": true,  "tts_code": "es-ES" },
+    "de": { "name": "German",   "native_name": "Deutsch",   "uses_latin": true,  "tts_code": "de-DE" }
+  },
+
+  "categories": [
+    { "id": "greetings",     "label": "Greetings",     "icon": "heart",     "context_tags": ["social"] },
+    { "id": "emergency",     "label": "Emergency",     "icon": "shield",    "context_tags": ["safety", "urgent"] },
+    { "id": "food",          "label": "Food & Dining", "icon": "utensils",  "context_tags": ["restaurant"] },
+    { "id": "transit",       "label": "Transit",       "icon": "train",     "context_tags": ["transit", "station"] },
+    { "id": "accommodation", "label": "Hotel",         "icon": "hotel",     "context_tags": ["accommodation"] },
+    { "id": "shopping",      "label": "Shopping",      "icon": "shopping-bag", "context_tags": ["market", "shop"] },
+    { "id": "medical",       "label": "Medical",       "icon": "heart-pulse", "context_tags": ["hospital", "clinic", "pharmacy"] },
+    { "id": "directions",    "label": "Directions",    "icon": "navigation","context_tags": ["navigation"] }
+  ],
+
+  "reply_categories": [
+    { "id": "common_replies", "label": "Common Replies", "icon": "message-circle" }
+  ],
+
+  "phrases": [
+    {
+      "id": "greet_hello",
+      "category": "greetings",
+      "tags": ["essential"],
+      "translations": {
+        "en": "Hello",
+        "hi": "नमस्ते",
+        "te": "నమస్కారం",
+        "ta": "வணக்கம்",
+        "kn": "ನಮಸ್ಕಾರ",
+        "mr": "नमस्कार",
+        "bn": "নমস্কার",
+        "pa": "ਸਤ ਸ੍ਰੀ ਅਕਾਲ",
+        "ja": "こんにちは",
+        "fr": "Bonjour",
+        "es": "Hola",
+        "de": "Hallo"
+      },
+      "romanizations": {
+        "hi": "Namaste",
+        "te": "Namaskaaram",
+        "ta": "Vanakkam",
+        "kn": "Namaskaara",
+        "mr": "Namaskar",
+        "bn": "Nomoskar",
+        "pa": "Sat Sri Akaal",
+        "ja": "Konnichiwa"
+      }
+    },
+    {
+      "id": "greet_thanks",
+      "category": "greetings",
+      "tags": ["essential"],
+      "translations": {
+        "en": "Thank you",
+        "hi": "धन्यवाद",
+        "te": "ధన్యవాదాలు",
+        "ta": "நன்றி",
+        "kn": "ಧನ್ಯವಾದಗಳು",
+        "mr": "धन्यवाद",
+        "bn": "ধন্যবাদ",
+        "pa": "ਧੰਨਵਾਦ",
+        "ja": "ありがとうございます",
+        "fr": "Merci",
+        "es": "Gracias",
+        "de": "Danke"
+      },
+      "romanizations": {
+        "hi": "Dhanyavaad",
+        "te": "Dhanyavaadaalu",
+        "ta": "Nandri",
+        "kn": "Dhanyavaadagalu",
+        "mr": "Dhanyavaad",
+        "bn": "Dhonnobad",
+        "pa": "Dhanvaad",
+        "ja": "Arigatou gozaimasu"
+      }
+    },
+    {
+      "id": "greet_please",
+      "category": "greetings",
+      "tags": ["essential"],
+      "translations": {
+        "en": "Please",
+        "hi": "कृपया",
+        "te": "దయచేసి",
+        "ta": "தயவுசெய்து",
+        "kn": "ದಯವಿಟ್ಟು",
+        "mr": "कृपया",
+        "bn": "দয়া করে",
+        "pa": "ਕਿਰਪਾ ਕਰਕੇ",
+        "ja": "お願いします",
+        "fr": "S'il vous plaît",
+        "es": "Por favor",
+        "de": "Bitte"
+      },
+      "romanizations": {
+        "hi": "Kripya",
+        "te": "Dayachesi",
+        "ta": "Thayavuseidhu",
+        "kn": "Dayavittu",
+        "mr": "Krupaya",
+        "bn": "Doya kore",
+        "pa": "Kirpa karke",
+        "ja": "Onegai shimasu"
+      }
+    },
+    {
+      "id": "greet_sorry",
+      "category": "greetings",
+      "tags": ["essential"],
+      "translations": {
+        "en": "Sorry / Excuse me",
+        "hi": "माफ़ कीजिए",
+        "te": "క్షమించండి",
+        "ta": "மன்னிக்கவும்",
+        "kn": "ಕ್ಷಮಿಸಿ",
+        "mr": "माफ करा",
+        "bn": "দুঃখিত",
+        "pa": "ਮਾਫ਼ ਕਰਨਾ",
+        "ja": "すみません",
+        "fr": "Pardon / Excusez-moi",
+        "es": "Disculpe",
+        "de": "Entschuldigung"
+      },
+      "romanizations": {
+        "hi": "Maaf kijiye",
+        "te": "Kshaminchandi",
+        "ta": "Mannikkavum",
+        "kn": "Kshamisi",
+        "mr": "Maaf kara",
+        "bn": "Dukkhito",
+        "pa": "Maaf karna",
+        "ja": "Sumimasen"
+      }
+    },
+    {
+      "id": "greet_goodbye",
+      "category": "greetings",
+      "tags": ["essential"],
+      "translations": {
+        "en": "Goodbye",
+        "hi": "अलविदा",
+        "te": "వెళ్తాను",
+        "ta": "போய் வருகிறேன்",
+        "kn": "ಹೋಗಿ ಬರ್ತೀನಿ",
+        "mr": "निरोप",
+        "bn": "বিদায়",
+        "pa": "ਅਲਵਿਦਾ",
+        "ja": "さようなら",
+        "fr": "Au revoir",
+        "es": "Adiós",
+        "de": "Auf Wiedersehen"
+      },
+      "romanizations": {
+        "hi": "Alvida",
+        "te": "Veltaanu",
+        "ta": "Poyi varugiren",
+        "kn": "Hogi bartheeni",
+        "mr": "Nirop",
+        "bn": "Biday",
+        "pa": "Alvida",
+        "ja": "Sayounara"
+      }
+    },
+    {
+      "id": "greet_yes",
+      "category": "greetings",
+      "tags": ["essential", "reply"],
+      "translations": {
+        "en": "Yes",
+        "hi": "हाँ",
+        "te": "అవును",
+        "ta": "ஆம்",
+        "kn": "ಹೌದು",
+        "mr": "हो",
+        "bn": "হ্যাঁ",
+        "pa": "ਹਾਂ",
+        "ja": "はい",
+        "fr": "Oui",
+        "es": "Sí",
+        "de": "Ja"
+      },
+      "romanizations": {
+        "hi": "Haan",
+        "te": "Avunu",
+        "ta": "Aam",
+        "kn": "Houdu",
+        "mr": "Ho",
+        "bn": "Hyaan",
+        "pa": "Haan",
+        "ja": "Hai"
+      }
+    },
+    {
+      "id": "greet_no",
+      "category": "greetings",
+      "tags": ["essential", "reply"],
+      "translations": {
+        "en": "No",
+        "hi": "नहीं",
+        "te": "కాదు",
+        "ta": "இல்லை",
+        "kn": "ಇಲ್ಲ",
+        "mr": "नाही",
+        "bn": "না",
+        "pa": "ਨਹੀਂ",
+        "ja": "いいえ",
+        "fr": "Non",
+        "es": "No",
+        "de": "Nein"
+      },
+      "romanizations": {
+        "hi": "Nahi",
+        "te": "Kaadu",
+        "ta": "Illai",
+        "kn": "Illa",
+        "mr": "Nahi",
+        "bn": "Na",
+        "pa": "Nahin",
+        "ja": "Iie"
+      }
+    },
+    {
+      "id": "greet_understand_no",
+      "category": "greetings",
+      "tags": ["communication"],
+      "translations": {
+        "en": "I do not understand",
+        "hi": "मुझे समझ नहीं आ रहा",
+        "te": "నాకు అర్థం కావడం లేదు",
+        "ta": "எனக்கு புரியவில்லை",
+        "kn": "ನನಗೆ ಅರ್ಥವಾಗುತ್ತಿಲ್ಲ",
+        "mr": "मला समजत नाही",
+        "bn": "আমি বুঝতে পারছি না",
+        "pa": "ਮੈਨੂੰ ਸਮਝ ਨਹੀਂ ਆ ਰਿਹਾ",
+        "ja": "わかりません",
+        "fr": "Je ne comprends pas",
+        "es": "No entiendo",
+        "de": "Ich verstehe nicht"
+      },
+      "romanizations": {
+        "hi": "Mujhe samajh nahi aa raha",
+        "te": "Naaku artham kaavadam ledu",
+        "ta": "Enakku puriyavillai",
+        "kn": "Nanage arthavaaguttilla",
+        "mr": "Mala samajat nahi",
+        "bn": "Ami bujhte parchi na",
+        "pa": "Mainu samajh nahin aa riha",
+        "ja": "Wakarimasen"
+      }
+    },
+    {
+      "id": "greet_english_speaker",
+      "category": "greetings",
+      "tags": ["communication"],
+      "translations": {
+        "en": "Do you speak English?",
+        "hi": "क्या आप अंग्रेज़ी बोलते हैं?",
+        "te": "మీరు ఇంగ్లీష్ మాట్లాడతారా?",
+        "ta": "நீங்கள் ஆங்கிலம் பேசுவீர்களா?",
+        "kn": "ನೀವು ಇಂಗ್ಲಿಷ್ ಮಾತನಾಡುತ್ತೀರಾ?",
+        "mr": "तुम्ही इंग्रजी बोलता का?",
+        "bn": "আপনি কি ইংরেজি বলেন?",
+        "pa": "ਕੀ ਤੁਸੀਂ ਅੰਗਰੇਜ਼ੀ ਬੋਲਦੇ ਹੋ?",
+        "ja": "英語を話せますか？",
+        "fr": "Parlez-vous anglais?",
+        "es": "¿Habla inglés?",
+        "de": "Sprechen Sie Englisch?"
+      },
+      "romanizations": {
+        "hi": "Kya aap angrezi bolte hain?",
+        "te": "Meeru English maatladuthaaraa?",
+        "ta": "Neengal Aangilam pesuveerkalaa?",
+        "kn": "Neevu English maatanaaduttiraa?",
+        "mr": "Tumhi English bolta ka?",
+        "bn": "Apni ki English bolen?",
+        "pa": "Ki tusin angrezi bolde ho?",
+        "ja": "Eigo wo hanasemasu ka?"
+      }
+    },
+
+    {
+      "id": "emerg_help",
+      "category": "emergency",
+      "tags": ["urgent", "essential"],
+      "translations": {
+        "en": "I need help!",
+        "hi": "मुझे मदद चाहिए!",
+        "te": "నాకు సహాయం కావాలి!",
+        "ta": "எனக்கு உதவி வேண்டும்!",
+        "kn": "ನನಗೆ ಸಹಾಯ ಬೇಕು!",
+        "mr": "मला मदत हवी आहे!",
+        "bn": "আমার সাহায্য দরকার!",
+        "pa": "ਮੈਨੂੰ ਮਦਦ ਚਾਹੀਦੀ ਹੈ!",
+        "ja": "助けてください！",
+        "fr": "J'ai besoin d'aide !",
+        "es": "¡Necesito ayuda!",
+        "de": "Ich brauche Hilfe!"
+      },
+      "romanizations": {
+        "hi": "Mujhe madad chahiye!",
+        "te": "Naaku sahaayam kaavaali!",
+        "ta": "Enakku udhavi vendum!",
+        "kn": "Nanage sahaya beku!",
+        "mr": "Mala madat havi aahe!",
+        "bn": "Amar sahajyo dorkar!",
+        "pa": "Mainu madad chaahidi hai!",
+        "ja": "Tasukete kudasai!"
+      }
+    },
+    {
+      "id": "emerg_call_police",
+      "category": "emergency",
+      "tags": ["urgent"],
+      "translations": {
+        "en": "Call the police!",
+        "hi": "पुलिस को बुलाओ!",
+        "te": "పోలీసులను పిలవండి!",
+        "ta": "காவல்துறையை அழைக்கவும்!",
+        "kn": "ಪೊಲೀಸ್ ಕರೆಯಿರಿ!",
+        "mr": "पोलिसांना बोलवा!",
+        "bn": "পুলিশ ডাকুন!",
+        "pa": "ਪੁਲਿਸ ਨੂੰ ਬੁਲਾਓ!",
+        "ja": "警察を呼んでください！",
+        "fr": "Appelez la police !",
+        "es": "¡Llame a la policía!",
+        "de": "Rufen Sie die Polizei!"
+      },
+      "romanizations": {
+        "hi": "Police ko bulao!",
+        "te": "Police-lanu pilavandi!",
+        "ta": "Kaaval-thurai-yai azhaikkavum!",
+        "kn": "Police kareyiri!",
+        "mr": "Police-na bolva!",
+        "bn": "Police daakun!",
+        "pa": "Police nu bulao!",
+        "ja": "Keisatsu wo yonde kudasai!"
+      }
+    },
+    {
+      "id": "emerg_call_ambulance",
+      "category": "emergency",
+      "tags": ["urgent", "medical"],
+      "translations": {
+        "en": "Call an ambulance!",
+        "hi": "एम्बुलेंस बुलाओ!",
+        "te": "అంబులెన్స్ పిలవండి!",
+        "ta": "ஆம்புலன்ஸ் அழையுங்கள்!",
+        "kn": "ಆಂಬುಲೆನ್ಸ್ ಕರೆಯಿರಿ!",
+        "mr": "रुग्णवाहिका बोलवा!",
+        "bn": "অ্যাম্বুলেন্স ডাকুন!",
+        "pa": "ਐਂਬੂਲੈਂਸ ਬੁਲਾਓ!",
+        "ja": "救急車を呼んでください！",
+        "fr": "Appelez une ambulance !",
+        "es": "¡Llame a una ambulancia!",
+        "de": "Rufen Sie einen Krankenwagen!"
+      },
+      "romanizations": {
+        "hi": "Ambulance bulao!",
+        "te": "Ambulance pilavandi!",
+        "ta": "Ambulance azhaiyungal!",
+        "kn": "Ambulance kareyiri!",
+        "mr": "Rugnavaahika bolva!",
+        "bn": "Ambulance daakun!",
+        "pa": "Ambulance bulao!",
+        "ja": "Kyuukyuusha wo yonde kudasai!"
+      }
+    },
+    {
+      "id": "emerg_fire",
+      "category": "emergency",
+      "tags": ["urgent"],
+      "translations": {
+        "en": "Fire!",
+        "hi": "आग!",
+        "te": "మంట!",
+        "ta": "தீ!",
+        "kn": "ಬೆಂಕಿ!",
+        "mr": "आग!",
+        "bn": "আগুন!",
+        "pa": "ਅੱਗ!",
+        "ja": "火事だ！",
+        "fr": "Au feu !",
+        "es": "¡Fuego!",
+        "de": "Feuer!"
+      },
+      "romanizations": {
+        "hi": "Aag!",
+        "te": "Manta!",
+        "ta": "Thee!",
+        "kn": "Benki!",
+        "mr": "Aag!",
+        "bn": "Agun!",
+        "pa": "Agg!",
+        "ja": "Kaji da!"
+      }
+    },
+    {
+      "id": "emerg_thief",
+      "category": "emergency",
+      "tags": ["urgent", "crime"],
+      "translations": {
+        "en": "Thief! Stop them!",
+        "hi": "चोर! रोको उन्हें!",
+        "te": "దొంగ! ఆపండి వాళ్ళని!",
+        "ta": "திருடன்! நிறுத்துங்கள்!",
+        "kn": "ಕಳ್ಳ! ತಡೆಯಿರಿ!",
+        "mr": "चोर! थांबवा!",
+        "bn": "চোর! থামান!",
+        "pa": "ਚੋਰ! ਰੋਕੋ!",
+        "ja": "泥棒！止めて！",
+        "fr": "Au voleur ! Arrêtez-le !",
+        "es": "¡Ladrón! ¡Deténganlo!",
+        "de": "Dieb! Haltet ihn!"
+      },
+      "romanizations": {
+        "hi": "Chor! Roko unhe!",
+        "te": "Donga! Aapandi vaallani!",
+        "ta": "Thirudan! Niruththungal!",
+        "kn": "Kalla! Tadeyiri!",
+        "mr": "Chor! Thaambava!",
+        "bn": "Chor! Thaman!",
+        "pa": "Chor! Roko!",
+        "ja": "Dorobou! Tomete!"
+      }
+    },
+    {
+      "id": "emerg_lost",
+      "category": "emergency",
+      "tags": ["navigation"],
+      "translations": {
+        "en": "I am lost. Can you help me?",
+        "hi": "मैं खो गया हूँ। क्या आप मदद कर सकते हैं?",
+        "te": "నేను తప్పిపోయాను. మీరు సహాయం చేయగలరా?",
+        "ta": "நான் தொலைந்துவிட்டேன். உதவ முடியுமா?",
+        "kn": "ನಾನು ಕಳೆದುಹೋಗಿದ್ದೇನೆ. ಸಹಾಯ ಮಾಡಬಹುದೇ?",
+        "mr": "मी हरवलो आहे. मदत कराल का?",
+        "bn": "আমি হারিয়ে গেছি। সাহায্য করবেন?",
+        "pa": "ਮੈਂ ਗੁਆਚ ਗਿਆ ਹਾਂ। ਮਦਦ ਕਰੋਗੇ?",
+        "ja": "道に迷いました。助けてもらえますか？",
+        "fr": "Je suis perdu(e). Pouvez-vous m'aider ?",
+        "es": "Estoy perdido/a. ¿Puede ayudarme?",
+        "de": "Ich habe mich verirrt. Können Sie mir helfen?"
+      },
+      "romanizations": {
+        "hi": "Main kho gaya hoon. Kya aap madad kar sakte hain?",
+        "te": "Nenu tappipoyaanu. Meeru sahaayam cheyagalara?",
+        "ta": "Naan tholaindhu-vittEn. Udhava mudiyumaa?",
+        "kn": "Naanu kaledu-hogiddene. Sahaya maadabahuda?",
+        "mr": "Mi haravalo aahe. Madat karal ka?",
+        "bn": "Ami hariye gechi. Sahajyo korben?",
+        "pa": "Main guach gaya haan. Madad karoge?",
+        "ja": "Michi ni mayoimashita. Tasukete moraemasu ka?"
+      }
+    },
+    {
+      "id": "emerg_danger",
+      "category": "emergency",
+      "tags": ["urgent", "safety"],
+      "translations": {
+        "en": "I am in danger",
+        "hi": "मैं खतरे में हूँ",
+        "te": "నేను ప్రమాదంలో ఉన్నాను",
+        "ta": "நான் ஆபத்தில் உள்ளேன்",
+        "kn": "ನಾನು ಅಪಾಯದಲ್ಲಿದ್ದೇನೆ",
+        "mr": "मी संकटात आहे",
+        "bn": "আমি বিপদে আছি",
+        "pa": "ਮੈਂ ਖ਼ਤਰੇ ਵਿੱਚ ਹਾਂ",
+        "ja": "危険な状況です",
+        "fr": "Je suis en danger",
+        "es": "Estoy en peligro",
+        "de": "Ich bin in Gefahr"
+      },
+      "romanizations": {
+        "hi": "Main khatre mein hoon",
+        "te": "Nenu pramaadamlo unnaanu",
+        "ta": "Naan aabaththil ullen",
+        "kn": "Naanu apaayadalliddene",
+        "mr": "Mi sankatat aahe",
+        "bn": "Ami bipode achhi",
+        "pa": "Main khatre vich haan",
+        "ja": "Kiken na joukyou desu"
+      }
+    },
+
+    {
+      "id": "food_menu",
+      "category": "food",
+      "tags": ["restaurant"],
+      "translations": {
+        "en": "Can I see the menu?",
+        "hi": "क्या मैं मेनू देख सकता हूँ?",
+        "te": "నేను మెనూ చూడవచ్చా?",
+        "ta": "மெனு பார்க்கலாமா?",
+        "kn": "ಮೆನು ನೋಡಬಹುದೇ?",
+        "mr": "मला मेनू पाहता येईल का?",
+        "bn": "আমি কি মেনু দেখতে পারি?",
+        "pa": "ਕੀ ਮੈਂ ਮੀਨੂ ਵੇਖ ਸਕਦਾ ਹਾਂ?",
+        "ja": "メニューを見せてください",
+        "fr": "Puis-je voir le menu ?",
+        "es": "¿Puedo ver el menú?",
+        "de": "Kann ich die Speisekarte sehen?"
+      },
+      "romanizations": {
+        "hi": "Kya main menu dekh sakta hoon?",
+        "te": "Nenu menu chudavacchaa?",
+        "ta": "Menu paarkkalaamaa?",
+        "kn": "Menu nodabahuda?",
+        "mr": "Mala menu paahta yeil ka?",
+        "bn": "Ami ki menu dekhte pari?",
+        "pa": "Ki main menu vekh sakda haan?",
+        "ja": "Menyuu wo misete kudasai"
+      }
+    },
+    {
+      "id": "food_vegetarian",
+      "category": "food",
+      "tags": ["dietary"],
+      "translations": {
+        "en": "I am vegetarian",
+        "hi": "मैं शाकाहारी हूँ",
+        "te": "నేను శాకాహారిని",
+        "ta": "நான் சைவம்",
+        "kn": "ನಾನು ಶಾಕಾಹಾರಿ",
+        "mr": "मी शाकाहारी आहे",
+        "bn": "আমি নিরামিষভোজী",
+        "pa": "ਮੈਂ ਸ਼ਾਕਾਹਾਰੀ ਹਾਂ",
+        "ja": "私はベジタリアンです",
+        "fr": "Je suis végétarien(ne)",
+        "es": "Soy vegetariano/a",
+        "de": "Ich bin Vegetarier(in)"
+      },
+      "romanizations": {
+        "hi": "Main shaakaahaari hoon",
+        "te": "Nenu shaakaaharini",
+        "ta": "Naan saivam",
+        "kn": "Naanu shaakaahaari",
+        "mr": "Mi shakahari aahe",
+        "bn": "Ami niramish-bhoji",
+        "pa": "Main shakahari haan",
+        "ja": "Watashi wa bejitarian desu"
+      }
+    },
+    {
+      "id": "food_allergy",
+      "category": "food",
+      "tags": ["dietary", "medical"],
+      "translations": {
+        "en": "I have a food allergy",
+        "hi": "मुझे खाने से एलर्जी है",
+        "te": "నాకు ఆహార అలెర్జీ ఉంది",
+        "ta": "எனக்கு உணவு ஒவ்வாமை உள்ளது",
+        "kn": "ನನಗೆ ಆಹಾರ ಅಲರ್ಜಿ ಇದೆ",
+        "mr": "मला अन्नाची ऍलर्जी आहे",
+        "bn": "আমার খাবারে অ্যালার্জি আছে",
+        "pa": "ਮੈਨੂੰ ਖਾਣੇ ਤੋਂ ਐਲਰਜੀ ਹੈ",
+        "ja": "食物アレルギーがあります",
+        "fr": "J'ai une allergie alimentaire",
+        "es": "Tengo alergia alimentaria",
+        "de": "Ich habe eine Lebensmittelallergie"
+      },
+      "romanizations": {
+        "hi": "Mujhe khaane se allergy hai",
+        "te": "Naaku aahara allergy undi",
+        "ta": "Enakku unavu ovvaamai ulladhu",
+        "kn": "Nanage aahaara allergy ide",
+        "mr": "Mala annachi allergy aahe",
+        "bn": "Amar khabare allergy achhe",
+        "pa": "Mainu khaane ton allergy hai",
+        "ja": "Shokumotsu arerugii ga arimasu"
+      }
+    },
+    {
+      "id": "food_water",
+      "category": "food",
+      "tags": ["essential"],
+      "translations": {
+        "en": "Water, please",
+        "hi": "पानी दीजिए",
+        "te": "నీళ్ళు ఇవ్వండి",
+        "ta": "தண்ணீர் கொடுங்கள்",
+        "kn": "ನೀರು ಕೊಡಿ",
+        "mr": "पाणी द्या",
+        "bn": "জল দিন",
+        "pa": "ਪਾਣੀ ਦਿਓ",
+        "ja": "お水をお願いします",
+        "fr": "De l'eau, s'il vous plaît",
+        "es": "Agua, por favor",
+        "de": "Wasser, bitte"
+      },
+      "romanizations": {
+        "hi": "Paani dijiye",
+        "te": "Neellu ivvandi",
+        "ta": "Thanneer kodungal",
+        "kn": "Neeru kodi",
+        "mr": "Paani dya",
+        "bn": "Jol din",
+        "pa": "Paani dio",
+        "ja": "Omizu wo onegai shimasu"
+      }
+    },
+    {
+      "id": "food_bill",
+      "category": "food",
+      "tags": ["restaurant"],
+      "translations": {
+        "en": "The bill, please",
+        "hi": "बिल दीजिए",
+        "te": "బిల్లు ఇవ్వండి",
+        "ta": "பில் கொடுங்கள்",
+        "kn": "ಬಿಲ್ ಕೊಡಿ",
+        "mr": "बिल द्या",
+        "bn": "বিল দিন",
+        "pa": "ਬਿੱਲ ਦਿਓ",
+        "ja": "お会計お願いします",
+        "fr": "L'addition, s'il vous plaît",
+        "es": "La cuenta, por favor",
+        "de": "Die Rechnung, bitte"
+      },
+      "romanizations": {
+        "hi": "Bill dijiye",
+        "te": "Billu ivvandi",
+        "ta": "Bill kodungal",
+        "kn": "Bill kodi",
+        "mr": "Bill dya",
+        "bn": "Bill din",
+        "pa": "Bill dio",
+        "ja": "Okaikei onegai shimasu"
+      }
+    },
+    {
+      "id": "food_delicious",
+      "category": "food",
+      "tags": ["compliment"],
+      "translations": {
+        "en": "This is delicious!",
+        "hi": "यह बहुत स्वादिष्ट है!",
+        "te": "ఇది చాలా రుచిగా ఉంది!",
+        "ta": "இது மிகவும் சுவையானது!",
+        "kn": "ಇದು ತುಂಬಾ ರುಚಿಯಾಗಿದೆ!",
+        "mr": "हे खूप चविष्ट आहे!",
+        "bn": "এটি খুব সুস্বাদু!",
+        "pa": "ਇਹ ਬਹੁਤ ਸੁਆਦੀ ਹੈ!",
+        "ja": "おいしいです！",
+        "fr": "C'est délicieux !",
+        "es": "¡Está delicioso!",
+        "de": "Das ist köstlich!"
+      },
+      "romanizations": {
+        "hi": "Yeh bahut swaadisht hai!",
+        "te": "Idi chaala ruchiga undi!",
+        "ta": "Idhu migavum suvaiyaanadhu!",
+        "kn": "Idu tumba ruchiyaagide!",
+        "mr": "He khoop chavishta aahe!",
+        "bn": "Eti khub shushwadu!",
+        "pa": "Ih bahut suaadi hai!",
+        "ja": "Oishii desu!"
+      }
+    },
+    {
+      "id": "food_not_spicy",
+      "category": "food",
+      "tags": ["dietary"],
+      "translations": {
+        "en": "Not spicy, please",
+        "hi": "तीखा मत बनाइए",
+        "te": "కారం వద్దు",
+        "ta": "காரம் வேண்டாம்",
+        "kn": "ಖಾರ ಬೇಡ",
+        "mr": "तिखट नको",
+        "bn": "ঝাল না",
+        "pa": "ਮਸਾਲੇਦਾਰ ਨਾ",
+        "ja": "辛くないでお願いします",
+        "fr": "Pas épicé, s'il vous plaît",
+        "es": "No picante, por favor",
+        "de": "Nicht scharf, bitte"
+      },
+      "romanizations": {
+        "hi": "Teekha mat banaaiye",
+        "te": "Kaaram vaddu",
+        "ta": "Kaaram vendam",
+        "kn": "Khaara beda",
+        "mr": "Tikhat nako",
+        "bn": "Jhaal na",
+        "pa": "Masaledaar na",
+        "ja": "Karakunaide onegai shimasu"
+      }
+    },
+
+    {
+      "id": "transit_station",
+      "category": "transit",
+      "tags": ["navigation"],
+      "translations": {
+        "en": "Where is the train station?",
+        "hi": "रेलवे स्टेशन कहाँ है?",
+        "te": "రైల్వే స్టేషన్ ఎక్కడ?",
+        "ta": "ரயில் நிலையம் எங்கே?",
+        "kn": "ರೈಲ್ವೆ ನಿಲ್ದಾಣ ಎಲ್ಲಿದೆ?",
+        "mr": "रेल्वे स्टेशन कुठे आहे?",
+        "bn": "ট্রেন স্টেশন কোথায়?",
+        "pa": "ਰੇਲਵੇ ਸਟੇਸ਼ਨ ਕਿੱਥੇ ਹੈ?",
+        "ja": "駅はどこですか？",
+        "fr": "Où est la gare ?",
+        "es": "¿Dónde está la estación de tren?",
+        "de": "Wo ist der Bahnhof?"
+      },
+      "romanizations": {
+        "hi": "Railway station kahaan hai?",
+        "te": "Railway station ekkada?",
+        "ta": "Rayil nilaiyam engae?",
+        "kn": "Railway nildaana ellide?",
+        "mr": "Railway station kuthe aahe?",
+        "bn": "Train station kothay?",
+        "pa": "Railway station kithe hai?",
+        "ja": "Eki wa doko desu ka?"
+      }
+    },
+    {
+      "id": "transit_taxi",
+      "category": "transit",
+      "tags": ["essential"],
+      "translations": {
+        "en": "I need a taxi",
+        "hi": "मुझे टैक्सी चाहिए",
+        "te": "నాకు టాక్సీ కావాలి",
+        "ta": "எனக்கு டாக்ஸி வேண்டும்",
+        "kn": "ನನಗೆ ಟ್ಯಾಕ್ಸಿ ಬೇಕು",
+        "mr": "मला टॅक्सी हवी आहे",
+        "bn": "আমার ট্যাক্সি দরকার",
+        "pa": "ਮੈਨੂੰ ਟੈਕਸੀ ਚਾਹੀਦੀ ਹੈ",
+        "ja": "タクシーが必要です",
+        "fr": "J'ai besoin d'un taxi",
+        "es": "Necesito un taxi",
+        "de": "Ich brauche ein Taxi"
+      },
+      "romanizations": {
+        "hi": "Mujhe taxi chahiye",
+        "te": "Naaku taxi kaavaali",
+        "ta": "Enakku taxi vendum",
+        "kn": "Nanage taxi beku",
+        "mr": "Mala taxi havi aahe",
+        "bn": "Amar taxi dorkar",
+        "pa": "Mainu taxi chaahidi hai",
+        "ja": "Takushii ga hitsuyou desu"
+      }
+    },
+    {
+      "id": "transit_take_me_to",
+      "category": "transit",
+      "tags": ["essential"],
+      "translations": {
+        "en": "Please take me to this address",
+        "hi": "कृपया मुझे इस पते पर ले जाइए",
+        "te": "దయచేసి నన్ను ఈ చిరునామాకి తీసుకువెళ్ళండి",
+        "ta": "தயவுசெய்து என்னை இந்த முகவரிக்கு அழைத்துச் செல்லுங்கள்",
+        "kn": "ದಯವಿಟ್ಟು ನನ್ನನ್ನು ಈ ವಿಳಾಸಕ್ಕೆ ಕರೆದೊಯ್ಯಿರಿ",
+        "mr": "कृपया मला या पत्त्यावर घेऊन चला",
+        "bn": "দয়া করে আমাকে এই ঠিকানায় নিয়ে যান",
+        "pa": "ਕਿਰਪਾ ਕਰਕੇ ਮੈਨੂੰ ਇਸ ਪਤੇ ਤੇ ਲੈ ਜਾਓ",
+        "ja": "この住所まで連れて行ってください",
+        "fr": "Emmenez-moi à cette adresse, s'il vous plaît",
+        "es": "Por favor, lléveme a esta dirección",
+        "de": "Bitte bringen Sie mich zu dieser Adresse"
+      },
+      "romanizations": {
+        "hi": "Kripya mujhe is pate par le jaaiye",
+        "te": "Dayachesi nannu ee chirunaamaaki teesukuvellandi",
+        "ta": "Thayavuseidhu ennai indha mugavarikku azhaiththuch sellungal",
+        "kn": "Dayavittu nannannu ee vilaasakke karedoyyiri",
+        "mr": "Krupaya mala ya pattyavar gheun chala",
+        "bn": "Doya kore amake ei thikanay niye jaan",
+        "pa": "Kirpa karke mainu is pate te lai jao",
+        "ja": "Kono juusho made tsurete itte kudasai"
+      }
+    },
+    {
+      "id": "transit_how_much",
+      "category": "transit",
+      "tags": ["essential"],
+      "translations": {
+        "en": "How much will it cost?",
+        "hi": "कितना खर्च होगा?",
+        "te": "ఎంత ఖర్చు అవుతుంది?",
+        "ta": "எவ்வளவு செலவாகும்?",
+        "kn": "ಎಷ್ಟು ಖರ್ಚಾಗುತ್ತದೆ?",
+        "mr": "किती खर्च होईल?",
+        "bn": "কত খরচ হবে?",
+        "pa": "ਕਿੰਨਾ ਖਰਚ ਆਵੇਗਾ?",
+        "ja": "いくらかかりますか？",
+        "fr": "Combien ça coûte ?",
+        "es": "¿Cuánto cuesta?",
+        "de": "Wie viel kostet das?"
+      },
+      "romanizations": {
+        "hi": "Kitna kharch hoga?",
+        "te": "Entha kharchu avutundi?",
+        "ta": "Evvalavu selavaagum?",
+        "kn": "Eshtu kharchaaguttade?",
+        "mr": "Kiti kharch hoeel?",
+        "bn": "Koto khoroch hobe?",
+        "pa": "Kinna kharach aavega?",
+        "ja": "Ikura kakarimasu ka?"
+      }
+    },
+    {
+      "id": "transit_airport",
+      "category": "transit",
+      "tags": ["navigation"],
+      "translations": {
+        "en": "How do I get to the airport?",
+        "hi": "एयरपोर्ट कैसे पहुँचें?",
+        "te": "ఎయిర్‌పోర్ట్‌కి ఎలా వెళ్ళాలి?",
+        "ta": "விமான நிலையத்திற்கு எப்படி செல்வது?",
+        "kn": "ವಿಮಾನ ನಿಲ್ದಾಣಕ್ಕೆ ಹೇಗೆ ಹೋಗಬೇಕು?",
+        "mr": "विमानतळावर कसे जायचे?",
+        "bn": "এয়ারপোর্টে কীভাবে যাব?",
+        "pa": "ਏਅਰਪੋਰਟ ਕਿਵੇਂ ਜਾਣਾ ਹੈ?",
+        "ja": "空港にはどう行きますか？",
+        "fr": "Comment aller à l'aéroport ?",
+        "es": "¿Cómo llego al aeropuerto?",
+        "de": "Wie komme ich zum Flughafen?"
+      },
+      "romanizations": {
+        "hi": "Airport kaise pahuche?",
+        "te": "Airport-ki elaa vellaali?",
+        "ta": "Vimaana nilaiyaththirku eppadi selvadhu?",
+        "kn": "Vimaana nildaanakke hege hogabeku?",
+        "mr": "Vimaantalavar kase jaayache?",
+        "bn": "Airport-e kibhabe jaabo?",
+        "pa": "Airport kiven jaana hai?",
+        "ja": "Kuukou ni wa dou ikimasu ka?"
+      }
+    },
+    {
+      "id": "transit_ticket",
+      "category": "transit",
+      "tags": ["essential"],
+      "translations": {
+        "en": "One ticket, please",
+        "hi": "एक टिकट दीजिए",
+        "te": "ఒక టికెట్ ఇవ్వండి",
+        "ta": "ஒரு டிக்கெட் கொடுங்கள்",
+        "kn": "ಒಂದು ಟಿಕೆಟ್ ಕೊಡಿ",
+        "mr": "एक तिकीट द्या",
+        "bn": "একটি টিকিট দিন",
+        "pa": "ਇੱਕ ਟਿਕਟ ਦਿਓ",
+        "ja": "切符を一枚お願いします",
+        "fr": "Un billet, s'il vous plaît",
+        "es": "Un boleto, por favor",
+        "de": "Eine Fahrkarte, bitte"
+      },
+      "romanizations": {
+        "hi": "Ek ticket dijiye",
+        "te": "Oka ticket ivvandi",
+        "ta": "Oru ticket kodungal",
+        "kn": "Ondu ticket kodi",
+        "mr": "Ek tikit dya",
+        "bn": "Ekti ticket din",
+        "pa": "Ikk ticket dio",
+        "ja": "Kippu wo ichi-mai onegai shimasu"
+      }
+    },
+
+    {
+      "id": "hotel_reservation",
+      "category": "accommodation",
+      "tags": ["check-in"],
+      "translations": {
+        "en": "I have a reservation",
+        "hi": "मेरा रिज़र्वेशन है",
+        "te": "నాకు రిజర్వేషన్ ఉంది",
+        "ta": "எனக்கு முன்பதிவு உள்ளது",
+        "kn": "ನನಗೆ ಮುಂಗಡ ಬುಕಿಂಗ್ ಇದೆ",
+        "mr": "माझे आरक्षण आहे",
+        "bn": "আমার রিজার্ভেশন আছে",
+        "pa": "ਮੇਰੀ ਰਿਜ਼ਰਵੇਸ਼ਨ ਹੈ",
+        "ja": "予約があります",
+        "fr": "J'ai une réservation",
+        "es": "Tengo una reserva",
+        "de": "Ich habe eine Reservierung"
+      },
+      "romanizations": {
+        "hi": "Mera reservation hai",
+        "te": "Naaku reservation undi",
+        "ta": "Enakku munpadivu ulladhu",
+        "kn": "Nanage mungada booking ide",
+        "mr": "Maaze aarakshan aahe",
+        "bn": "Amar reservation achhe",
+        "pa": "Meri reservation hai",
+        "ja": "Yoyaku ga arimasu"
+      }
+    },
+    {
+      "id": "hotel_checkout",
+      "category": "accommodation",
+      "tags": ["check-out"],
+      "translations": {
+        "en": "What time is checkout?",
+        "hi": "चेकआउट कितने बजे है?",
+        "te": "చెకౌట్ ఎప్పుడు?",
+        "ta": "செக்அவுட் எப்போது?",
+        "kn": "ಚೆಕ್‌ಔಟ್ ಎಷ್ಟು ಗಂಟೆಗೆ?",
+        "mr": "चेकआउट किती वाजता आहे?",
+        "bn": "চেকআউট কখন?",
+        "pa": "ਚੈਕਆਊਟ ਕਦੋਂ ਹੈ?",
+        "ja": "チェックアウトは何時ですか？",
+        "fr": "À quelle heure est le départ ?",
+        "es": "¿A qué hora es el check-out?",
+        "de": "Um wie viel Uhr ist Check-out?"
+      },
+      "romanizations": {
+        "hi": "Checkout kitne baje hai?",
+        "te": "Checkout eppudu?",
+        "ta": "Checkout eppodhu?",
+        "kn": "Checkout eshtu gantege?",
+        "mr": "Checkout kiti vaajta aahe?",
+        "bn": "Checkout kokhon?",
+        "pa": "Checkout kadon hai?",
+        "ja": "Chekkuauto wa nan-ji desu ka?"
+      }
+    },
+    {
+      "id": "hotel_wifi",
+      "category": "accommodation",
+      "tags": ["amenity"],
+      "translations": {
+        "en": "What is the WiFi password?",
+        "hi": "वाई-फाई पासवर्ड क्या है?",
+        "te": "వైఫై పాస్‌వర్డ్ ఏమిటి?",
+        "ta": "வைஃபை கடவுச்சொல் என்ன?",
+        "kn": "ವೈಫೈ ಪಾಸ್‌ವರ್ಡ್ ಏನು?",
+        "mr": "वाय-फाय पासवर्ड काय आहे?",
+        "bn": "ওয়াইফাই পাসওয়ার্ড কী?",
+        "pa": "ਵਾਈਫਾਈ ਪਾਸਵਰਡ ਕੀ ਹੈ?",
+        "ja": "WiFiのパスワードは何ですか？",
+        "fr": "Quel est le mot de passe WiFi ?",
+        "es": "¿Cuál es la contraseña del WiFi?",
+        "de": "Wie lautet das WLAN-Passwort?"
+      },
+      "romanizations": {
+        "hi": "WiFi password kya hai?",
+        "te": "WiFi password emiti?",
+        "ta": "WiFi kadavucholl enna?",
+        "kn": "WiFi password enu?",
+        "mr": "WiFi password kaay aahe?",
+        "bn": "WiFi password ki?",
+        "pa": "WiFi password ki hai?",
+        "ja": "WiFi no pasuwaado wa nan desu ka?"
+      }
+    },
+    {
+      "id": "hotel_bathroom",
+      "category": "accommodation",
+      "tags": ["essential"],
+      "translations": {
+        "en": "Where is the bathroom?",
+        "hi": "बाथरूम कहाँ है?",
+        "te": "బాత్రూమ్ ఎక్కడ?",
+        "ta": "கழிவறை எங்கே?",
+        "kn": "ಶೌಚಾಲಯ ಎಲ್ಲಿದೆ?",
+        "mr": "स्वच्छतागृह कुठे आहे?",
+        "bn": "বাথরুম কোথায়?",
+        "pa": "ਬਾਥਰੂਮ ਕਿੱਥੇ ਹੈ?",
+        "ja": "トイレはどこですか？",
+        "fr": "Où sont les toilettes ?",
+        "es": "¿Dónde está el baño?",
+        "de": "Wo ist die Toilette?"
+      },
+      "romanizations": {
+        "hi": "Bathroom kahaan hai?",
+        "te": "Bathroom ekkada?",
+        "ta": "Kazhivarai engae?",
+        "kn": "Shauchaalaya ellide?",
+        "mr": "Swacchatagruh kuthe aahe?",
+        "bn": "Bathroom kothay?",
+        "pa": "Bathroom kithe hai?",
+        "ja": "Toire wa doko desu ka?"
+      }
+    },
+    {
+      "id": "hotel_room_key",
+      "category": "accommodation",
+      "tags": ["essential"],
+      "translations": {
+        "en": "I lost my room key",
+        "hi": "मेरी कमरे की चाबी खो गई",
+        "te": "నా గది తాళం పోయింది",
+        "ta": "என் அறை சாவி தொலைந்துவிட்டது",
+        "kn": "ನನ್ನ ಕೋಣೆಯ ಬೀಗದ ಕೈ ಕಳೆದುಹೋಗಿದೆ",
+        "mr": "माझ्या खोलीची चावी हरवली",
+        "bn": "আমার রুমের চাবি হারিয়ে গেছে",
+        "pa": "ਮੇਰੀ ਕਮਰੇ ਦੀ ਚਾਬੀ ਗੁਆਚ ਗਈ",
+        "ja": "部屋の鍵をなくしました",
+        "fr": "J'ai perdu la clé de ma chambre",
+        "es": "Perdí la llave de mi habitación",
+        "de": "Ich habe meinen Zimmerschlüssel verloren"
+      },
+      "romanizations": {
+        "hi": "Meri kamre ki chaabi kho gayi",
+        "te": "Naa gadi taalam poyindi",
+        "ta": "En arai saavi tholaindhu-vittadhu",
+        "kn": "Nanna koneya beegada kai kaledu-hogide",
+        "mr": "Majhya kholichi chaavi haravali",
+        "bn": "Amar room-er chaabi hariye gechhe",
+        "pa": "Meri kamre di chaabi guach gayi",
+        "ja": "Heya no kagi wo nakushimashita"
+      }
+    },
+
+    {
+      "id": "shop_price",
+      "category": "shopping",
+      "tags": ["essential"],
+      "translations": {
+        "en": "How much is this?",
+        "hi": "यह कितने का है?",
+        "te": "ఇది ఎంత?",
+        "ta": "இது எவ்வளவு?",
+        "kn": "ಇದು ಎಷ್ಟು?",
+        "mr": "हे किती आहे?",
+        "bn": "এটির দাম কত?",
+        "pa": "ਇਹ ਕਿੰਨੇ ਦਾ ਹੈ?",
+        "ja": "これはいくらですか？",
+        "fr": "C'est combien ?",
+        "es": "¿Cuánto cuesta esto?",
+        "de": "Wie viel kostet das?"
+      },
+      "romanizations": {
+        "hi": "Yeh kitne ka hai?",
+        "te": "Idi entha?",
+        "ta": "Idhu evvalavu?",
+        "kn": "Idu eshtu?",
+        "mr": "He kiti aahe?",
+        "bn": "Etir daam koto?",
+        "pa": "Ih kinne da hai?",
+        "ja": "Kore wa ikura desu ka?"
+      }
+    },
+    {
+      "id": "shop_too_expensive",
+      "category": "shopping",
+      "tags": ["bargain"],
+      "translations": {
+        "en": "Too expensive",
+        "hi": "बहुत महंगा है",
+        "te": "చాలా ఖరీదు",
+        "ta": "மிக விலை அதிகம்",
+        "kn": "ತುಂಬಾ ದುಬಾರಿ",
+        "mr": "खूप महाग आहे",
+        "bn": "অনেক দাম",
+        "pa": "ਬਹੁਤ ਮਹਿੰਗਾ ਹੈ",
+        "ja": "高すぎます",
+        "fr": "Trop cher",
+        "es": "Demasiado caro",
+        "de": "Zu teuer"
+      },
+      "romanizations": {
+        "hi": "Bahut mehnga hai",
+        "te": "Chaala kharidu",
+        "ta": "Miga vilai adhigam",
+        "kn": "Tumba dubaari",
+        "mr": "Khoop mahaag aahe",
+        "bn": "Onek daam",
+        "pa": "Bahut mahinga hai",
+        "ja": "Takasugimasu"
+      }
+    },
+    {
+      "id": "shop_discount",
+      "category": "shopping",
+      "tags": ["bargain"],
+      "translations": {
+        "en": "Can you give a discount?",
+        "hi": "क्या आप कुछ कम कर सकते हैं?",
+        "te": "కొంచెం తగ్గించగలరా?",
+        "ta": "கொஞ்சம் குறைக்க முடியுமா?",
+        "kn": "ಸ್ವಲ್ಪ ಕಡಿಮೆ ಮಾಡಬಹುದೇ?",
+        "mr": "थोडे कमी कराल का?",
+        "bn": "একটু কম করতে পারেন?",
+        "pa": "ਥੋੜਾ ਘੱਟ ਕਰੋਗੇ?",
+        "ja": "少し安くしてもらえますか？",
+        "fr": "Pouvez-vous faire une remise ?",
+        "es": "¿Puede hacer un descuento?",
+        "de": "Können Sie einen Rabatt geben?"
+      },
+      "romanizations": {
+        "hi": "Kya aap kuch kam kar sakte hain?",
+        "te": "Konchem taggincha-galaraa?",
+        "ta": "Konjam kuraikka mudiyumaa?",
+        "kn": "Swalpa kadime maadabahuda?",
+        "mr": "Thode kami karaal ka?",
+        "bn": "Ektu kom korte paren?",
+        "pa": "Thoda ghatt karoge?",
+        "ja": "Sukoshi yasuku shite moraemasu ka?"
+      }
+    },
+    {
+      "id": "shop_card",
+      "category": "shopping",
+      "tags": ["payment"],
+      "translations": {
+        "en": "Do you accept credit cards?",
+        "hi": "क्या आप कार्ड लेते हैं?",
+        "te": "మీరు కార్డు తీసుకుంటారా?",
+        "ta": "நீங்கள் கார்டு ஏற்பீர்களா?",
+        "kn": "ನೀವು ಕಾರ್ಡ್ ತೆಗೆದುಕೊಳ್ಳುತ್ತೀರಾ?",
+        "mr": "तुम्ही कार्ड घेता का?",
+        "bn": "আপনি কি কার্ড নেন?",
+        "pa": "ਕੀ ਤੁਸੀਂ ਕਾਰਡ ਲੈਂਦੇ ਹੋ?",
+        "ja": "クレジットカードは使えますか？",
+        "fr": "Acceptez-vous les cartes de crédit ?",
+        "es": "¿Aceptan tarjetas de crédito?",
+        "de": "Akzeptieren Sie Kreditkarten?"
+      },
+      "romanizations": {
+        "hi": "Kya aap card lete hain?",
+        "te": "Meeru cardu teesukuntaaraa?",
+        "ta": "Neengal card erpeerkalaa?",
+        "kn": "Neevu card tegedukolluttiraa?",
+        "mr": "Tumhi card gheta ka?",
+        "bn": "Apni ki card nen?",
+        "pa": "Ki tusin card lainde ho?",
+        "ja": "Kurejitto kaado wa tsukaemasu ka?"
+      }
+    },
+    {
+      "id": "shop_just_looking",
+      "category": "shopping",
+      "tags": ["polite"],
+      "translations": {
+        "en": "Just looking, thanks",
+        "hi": "बस देख रहा हूँ, धन्यवाद",
+        "te": "చూస్తున్నాను, ధన్యవాదాలు",
+        "ta": "வெறுமனே பார்க்கிறேன், நன்றி",
+        "kn": "ಸುಮ್ಮನೆ ನೋಡುತ್ತಿದ್ದೇನೆ, ಧನ್ಯವಾದಗಳು",
+        "mr": "फक्त बघतोय, धन्यवाद",
+        "bn": "শুধু দেখছি, ধন্যবাদ",
+        "pa": "ਬੱਸ ਵੇਖ ਰਿਹਾ ਹਾਂ, ਧੰਨਵਾਦ",
+        "ja": "見ているだけです、ありがとう",
+        "fr": "Je regarde seulement, merci",
+        "es": "Solo estoy mirando, gracias",
+        "de": "Ich schaue nur, danke"
+      },
+      "romanizations": {
+        "hi": "Bas dekh raha hoon, dhanyavaad",
+        "te": "Choostunaanu, dhanyavaadaalu",
+        "ta": "Verumane paarkiren, nandri",
+        "kn": "Summane noduttiddene, dhanyavaadagalu",
+        "mr": "Fakt baghtoy, dhanyavaad",
+        "bn": "Shudhu dekhchhi, dhonnobad",
+        "pa": "Bas vekh riha haan, dhanvaad",
+        "ja": "Mite iru dake desu, arigatou"
+      }
+    },
+
+    {
+      "id": "med_sick",
+      "category": "medical",
+      "tags": ["urgent"],
+      "translations": {
+        "en": "I am not feeling well",
+        "hi": "मेरी तबीयत ठीक नहीं है",
+        "te": "నాకు ఒంట్లో బాగాలేదు",
+        "ta": "எனக்கு உடல்நிலை சரியில்லை",
+        "kn": "ನನಗೆ ಆರೋಗ್ಯ ಸರಿಯಿಲ್ಲ",
+        "mr": "माझी तब्येत ठीक नाही",
+        "bn": "আমার শরীর ভালো লাগছে না",
+        "pa": "ਮੇਰੀ ਤਬੀਅਤ ਠੀਕ ਨਹੀਂ ਹੈ",
+        "ja": "気分が悪いです",
+        "fr": "Je ne me sens pas bien",
+        "es": "No me siento bien",
+        "de": "Mir geht es nicht gut"
+      },
+      "romanizations": {
+        "hi": "Meri tabiyat theek nahi hai",
+        "te": "Naaku ontlo baagaaledu",
+        "ta": "Enakku udalnilai sariyillai",
+        "kn": "Nanage aarogya sariyilla",
+        "mr": "Majhi tabyet theek nahi",
+        "bn": "Amar shorir bhalo lagche na",
+        "pa": "Meri tabeeyat theek nahin hai",
+        "ja": "Kibun ga warui desu"
+      }
+    },
+    {
+      "id": "med_doctor",
+      "category": "medical",
+      "tags": ["urgent"],
+      "translations": {
+        "en": "I need a doctor",
+        "hi": "मुझे डॉक्टर चाहिए",
+        "te": "నాకు డాక్టర్ కావాలి",
+        "ta": "எனக்கு டாக்டர் வேண்டும்",
+        "kn": "ನನಗೆ ವೈದ್ಯ ಬೇಕು",
+        "mr": "मला डॉक्टर हवा आहे",
+        "bn": "আমার ডাক্তার দরকার",
+        "pa": "ਮੈਨੂੰ ਡਾਕਟਰ ਚਾਹੀਦਾ ਹੈ",
+        "ja": "医者が必要です",
+        "fr": "J'ai besoin d'un médecin",
+        "es": "Necesito un médico",
+        "de": "Ich brauche einen Arzt"
+      },
+      "romanizations": {
+        "hi": "Mujhe doctor chahiye",
+        "te": "Naaku doctor kaavaali",
+        "ta": "Enakku doctor vendum",
+        "kn": "Nanage vaidya beku",
+        "mr": "Mala doctor hava aahe",
+        "bn": "Amar doctor dorkar",
+        "pa": "Mainu doctor chaahida hai",
+        "ja": "Isha ga hitsuyou desu"
+      }
+    },
+    {
+      "id": "med_pharmacy",
+      "category": "medical",
+      "tags": ["navigation"],
+      "translations": {
+        "en": "Where is the nearest pharmacy?",
+        "hi": "नज़दीकी फार्मेसी कहाँ है?",
+        "te": "దగ్గరి మెడికల్ షాప్ ఎక్కడ?",
+        "ta": "அருகிலுள்ள மருந்தகம் எங்கே?",
+        "kn": "ಹತ್ತಿರದ ಔಷಧಿ ಅಂಗಡಿ ಎಲ್ಲಿದೆ?",
+        "mr": "जवळचे औषधालय कुठे आहे?",
+        "bn": "নিকটতম ফার্মেসি কোথায়?",
+        "pa": "ਨੇੜਲੀ ਦਵਾਈ ਦੀ ਦੁਕਾਨ ਕਿੱਥੇ ਹੈ?",
+        "ja": "近くの薬局はどこですか？",
+        "fr": "Où est la pharmacie la plus proche ?",
+        "es": "¿Dónde está la farmacia más cercana?",
+        "de": "Wo ist die nächste Apotheke?"
+      },
+      "romanizations": {
+        "hi": "Nazdeeki pharmacy kahaan hai?",
+        "te": "Daggari medical shop ekkada?",
+        "ta": "Arugil-ulla marundhagam engae?",
+        "kn": "Hattirada aushadhi angadi ellide?",
+        "mr": "Javlache aushadhalay kuthe aahe?",
+        "bn": "Niktotomo pharmacy kothay?",
+        "pa": "Nedli davayi di dukan kithe hai?",
+        "ja": "Chikaku no yakkyoku wa doko desu ka?"
+      }
+    },
+    {
+      "id": "med_pain",
+      "category": "medical",
+      "tags": ["symptom"],
+      "translations": {
+        "en": "I have pain here",
+        "hi": "यहाँ दर्द है",
+        "te": "ఇక్కడ నొప్పి",
+        "ta": "இங்கே வலி",
+        "kn": "ಇಲ್ಲಿ ನೋವು",
+        "mr": "इथे दुखत आहे",
+        "bn": "এখানে ব্যথা",
+        "pa": "ਇੱਥੇ ਦਰਦ ਹੈ",
+        "ja": "ここが痛いです",
+        "fr": "J'ai mal ici",
+        "es": "Me duele aquí",
+        "de": "Ich habe hier Schmerzen"
+      },
+      "romanizations": {
+        "hi": "Yahaan dard hai",
+        "te": "Ikkada noppi",
+        "ta": "Ingae vali",
+        "kn": "Illi novu",
+        "mr": "Ithe dukhat aahe",
+        "bn": "Ekhaane bytha",
+        "pa": "Ithe dard hai",
+        "ja": "Koko ga itai desu"
+      }
+    },
+    {
+      "id": "med_allergy",
+      "category": "medical",
+      "tags": ["symptom", "urgent"],
+      "translations": {
+        "en": "I am allergic to penicillin",
+        "hi": "मुझे पेनिसिलिन से एलर्जी है",
+        "te": "నాకు పెన్సిలిన్ అలెర్జీ ఉంది",
+        "ta": "எனக்கு பெனிசிலின் ஒவ்வாமை உள்ளது",
+        "kn": "ನನಗೆ ಪೆನಿಸಿಲಿನ್ ಅಲರ್ಜಿ ಇದೆ",
+        "mr": "मला पेनिसिलिनची ऍलर्जी आहे",
+        "bn": "আমার পেনিসিলিনে অ্যালার্জি আছে",
+        "pa": "ਮੈਨੂੰ ਪੈਨਿਸਿਲਿਨ ਤੋਂ ਐਲਰਜੀ ਹੈ",
+        "ja": "ペニシリンアレルギーがあります",
+        "fr": "Je suis allergique à la pénicilline",
+        "es": "Soy alérgico a la penicilina",
+        "de": "Ich bin allergisch gegen Penicillin"
+      },
+      "romanizations": {
+        "hi": "Mujhe penicillin se allergy hai",
+        "te": "Naaku penicillin allergy undi",
+        "ta": "Enakku penicillin ovvaamai ulladhu",
+        "kn": "Nanage penicillin allergy ide",
+        "mr": "Mala penicillin-chi allergy aahe",
+        "bn": "Amar penicillin-e allergy achhe",
+        "pa": "Mainu penicillin ton allergy hai",
+        "ja": "Penishirin arerugii ga arimasu"
+      }
+    },
+
+    {
+      "id": "dir_where",
+      "category": "directions",
+      "tags": ["essential"],
+      "translations": {
+        "en": "Where is...?",
+        "hi": "कहाँ है...?",
+        "te": "ఎక్కడ ఉంది...?",
+        "ta": "எங்கே...?",
+        "kn": "ಎಲ್ಲಿದೆ...?",
+        "mr": "कुठे आहे...?",
+        "bn": "কোথায়...?",
+        "pa": "ਕਿੱਥੇ ਹੈ...?",
+        "ja": "...はどこですか？",
+        "fr": "Où est...?",
+        "es": "¿Dónde está...?",
+        "de": "Wo ist...?"
+      },
+      "romanizations": {
+        "hi": "Kahaan hai...?",
+        "te": "Ekkada undi...?",
+        "ta": "Engae...?",
+        "kn": "Ellide...?",
+        "mr": "Kuthe aahe...?",
+        "bn": "Kothay...?",
+        "pa": "Kithe hai...?",
+        "ja": "...wa doko desu ka?"
+      }
+    },
+    {
+      "id": "dir_far",
+      "category": "directions",
+      "tags": ["essential"],
+      "translations": {
+        "en": "How far is it?",
+        "hi": "यह कितनी दूर है?",
+        "te": "ఇది ఎంత దూరం?",
+        "ta": "இது எவ்வளவு தூரம்?",
+        "kn": "ಇದು ಎಷ್ಟು ದೂರ?",
+        "mr": "हे किती लांब आहे?",
+        "bn": "এটি কত দূরে?",
+        "pa": "ਇਹ ਕਿੰਨੀ ਦੂਰ ਹੈ?",
+        "ja": "どのくらい遠いですか？",
+        "fr": "C'est à quelle distance ?",
+        "es": "¿Qué tan lejos está?",
+        "de": "Wie weit ist es?"
+      },
+      "romanizations": {
+        "hi": "Yeh kitni door hai?",
+        "te": "Idi entha dooram?",
+        "ta": "Idhu evvalavu thooram?",
+        "kn": "Idu eshtu doora?",
+        "mr": "He kiti laamb aahe?",
+        "bn": "Eti koto doore?",
+        "pa": "Ih kinni door hai?",
+        "ja": "Dono kurai tooi desu ka?"
+      }
+    },
+    {
+      "id": "dir_left_right",
+      "category": "directions",
+      "tags": ["essential"],
+      "translations": {
+        "en": "Left or right?",
+        "hi": "बाएँ या दाएँ?",
+        "te": "ఎడమ లేదా కుడి?",
+        "ta": "இடதா வலதா?",
+        "kn": "ಎಡ ಅಥವಾ ಬಲ?",
+        "mr": "डावे की उजवे?",
+        "bn": "বাম না ডান?",
+        "pa": "ਖੱਬੇ ਜਾਂ ਸੱਜੇ?",
+        "ja": "左ですか右ですか？",
+        "fr": "À gauche ou à droite ?",
+        "es": "¿Izquierda o derecha?",
+        "de": "Links oder rechts?"
+      },
+      "romanizations": {
+        "hi": "Baayein ya daayein?",
+        "te": "Edama ledha kudi?",
+        "ta": "Idadhaa valadhaa?",
+        "kn": "Eda athava bala?",
+        "mr": "Daave ki ujave?",
+        "bn": "Baam na daan?",
+        "pa": "Khabbe ja sajje?",
+        "ja": "Hidari desu ka migi desu ka?"
+      }
+    },
+    {
+      "id": "dir_straight",
+      "category": "directions",
+      "tags": ["essential"],
+      "translations": {
+        "en": "Go straight",
+        "hi": "सीधे जाइए",
+        "te": "నేరుగా వెళ్ళండి",
+        "ta": "நேராக செல்லுங்கள்",
+        "kn": "ನೇರವಾಗಿ ಹೋಗಿ",
+        "mr": "सरळ जा",
+        "bn": "সোজা যান",
+        "pa": "ਸਿੱਧੇ ਜਾਓ",
+        "ja": "まっすぐ行ってください",
+        "fr": "Allez tout droit",
+        "es": "Vaya recto",
+        "de": "Geradeaus gehen"
+      },
+      "romanizations": {
+        "hi": "Seedhe jaiye",
+        "te": "Neruga vellandi",
+        "ta": "Neraaga sellungal",
+        "kn": "Neravaagi hogi",
+        "mr": "Saral jaa",
+        "bn": "Soja jaan",
+        "pa": "Sidhe jao",
+        "ja": "Massugu itte kudasai"
+      }
+    },
+    {
+      "id": "dir_show_map",
+      "category": "directions",
+      "tags": ["essential"],
+      "translations": {
+        "en": "Can you show me on the map?",
+        "hi": "क्या आप मुझे नक्शे पर दिखा सकते हैं?",
+        "te": "మీరు మ్యాప్‌లో చూపించగలరా?",
+        "ta": "வரைபடத்தில் காட்ட முடியுமா?",
+        "kn": "ನಕ್ಷೆಯಲ್ಲಿ ತೋರಿಸಬಹುದೇ?",
+        "mr": "नकाशावर दाखवाल का?",
+        "bn": "মানচিত্রে দেখাতে পারবেন?",
+        "pa": "ਨਕਸ਼ੇ ਤੇ ਦਿਖਾ ਸਕਦੇ ਹੋ?",
+        "ja": "地図で見せてもらえますか？",
+        "fr": "Pouvez-vous me montrer sur la carte ?",
+        "es": "¿Puede mostrarme en el mapa?",
+        "de": "Können Sie es mir auf der Karte zeigen?"
+      },
+      "romanizations": {
+        "hi": "Kya aap mujhe nakshe par dikha sakte hain?",
+        "te": "Meeru map-lo choopinchagalaraa?",
+        "ta": "Varaipadaththil kaatta mudiyumaa?",
+        "kn": "Nakshe-yalli torisabahuda?",
+        "mr": "Nakashaavar daakhvaal ka?",
+        "bn": "Manchitre dekhate paarben?",
+        "pa": "Nakshe te dikha sakde ho?",
+        "ja": "Chizu de misete moraemasu ka?"
+      }
+    }
+  ],
+
+  "common_replies": [
+    {
+      "id": "reply_follow_me",
+      "category": "common_replies",
+      "translations": {
+        "en": "Follow me",
+        "hi": "मेरे पीछे आइए",
+        "te": "నా వెనక రండి",
+        "ta": "என்னை பின்தொடருங்கள்",
+        "kn": "ನನ್ನ ಹಿಂದೆ ಬನ್ನಿ",
+        "mr": "माझ्या मागे या",
+        "bn": "আমার পিছনে আসুন",
+        "pa": "ਮੇਰੇ ਪਿੱਛੇ ਆਓ",
+        "ja": "ついてきてください",
+        "fr": "Suivez-moi",
+        "es": "Sígame",
+        "de": "Folgen Sie mir"
+      },
+      "romanizations": {
+        "hi": "Mere peeche aaiye",
+        "te": "Naa venaka randi",
+        "ta": "Ennai pin-thodarungal",
+        "kn": "Nanna hinde banni",
+        "mr": "Maajhya maage yaa",
+        "bn": "Amar pichhone aashun",
+        "pa": "Mere pichhe aao",
+        "ja": "Tsuite kite kudasai"
+      }
+    },
+    {
+      "id": "reply_wait_moment",
+      "category": "common_replies",
+      "translations": {
+        "en": "Wait one moment",
+        "hi": "एक पल रुकिए",
+        "te": "ఒక్క నిమిషం",
+        "ta": "ஒரு நிமிடம்",
+        "kn": "ಒಂದು ಕ್ಷಣ",
+        "mr": "एक क्षण थांबा",
+        "bn": "এক মুহূর্ত অপেক্ষা করুন",
+        "pa": "ਇੱਕ ਪਲ ਰੁਕੋ",
+        "ja": "少々お待ちください",
+        "fr": "Un instant, s'il vous plaît",
+        "es": "Espere un momento",
+        "de": "Einen Moment bitte"
+      },
+      "romanizations": {
+        "hi": "Ek pal rukiye",
+        "te": "Okka nimisham",
+        "ta": "Oru nimidam",
+        "kn": "Ondu kshana",
+        "mr": "Ek kshan thaambaa",
+        "bn": "Ek muhurto opeksha korun",
+        "pa": "Ikk pal ruko",
+        "ja": "Shou-shou omachi kudasai"
+      }
+    },
+    {
+      "id": "reply_dont_know",
+      "category": "common_replies",
+      "translations": {
+        "en": "I don't know",
+        "hi": "मुझे नहीं पता",
+        "te": "నాకు తెలియదు",
+        "ta": "எனக்கு தெரியாது",
+        "kn": "ನನಗೆ ಗೊತ್ತಿಲ್ಲ",
+        "mr": "मला माहित नाही",
+        "bn": "আমি জানি না",
+        "pa": "ਮੈਨੂੰ ਨਹੀਂ ਪਤਾ",
+        "ja": "わかりません",
+        "fr": "Je ne sais pas",
+        "es": "No lo sé",
+        "de": "Ich weiß nicht"
+      },
+      "romanizations": {
+        "hi": "Mujhe nahi pata",
+        "te": "Naaku teliyadhu",
+        "ta": "Enakku theriyaadhu",
+        "kn": "Nanage gottilla",
+        "mr": "Mala maahit nahi",
+        "bn": "Ami jaani na",
+        "pa": "Mainu nahin pata",
+        "ja": "Wakarimasen"
+      }
+    },
+    {
+      "id": "reply_call_number",
+      "category": "common_replies",
+      "translations": {
+        "en": "Call this number",
+        "hi": "इस नंबर पर कॉल करें",
+        "te": "ఈ నంబర్‌కి కాల్ చేయండి",
+        "ta": "இந்த எண்ணை அழைக்கவும்",
+        "kn": "ಈ ನಂಬರ್‌ಗೆ ಕರೆ ಮಾಡಿ",
+        "mr": "या नंबरवर कॉल करा",
+        "bn": "এই নম্বরে কল করুন",
+        "pa": "ਇਸ ਨੰਬਰ ਤੇ ਕਾਲ ਕਰੋ",
+        "ja": "この番号に電話してください",
+        "fr": "Appelez ce numéro",
+        "es": "Llame a este número",
+        "de": "Rufen Sie diese Nummer an"
+      },
+      "romanizations": {
+        "hi": "Is number par call karein",
+        "te": "Ee number-ki call cheyandi",
+        "ta": "Indha ennai azhaikkavum",
+        "kn": "Ee number-ge kare maadi",
+        "mr": "Ya number-var call karaa",
+        "bn": "Ei number-e call korun",
+        "pa": "Is number te call karo",
+        "ja": "Kono bangou ni denwa shite kudasai"
+      }
+    },
+    {
+      "id": "reply_no_english",
+      "category": "common_replies",
+      "translations": {
+        "en": "I don't speak English",
+        "hi": "मैं अंग्रेज़ी नहीं बोलता",
+        "te": "నేను ఇంగ్లీష్ మాట్లాడలేను",
+        "ta": "எனக்கு ஆங்கிலம் தெரியாது",
+        "kn": "ನನಗೆ ಇಂಗ್ಲಿಷ್ ಬರೋದಿಲ್ಲ",
+        "mr": "मला इंग्रजी येत नाही",
+        "bn": "আমি ইংরেজি বলি না",
+        "pa": "ਮੈਨੂੰ ਅੰਗਰੇਜ਼ੀ ਨਹੀਂ ਆਉਂਦੀ",
+        "ja": "英語が話せません",
+        "fr": "Je ne parle pas anglais",
+        "es": "No hablo inglés",
+        "de": "Ich spreche kein Englisch"
+      },
+      "romanizations": {
+        "hi": "Main angrezi nahi bolta",
+        "te": "Nenu English maatlaadalenu",
+        "ta": "Enakku Aangilam theriyaadhu",
+        "kn": "Nanage English barodilla",
+        "mr": "Mala English yet nahi",
+        "bn": "Ami English boli na",
+        "pa": "Mainu angrezi nahin aaundi",
+        "ja": "Eigo ga hanasemasen"
+      }
+    }
+  ],
+
+  "context_rules": {
+    "description": "Maps detected context (from GPS/places) to recommended phrase categories",
+    "rules": [
+      { "context": "near_hospital", "categories": ["medical", "emergency"], "priority": 1 },
+      { "context": "near_pharmacy", "categories": ["medical"], "priority": 1 },
+      { "context": "near_police", "categories": ["emergency"], "priority": 1 },
+      { "context": "near_restaurant", "categories": ["food"], "priority": 2 },
+      { "context": "near_hotel", "categories": ["accommodation"], "priority": 2 },
+      { "context": "near_station", "categories": ["transit", "directions"], "priority": 2 },
+      { "context": "near_market", "categories": ["shopping"], "priority": 2 },
+      { "context": "in_risk_zone", "categories": ["emergency"], "priority": 1 },
+      { "context": "default", "categories": ["greetings", "directions"], "priority": 3 }
+    ]
+  }
+}
