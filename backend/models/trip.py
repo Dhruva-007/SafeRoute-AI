@@ -149,6 +149,17 @@ class Activity(BaseModel):
     )
 
 
+class DayWeather(BaseModel):
+    date: str = ""
+    temp_max: float = 0.0
+    temp_min: float = 0.0
+    condition: str = ""
+    condition_code: str = "unknown"
+    precipitation_mm: float = 0.0
+    precipitation_probability: int = 0
+    weather_code: int = 0
+
+
 class DayPlan(BaseModel):
     day: int = Field(..., description="Day number starting from 1")
     date: str = Field(..., description="Date in YYYY-MM-DD format")
@@ -160,6 +171,10 @@ class DayPlan(BaseModel):
         ge=0,
         le=100,
         description="Average fatigue across all activities this day",
+    )
+    weather: DayWeather | None = Field(
+        default=None,
+        description="Weather forecast for this day",
     )
 
 

@@ -54,6 +54,39 @@ TIME_FATIGUE_MULTIPLIER = {
 # Cumulative day fatigue — each activity adds to the day's running score
 DAY_ACCUMULATION_FACTOR = 0.15  # per prior activity in the same day
 
+# Weather impact on fatigue (added to score)
+WEATHER_FATIGUE_BONUS = {
+    "clear":          0,
+    "partly_cloudy":  0,
+    "cloudy":         -2,    # slightly easier
+    "fog":            +3,
+    "drizzle":        +5,
+    "rain":           +8,
+    "heavy_rain":     +15,
+    "thunderstorm":   +18,
+    "snow":           +12,
+    "unknown":        0,
+}
+
+# Heat / cold impact on fatigue (added to score)
+def _temperature_fatigue_bonus(temp_max_c: float) -> float:
+    """
+    Temperature deviation from ideal 22°C increases fatigue.
+    Heat is more punishing than cold for tourism.
+    """
+    if temp_max_c >= 38:
+        return 18
+    if temp_max_c >= 34:
+        return 12
+    if temp_max_c >= 30:
+        return 7
+    if temp_max_c >= 26:
+        return 3
+    if temp_max_c <= 5:
+        return 8
+    if temp_max_c <= 10:
+        return 4
+    return 0
 
 @dataclass
 class FatigueScore:
@@ -83,6 +116,7 @@ class FatigueService:
         self,
         activity: dict,
         prior_activities_today: int = 0,
+        weather: dict | None = None,
     ) -> FatigueScore:
         """
         Score a single activity from 0-100.
@@ -102,7 +136,8 @@ class FatigueService:
         accumulation = self._compute_accumulation(prior_activities_today)
 
         raw_score = (intensity_score + duration_score) * time_multiplier
-        final_score = raw_score + accumulation
+        weather_bonus = self._weather_bonus(weather)
+        final_score = raw_score + accumulation + weather_bonus
 
         # Clamp 5-95
         final_score = max(5, min(95, int(round(final_score))))
@@ -114,6 +149,7 @@ class FatigueService:
             "duration": round(duration_score, 2),
             "time_multiplier": round(time_multiplier, 2),
             "accumulation": round(accumulation, 2),
+            "weather": round(weather_bonus, 2),
         }
 
         return FatigueScore(
@@ -122,7 +158,7 @@ class FatigueService:
             factors=factors,
         )
 
-    def score_itinerary(self, days: list[dict]) -> list[dict]:
+    def score_itinerary(self, days: list[dict], weather_by_date: dict[str, dict] | None = None) -> list[dict]:
         """
         Score every activity across every day of an itinerary.
 
@@ -137,14 +173,19 @@ class FatigueService:
         """
         annotated_days = []
 
+        weather_by_date = weather_by_date or {}
+
         for day_obj in days:
             annotated_activities = []
             activities = day_obj.get("activities", [])
+            day_date = day_obj.get("date")
+            day_weather = weather_by_date.get(day_date)
 
             for idx, activity in enumerate(activities):
                 fatigue = self.score_activity(
                     activity=activity,
                     prior_activities_today=idx,
+                    weather=day_weather,
                 )
 
                 annotated = dict(activity)
@@ -308,6 +349,32 @@ class FatigueService:
         if 17 <= h24 < 21:
             return "evening"
         return "night"
+    
+    def _weather_bonus(self, weather: dict | None) -> float:
+        """
+        Compute fatigue bonus from weather data.
+
+        Args:
+            weather: dict with keys 'condition_code' and 'temp_max'
+
+        Returns:
+            Fatigue bonus (can be negative for pleasant weather).
+        """
+        if not weather:
+            return 0.0
+
+        code = weather.get("condition_code", "unknown")
+        temp_max = weather.get("temp_max")
+
+        bonus = WEATHER_FATIGUE_BONUS.get(code, 0)
+
+        if temp_max is not None:
+            try:
+                bonus += _temperature_fatigue_bonus(float(temp_max))
+            except (TypeError, ValueError):
+                pass
+
+        return float(bonus)
 
 
 # ---------------------------------------------------------------------------
