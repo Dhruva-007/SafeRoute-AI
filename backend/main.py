@@ -10,11 +10,18 @@ from fastapi.responses import JSONResponse
 
 from config.settings import get_settings
 from models.trip import TripPlanRequest, TripPlanResponse
+from models.user import init_user_db
 from routes.fatigue import router as fatigue_router
+from routes.sharing import router as sharing_router
+from routes.translator import router as translator_router
 from routes.trips import router as trips_router
+from routes.auth import router as auth_router
+from routes.weather import router as weather_router
 from services.fatigue import get_fatigue_service
 from services.planner import get_planner
 from services.retriever import get_retriever
+from services.translator import get_translator
+from services.weather import get_weather_service
 
 # ---------------------------------------------------------------------------
 # Logging setup
@@ -53,6 +60,21 @@ async def lifespan(app: FastAPI):
     get_fatigue_service()
     logger.info("Fatigue service ready")
 
+    # Pre-warm weather service
+    # Pre-warm weather service
+    logger.info("Pre-warming weather service...")
+    get_weather_service()
+    logger.info("Weather service ready")
+
+    # Pre-warm translator service
+    logger.info("Pre-warming translator service...")
+    get_translator()
+    logger.info("Translator service ready")
+
+    logger.info("Initialising user database...")
+    init_user_db()
+    logger.info("User database ready")
+
     logger.info("=" * 60)
 
     yield
@@ -85,9 +107,14 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 # Register sub-routers
 app.include_router(trips_router)
 app.include_router(fatigue_router)
+app.include_router(weather_router)
+app.include_router(sharing_router)
+app.include_router(translator_router)
+app.include_router(auth_router)
 
 
 # ---------------------------------------------------------------------------
