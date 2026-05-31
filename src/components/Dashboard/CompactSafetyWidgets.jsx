@@ -38,11 +38,12 @@ function TrackingMiniWidget() {
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
-      className="glass-card p-5 relative overflow-hidden border border-[#DDD3C5]"
+      className="glass-card p-5 relative overflow-hidden"
     >
+      {/* Top accent line — only visible when tracking */}
       <div
-        className={`absolute top-0 left-0 right-0 h-0.5 ${
-          isTracking ? 'bg-success/60' : 'bg-text-muted/20'
+        className={`absolute top-0 left-0 right-0 h-0.5 transition-colors ${
+          isTracking ? 'bg-success/60' : 'bg-transparent'
         }`}
       />
 
@@ -56,18 +57,12 @@ function TrackingMiniWidget() {
             }`}
           >
             <Navigation
-              className={`w-4 h-4 ${
-                isTracking ? 'text-success' : 'text-text-muted'
-              }`}
+              className={`w-4 h-4 ${isTracking ? 'text-success' : 'text-text-muted'}`}
             />
           </div>
           <div>
-            <h3 className="text-sm font-semibold text-text-primary">
-              Live Tracking
-            </h3>
-            <p className="text-xs text-text-muted">
-              {isTracking ? 'Active' : 'Inactive'}
-            </p>
+            <h3 className="text-sm font-semibold text-text-primary">Live Tracking</h3>
+            <p className="text-xs text-text-muted">{isTracking ? 'Active' : 'Inactive'}</p>
           </div>
         </div>
 
@@ -167,16 +162,14 @@ function RecentAlertsMiniWidget() {
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: 0.05 }}
-      className="glass-card p-5 border border-[#DDD3C5]"
+      className="glass-card p-5"
     >
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2.5">
           <div className="w-9 h-9 rounded-xl bg-accent-primary/10 border border-accent-primary/20 flex items-center justify-center">
             <History className="w-4 h-4 text-accent-primary" />
           </div>
-          <h3 className="text-sm font-semibold text-text-primary">
-            Recent Alerts
-          </h3>
+          <h3 className="text-sm font-semibold text-text-primary">Recent Alerts</h3>
         </div>
         <Link
           to="/profile"
@@ -272,16 +265,14 @@ function NearbyEmergencyMiniWidget() {
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: 0.1 }}
-      className="glass-card p-5 border border-[#DDD3C5]"
+      className="glass-card p-5"
     >
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2.5">
           <div className="w-9 h-9 rounded-xl bg-danger-soft border border-danger/20 flex items-center justify-center">
             <Hospital className="w-4 h-4 text-danger" />
           </div>
-          <h3 className="text-sm font-semibold text-text-primary">
-            Nearby Emergency
-          </h3>
+          <h3 className="text-sm font-semibold text-text-primary">Nearby Emergency</h3>
         </div>
         <Link
           to="/safety-map"

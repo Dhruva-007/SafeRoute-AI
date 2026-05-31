@@ -5,25 +5,22 @@ import { Activity } from 'lucide-react';
 function FatigueIndicator({ level = 'LOW', value = 25, compact = false }) {
   const config = {
     LOW: {
-      bg: 'bg-green-500/10',
-      text: 'text-green-700',
-      bar: 'bg-green-500',
-      border: 'border-green-500/30',
-      glow: 'shadow-green-500/10',
+      bg: 'bg-success-soft',
+      text: 'text-success',
+      bar: 'bg-success',
+      border: 'border-success/25',
     },
     MEDIUM: {
-      bg: 'bg-amber-500/10',
-      text: 'text-amber-700',
-      bar: 'bg-amber-500',
-      border: 'border-amber-500/30',
-      glow: 'shadow-amber-500/10',
+      bg: 'bg-warning-soft',
+      text: 'text-warning',
+      bar: 'bg-warning',
+      border: 'border-warning/25',
     },
     HIGH: {
-      bg: 'bg-red-500/10',
-      text: 'text-red-700',
-      bar: 'bg-red-500',
-      border: 'border-red-500/30',
-      glow: 'shadow-red-500/10',
+      bg: 'bg-danger-soft',
+      text: 'text-danger',
+      bar: 'bg-danger',
+      border: 'border-danger/25',
     },
   };
 
@@ -80,14 +77,14 @@ function FatigueIndicator({ level = 'LOW', value = 25, compact = false }) {
           {level}
         </motion.p>
       </AnimatePresence>
-      <div className="w-full h-2 rounded-full bg-accent-primary/10">
+      <div className="w-full h-2 rounded-full bg-white/50">
         <motion.div
-          className={`h-full rounded-full ${style.bar}/70`}
+          className={`h-full rounded-full ${style.bar}`}
           animate={{ width: `${value}%` }}
           transition={{ duration: 0.8, ease: 'easeOut' }}
         />
       </div>
-      <p className="text-xs text-text-muted mt-2">
+      <p className="text-xs text-text-secondary mt-2">
         {level === 'LOW' && "You're good to continue your journey."}
         {level === 'MEDIUM' && 'Consider taking a short break soon.'}
         {level === 'HIGH' && 'Rest is strongly recommended.'}

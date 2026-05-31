@@ -2,8 +2,8 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { ArrowUpRight, ArrowDownRight } from 'lucide-react';
 
-function StatCard({ icon: Icon, label, value, trend, delay = 0 }) {
-  const hasTrend = trend !== undefined && trend !== null;
+function StatCard({ icon: Icon, label, value, trend, delay = 0, loading = false }) {
+  const hasTrend = trend !== undefined && trend !== null && !loading;
   const isPositive = trend > 0;
 
   return (
@@ -14,7 +14,7 @@ function StatCard({ icon: Icon, label, value, trend, delay = 0 }) {
       className="glass-card p-5 sm:p-6"
     >
       <div className="flex items-start justify-between mb-3">
-        <div className="w-10 h-10 rounded-xl bg-accent-primary/10 flex items-center justify-center">
+        <div className="w-10 h-10 rounded-xl bg-accent-primary/10 border border-accent-primary/20 flex items-center justify-center">
           <Icon className="w-5 h-5 text-accent-primary" />
         </div>
         {hasTrend && (
@@ -35,7 +35,11 @@ function StatCard({ icon: Icon, label, value, trend, delay = 0 }) {
           </span>
         )}
       </div>
-      <p className="text-2xl font-bold text-text-primary mb-1">{value}</p>
+      {loading ? (
+        <div className="h-7 w-16 bg-[#EDE5DA] rounded animate-pulse mb-2" />
+      ) : (
+        <p className="text-2xl font-bold text-text-primary mb-1">{value}</p>
+      )}
       <p className="text-sm text-text-secondary">{label}</p>
     </motion.div>
   );
