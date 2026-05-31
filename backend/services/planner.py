@@ -17,6 +17,7 @@ from models.trip import (
 )
 from services.fatigue import get_fatigue_service
 from services.retriever import RetrievedDocument, get_retriever
+from services.weather import get_weather_service
 
 logger = logging.getLogger(__name__)
 
@@ -35,6 +36,7 @@ class PlannerService:
         self._settings = get_settings()
         self._retriever = get_retriever()
         self._fatigue = get_fatigue_service()
+        self._weather = get_weather_service()
         logger.info("PlannerService initialised")
         logger.info("Primary provider : Groq (%s)", self._settings.groq_model)
         logger.info(
@@ -66,8 +68,8 @@ class PlannerService:
         # Step 3: Call LLM with provider fallback
         raw_response = await self._call_llm_with_fallback(prompt)
 
-        # Step 4: Parse response into structured output
-        itinerary = self._parse_response(raw_response, request)
+        # Step 4: Parse response into structured output (async — fetches weather)
+        itinerary = await self._parse_response(raw_response, request)
 
         logger.info(
             "Trip planned successfully | days=%d | activities_total=%d",
@@ -390,7 +392,7 @@ Return ONLY the JSON object."""
     # Step 4 — Response Parsing
     # ------------------------------------------------------------------
 
-    def _parse_response(
+    async def _parse_response(
         self,
         raw_response: str,
         request: TripPlanRequest,
@@ -453,11 +455,23 @@ Return ONLY the JSON object."""
                 "No valid days could be parsed from LLM response"
             )
 
-        # Apply fatigue scoring to every activity
-        days_as_dicts = [d.model_dump() for d in days]
-        scored_days = self._fatigue.score_itinerary(days_as_dicts)
+        # Fetch weather forecast for the trip range
+        weather_by_date = await self._fetch_weather_for_trip(request)
+
+        # Attach weather to each day and apply fatigue scoring with weather context
+        days_as_dicts = []
+        for d in days:
+            day_dict = d.model_dump()
+            day_dict["weather"] = weather_by_date.get(d.date)
+            days_as_dicts.append(day_dict)
+
+        scored_days = self._fatigue.score_itinerary(
+            days_as_dicts,
+            weather_by_date=weather_by_date,
+        )
 
         scored_day_objs = [DayPlan(**d) for d in scored_days]
+
 
         return TripPlanResponse(
             summary=str(data.get("summary", "")).strip(),
@@ -507,6 +521,168 @@ Return ONLY the JSON object."""
             return json.loads(text[start : end + 1])
         except json.JSONDecodeError:
             return None
+        
+    async def _fetch_weather_for_trip(
+        self, request: TripPlanRequest
+    ) -> dict[str, dict]:
+        """
+        Fetch weather forecast for the entire trip date range.
+        Returns a dict mapping YYYY-MM-DD → weather dict.
+        Falls back to empty dict on any failure (non-fatal).
+        """
+        try:
+            forecasts = await self._weather.get_forecast(
+                city=request.destination,
+                start_date=str(request.start_date),
+                end_date=str(request.end_date),
+            )
+            mapping = {f.date: f.__dict__ for f in forecasts}
+            logger.info(
+                "Weather fetched for %d days of trip", len(mapping)
+            )
+            return mapping
+        except Exception as exc:
+            logger.warning(
+                "Weather fetch failed (non-fatal): %s", exc
+            )
+            return {}
+        
+    async def regenerate_day(
+        self,
+        existing_trip_dict: dict,
+        day_number: int,
+    ) -> list[dict]:
+        """
+        Regenerate activities for a single day of an existing trip
+        while keeping other days intact.
+
+        Args:
+            existing_trip_dict: dict form of SavedTrip
+            day_number:         day to regenerate (1-indexed)
+
+        Returns:
+            List of new activity dicts for that day.
+        """
+        from datetime import date as _date
+
+        # Find target day
+        target_day = None
+        for d in existing_trip_dict.get("days", []):
+            if d.get("day") == day_number:
+                target_day = d
+                break
+
+        if target_day is None:
+            raise ValueError(f"Day {day_number} not found in trip")
+
+        target_date = target_day.get("date", "")
+
+        # Build a list of all already-used place names across other days
+        used_places: list[str] = []
+        for d in existing_trip_dict.get("days", []):
+            if d.get("day") == day_number:
+                continue
+            for act in d.get("activities", []):
+                place = act.get("place", "").strip()
+                if place:
+                    used_places.append(place)
+
+        # Fetch RAG context for the trip's interests
+        interests = existing_trip_dict.get("interests", [])
+        budget = existing_trip_dict.get("budget_level", "mid-range")
+
+        documents = self._retriever.retrieve_multi_query(
+            interests=interests,
+            budget=budget,
+            n_per_query=4,
+        )
+
+        # Build a focused regeneration prompt
+        context_block = self._format_context_block(documents)
+        used_block = (
+            ", ".join(f'"{p}"' for p in used_places[:30])
+            if used_places else "(none)"
+        )
+
+        prompt = f"""You are an expert Hyderabad travel planner.
+Regenerate ONLY day {day_number} ({target_date}) of an existing trip.
+Use ONLY places from CONTEXT below. Do NOT repeat any places that are already used on other days.
+
+=== CONTEXT ===
+{context_block}
+
+=== ALREADY USED ON OTHER DAYS (avoid these) ===
+{used_block}
+
+=== TRIP PARAMETERS ===
+Destination: Hyderabad, India
+Day Number: {day_number}
+Date: {target_date}
+Budget: {budget}
+Interests: {', '.join(interests)}
+
+=== RULES ===
+1. Plan 3-5 activities for this single day only.
+2. Schedule meals at proper times (breakfast 8am, lunch 1pm, dinner 7pm).
+3. Group nearby attractions to minimise travel.
+4. Use only places from CONTEXT.
+5. Do NOT reuse any place from the "already used" list above.
+6. Activities start no earlier than 8 AM, end no later than 10 PM.
+
+=== OUTPUT FORMAT ===
+Respond with ONLY valid JSON. No markdown. No code fences.
+
+{{
+  "activities": [
+    {{
+      "time": "9:00 AM",
+      "place": "Place name from context",
+      "description": "What to do here",
+      "estimated_cost": "₹XXX per person"
+    }}
+  ]
+}}
+
+Return ONLY the JSON object."""
+
+        logger.info(
+            "Regenerating day %d (date=%s) of trip", day_number, target_date
+        )
+
+        raw_response = await self._call_llm_with_fallback(prompt)
+
+        # Parse activities
+        import json
+        cleaned = self._strip_markdown(raw_response)
+        try:
+            data = json.loads(cleaned)
+        except json.JSONDecodeError:
+            extracted = self._extract_json(cleaned)
+            if extracted is None:
+                raise RuntimeError(
+                    "LLM returned invalid JSON during day regeneration"
+                )
+            data = extracted
+
+        activities = data.get("activities", [])
+        if not isinstance(activities, list) or len(activities) == 0:
+            raise RuntimeError(
+                "LLM response had no activities for day regeneration"
+            )
+
+        # Clean activity dicts
+        cleaned_activities = []
+        for act in activities:
+            if not isinstance(act, dict):
+                continue
+            cleaned_activities.append({
+                "time": str(act.get("time", "TBD")).strip() or "TBD",
+                "place": str(act.get("place", "Unknown")).strip() or "Unknown",
+                "description": str(act.get("description", "")).strip(),
+                "estimated_cost": str(act.get("estimated_cost", "₹0")).strip() or "₹0",
+            })
+
+        return cleaned_activities
 
 
 # ---------------------------------------------------------------------------
