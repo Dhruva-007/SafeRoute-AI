@@ -15,6 +15,10 @@ import {
   WifiOff,
   MapPin,
   Calendar,
+  Navigation,
+  Gauge,
+  Zap,
+  Route,
 } from 'lucide-react';
 import { useFatigueMonitor } from '../hooks/useFatigueMonitor';
 import {
@@ -27,22 +31,24 @@ import {
   scoreToLevel,
 } from '../utils/fatigueStyles';
 
+// ─── Recommendations by level ─────────────────────────────────────────────────
+
 const RECOMMENDATIONS = {
   LOW: {
-    title: "You're good to continue your journey.",
+    title: "You're managing well. Maintain your current pace.",
     tips: [
-      'Keep hydrated and maintain your current pace.',
+      'Keep hydrated — aim for water every 30 minutes.',
+      'Good energy levels. Ideal time for exploring.',
       'Next recommended break in ~45 minutes.',
-      'Conditions are favorable for exploration.',
     ],
     nextBreak: 'Next break suggested in ~45 min',
   },
   MEDIUM: {
-    title: 'Consider taking a short break soon.',
+    title: 'Fatigue building. Consider slowing down.',
     tips: [
-      'Reduce walking speed by 20%.',
-      'Find a rest spot within the next 15 minutes.',
-      'Hydrate and consume a light snack.',
+      'Reduce your walking pace by about 20%.',
+      'Find a shaded rest area within the next 15 minutes.',
+      'Hydrate and have a light snack.',
     ],
     nextBreak: 'Break suggested in ~15 min',
   },
@@ -50,15 +56,42 @@ const RECOMMENDATIONS = {
     title: 'High fatigue detected. Rest is strongly recommended.',
     tips: [
       'Stop and rest for at least 20 minutes immediately.',
-      'Find shade or a cool resting area.',
-      'Rehydrate and assess before continuing.',
-      "Consider shortening today's itinerary.",
+      'Find shade or an air-conditioned space.',
+      'Rehydrate — drink water slowly.',
+      "Consider shortening today's remaining itinerary.",
     ],
     nextBreak: 'Immediate rest recommended',
   },
 };
 
-function FatiguePredictor({ tripId = null, days = [] }) {
+// ─── Mode badge config ────────────────────────────────────────────────────────
+
+const MODE_CONFIG = {
+  live: {
+    icon:  Navigation,
+    label: 'Live XGBoost',
+    class: 'bg-success-soft text-success border-success/25',
+  },
+  saved: {
+    icon:  Wifi,
+    label: 'Saved Trip',
+    class: 'bg-accent-primary/10 text-accent-primary border-accent-primary/25',
+  },
+  preview: {
+    icon:  WifiOff,
+    label: 'Preview',
+    class: 'bg-warning-soft text-warning border-warning/25',
+  },
+};
+
+// ─── Component ────────────────────────────────────────────────────────────────
+
+function FatiguePredictor({
+  tripId      = null,
+  days        = [],
+  groupSize   = 1,
+  temperatureC = 28.0,
+}) {
   const {
     fatigueData,
     history,
@@ -73,35 +106,34 @@ function FatiguePredictor({ tripId = null, days = [] }) {
     hasNext,
     hasPrev,
     isConnected,
+    activeMode,
+    isLiveMode,
+    sessionMetrics,
   } = useFatigueMonitor({
     tripId,
     days,
-    cooldownMs: 30000,
-    enabled: days.length > 0,
+    cooldownMs:  30_000,
+    enabled:     days.length > 0,
+    groupSize,
+    temperatureC,
   });
 
-  /* ------------------------------------------------------------------ */
-  /* Empty state                                                         */
-  /* ------------------------------------------------------------------ */
-
+  // ── Empty state ─────────────────────────────────────────────────────────
   if (!days || days.length === 0) {
     return (
       <div className="glass-card shadow-soft border border-[#DDD3C5] p-8 text-center">
         <Activity className="w-10 h-10 text-text-muted mx-auto mb-3" />
         <h3 className="text-base font-semibold text-text-primary mb-2">
-          Fatigue Predictor
+          Fatigue Monitor
         </h3>
         <p className="text-sm text-text-secondary">
-          Generate or open a trip to view live fatigue monitoring.
+          Generate or open a trip to view fatigue monitoring.
         </p>
       </div>
     );
   }
 
-  /* ------------------------------------------------------------------ */
-  /* Loading state                                                       */
-  /* ------------------------------------------------------------------ */
-
+  // ── Loading state ───────────────────────────────────────────────────────
   if (loading && !fatigueData) {
     return (
       <div className="glass-card shadow-soft border border-[#DDD3C5] p-8 text-center">
@@ -111,10 +143,7 @@ function FatiguePredictor({ tripId = null, days = [] }) {
     );
   }
 
-  /* ------------------------------------------------------------------ */
-  /* Error state                                                         */
-  /* ------------------------------------------------------------------ */
-
+  // ── Error state ─────────────────────────────────────────────────────────
   if (error && !fatigueData) {
     return (
       <div className="glass-card shadow-soft border border-[#DDD3C5] p-6">
@@ -138,22 +167,26 @@ function FatiguePredictor({ tripId = null, days = [] }) {
 
   if (!fatigueData) return null;
 
-  const level = fatigueData.level || 'LOW';
-  const score = fatigueData.score ?? 0;
-  const StatusIcon =
-    level === 'LOW'
-      ? CheckCircle
-      : level === 'MEDIUM'
-        ? AlertCircle
-        : AlertTriangle;
-  const currentRec = RECOMMENDATIONS[level];
-  const cooldownSeconds = Math.floor(cooldownMs / 1000);
-  const progressPct =
-    ((cooldownSeconds - secondsUntilRefresh) / cooldownSeconds) * 100;
+  const level        = fatigueData.level || 'LOW';
+  const score        = fatigueData.score ?? 0;
+  const confidence   = fatigueData.confidence;
+  const engine       = fatigueData.engine || 'rule-based-v1';
+  const isXGBoost    = engine === 'xgboost-v1';
+
+  const StatusIcon   =
+    level === 'LOW' ? CheckCircle : level === 'MEDIUM' ? AlertCircle : AlertTriangle;
+  const currentRec   = RECOMMENDATIONS[level];
+  const cooldownSecs = Math.floor(cooldownMs / 1000);
+  const progressPct  =
+    ((cooldownSecs - secondsUntilRefresh) / cooldownSecs) * 100;
+
+  const modeConfig = MODE_CONFIG[activeMode] || MODE_CONFIG.preview;
+  const ModeIcon   = modeConfig.icon;
 
   return (
     <div className="space-y-6">
-      {/* ---- Header ---- */}
+
+      {/* ── Header ─────────────────────────────────────────────────── */}
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-accent-primary/10 border border-accent-primary/25 flex items-center justify-center">
@@ -161,98 +194,130 @@ function FatiguePredictor({ tripId = null, days = [] }) {
           </div>
           <div>
             <h2 className="text-xl font-bold text-text-primary">
-              Fatigue Predictor
+              Fatigue Monitor
             </h2>
             <p className="text-sm text-text-secondary">
-              {isConnected
-                ? 'Live monitoring from saved trip'
-                : 'Preview from current itinerary'}
+              {isLiveMode
+                ? 'Live XGBoost prediction from GPS tracking'
+                : isConnected
+                ? 'Monitoring saved trip activity'
+                : 'Preview from itinerary'}
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          {isConnected ? (
-            <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-success-soft text-success text-xs font-medium border border-success/25">
-              <Wifi className="w-3 h-3" />
-              Connected
-            </span>
-          ) : (
-            <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-warning-soft text-warning text-xs font-medium border border-warning/25">
-              <WifiOff className="w-3 h-3" />
-              Preview
-            </span>
-          )}
-        </div>
+        {/* Mode badge */}
+        <span
+          className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium border ${modeConfig.class}`}
+        >
+          <ModeIcon className="w-3 h-3" />
+          {modeConfig.label}
+        </span>
       </div>
 
-      {/* ---- Current Activity Card ---- */}
-      <div className="glass-card shadow-soft border border-[#DDD3C5] p-5">
-        <div className="flex items-start justify-between gap-4 flex-wrap mb-4">
-          <div className="flex-1 min-w-0">
-            <p className="text-xs text-text-muted mb-1">
-              Currently Monitoring
-            </p>
-            <h3 className="text-base font-semibold text-text-primary">
-              {fatigueData.activity?.place || 'Activity'}
-            </h3>
-            <div className="flex items-center gap-3 mt-2 text-xs text-text-muted">
-              <span className="flex items-center gap-1">
-                <Calendar className="w-3 h-3" />
-                Day {fatigueData.day}
-              </span>
-              <span className="flex items-center gap-1">
-                <Clock className="w-3 h-3" />
-                {fatigueData.activity?.time || 'TBD'}
-              </span>
+      {/* ── Live Session Metrics (only in live mode) ────────────────── */}
+      {isLiveMode && sessionMetrics && (
+        <motion.div
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="glass-card border border-success/25 bg-success-soft/30 p-4"
+        >
+          <div className="flex items-center gap-2 mb-3">
+            <Navigation className="w-4 h-4 text-success" />
+            <span className="text-sm font-semibold text-success">
+              Live Session
+            </span>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <MetricTile
+              icon={Route}
+              label="Distance"
+              value={`${sessionMetrics.totalDistanceKm.toFixed(2)} km`}
+            />
+            <MetricTile
+              icon={Gauge}
+              label="Speed"
+              value={`${sessionMetrics.speedKmh.toFixed(1)} km/h`}
+            />
+            <MetricTile
+              icon={TrendingUp}
+              label="Elevation +"
+              value={`${sessionMetrics.totalElevationGain.toFixed(0)} m`}
+            />
+            <MetricTile
+              icon={Activity}
+              label="Grade"
+              value={`${sessionMetrics.grade.toFixed(1)}%`}
+            />
+          </div>
+        </motion.div>
+      )}
+
+      {/* ── Current Activity Card (non-live modes) ─────────────────── */}
+      {!isLiveMode && fatigueData.activity && (
+        <div className="glass-card shadow-soft border border-[#DDD3C5] p-5">
+          <div className="flex items-start justify-between gap-4 flex-wrap mb-4">
+            <div className="flex-1 min-w-0">
+              <p className="text-xs text-text-muted mb-1">Currently Monitoring</p>
+              <h3 className="text-base font-semibold text-text-primary">
+                {fatigueData.activity?.place || 'Activity'}
+              </h3>
+              <div className="flex items-center gap-3 mt-2 text-xs text-text-muted">
+                <span className="flex items-center gap-1">
+                  <Calendar className="w-3 h-3" />
+                  Day {fatigueData.day}
+                </span>
+                <span className="flex items-center gap-1">
+                  <Clock className="w-3 h-3" />
+                  {fatigueData.activity?.time || 'TBD'}
+                </span>
+              </div>
+            </div>
+
+            {/* Activity navigation */}
+            <div className="flex items-center gap-2">
+              <button
+                onClick={prevActivity}
+                disabled={!hasPrev}
+                className="p-2 rounded-lg border border-[#DDD3C5] hover:bg-accent-primary/5 hover:border-accent-primary/30 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                title="Previous activity"
+              >
+                <ChevronLeft className="w-4 h-4 text-text-secondary" />
+              </button>
+              <button
+                onClick={nextActivity}
+                disabled={!hasNext}
+                className="p-2 rounded-lg border border-[#DDD3C5] hover:bg-accent-primary/5 hover:border-accent-primary/30 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                title="Next activity"
+              >
+                <ChevronRight className="w-4 h-4 text-text-secondary" />
+              </button>
             </div>
           </div>
 
-          {/* Activity Navigation */}
-          <div className="flex items-center gap-2">
-            <button
-              onClick={prevActivity}
-              disabled={!hasPrev}
-              className="p-2 rounded-lg border border-[#DDD3C5] hover:bg-accent-primary/5 hover:border-accent-primary/30 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
-              title="Previous activity"
-            >
-              <ChevronLeft className="w-4 h-4 text-text-secondary" />
-            </button>
-            <button
-              onClick={nextActivity}
-              disabled={!hasNext}
-              className="p-2 rounded-lg border border-[#DDD3C5] hover:bg-accent-primary/5 hover:border-accent-primary/30 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
-              title="Next activity"
-            >
-              <ChevronRight className="w-4 h-4 text-text-secondary" />
-            </button>
-          </div>
+          {fatigueData.activity?.description && (
+            <p className="text-xs text-text-secondary leading-relaxed border-t border-[#DDD3C5] pt-3">
+              {fatigueData.activity.description}
+            </p>
+          )}
         </div>
+      )}
 
-        {fatigueData.activity?.description && (
-          <p className="text-xs text-text-secondary leading-relaxed border-t border-[#DDD3C5] pt-3">
-            {fatigueData.activity.description}
-          </p>
-        )}
-      </div>
-
-      {/* ---- Main Fatigue Result ---- */}
+      {/* ── Main Fatigue Result ─────────────────────────────────────── */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* ─── Gauge Card ─── */}
+
+        {/* ─── Gauge Card ─────────────────────────────────────────────── */}
         <motion.div
           layout
           className="glass-card shadow-soft border border-[#DDD3C5] p-6 sm:p-8 relative overflow-hidden"
         >
-          {/* Subtle glow halo at top center (replaces loud accent stripe) */}
           <div
             className={`absolute -top-px left-1/2 -translate-x-1/2 w-32 h-px ${FATIGUE_BAR[level]} opacity-40 rounded-full blur-sm`}
           />
 
           <div className="flex items-center justify-between mb-6">
             <div>
-              <p className="text-sm text-text-secondary mb-1">
-                Fatigue Level
-              </p>
+              <p className="text-sm text-text-secondary mb-1">Fatigue Level</p>
               <AnimatePresence mode="wait">
                 <motion.div
                   key={level}
@@ -262,9 +327,7 @@ function FatiguePredictor({ tripId = null, days = [] }) {
                   transition={{ duration: 0.3 }}
                   className="flex items-center gap-3"
                 >
-                  <span
-                    className={`text-3xl sm:text-4xl font-extrabold ${FATIGUE_TEXT[level]}`}
-                  >
+                  <span className={`text-3xl sm:text-4xl font-extrabold ${FATIGUE_TEXT[level]}`}>
                     {level}
                   </span>
                   <StatusIcon className={`w-6 h-6 ${FATIGUE_TEXT[level]}`} />
@@ -283,15 +346,13 @@ function FatiguePredictor({ tripId = null, days = [] }) {
                   className="text-2xl font-bold text-text-primary"
                 >
                   {score}
-                  <span className="text-sm text-text-muted font-normal">
-                    /100
-                  </span>
+                  <span className="text-sm text-text-muted font-normal">/100</span>
                 </motion.p>
               </AnimatePresence>
             </div>
           </div>
 
-          {/* Progress Bar */}
+          {/* Score bar */}
           <div className="mb-4">
             <div className="w-full h-3 rounded-full bg-accent-primary/10 overflow-hidden">
               <motion.div
@@ -307,8 +368,21 @@ function FatiguePredictor({ tripId = null, days = [] }) {
             </div>
           </div>
 
+          {/* Confidence (XGBoost only) */}
+          {isXGBoost && confidence !== null && confidence !== undefined && (
+            <div className="flex items-center justify-between mt-3 mb-1">
+              <span className="text-xs text-text-muted flex items-center gap-1.5">
+                <Zap className="w-3 h-3" />
+                Model Confidence
+              </span>
+              <span className="text-xs font-semibold text-text-primary">
+                {Math.round(confidence * 100)}%
+              </span>
+            </div>
+          )}
+
           {/* Day Average */}
-          {fatigueData.dayAverage !== undefined && (
+          {!isLiveMode && fatigueData.dayAverage !== undefined && fatigueData.dayAverage !== null && (
             <div className="mt-4 pt-4 border-t border-border-subtle flex items-center justify-between">
               <span className="text-xs text-text-muted flex items-center gap-1.5">
                 <TrendingUp className="w-3.5 h-3.5" />
@@ -320,16 +394,13 @@ function FatiguePredictor({ tripId = null, days = [] }) {
             </div>
           )}
 
-          {/* History Chart */}
+          {/* History chart */}
           {history.length > 1 && (
             <div className="mt-4 pt-4 border-t border-border-subtle">
               <div className="flex items-center justify-between mb-3">
+                <span className="text-xs text-text-muted">Recent History</span>
                 <span className="text-xs text-text-muted">
-                  Recent History
-                </span>
-                <span className="text-xs text-text-muted">
-                  {history.length} reading
-                  {history.length !== 1 ? 's' : ''}
+                  {history.length} reading{history.length !== 1 ? 's' : ''}
                 </span>
               </div>
               <div className="flex items-end gap-1 h-12">
@@ -346,21 +417,21 @@ function FatiguePredictor({ tripId = null, days = [] }) {
             </div>
           )}
 
-          {/* Live indicator + cooldown */}
+          {/* Live indicator + countdown */}
           <div className="flex items-center justify-between gap-3 mt-4 pt-4 border-t border-border-subtle">
             <div className="flex items-center gap-2">
               <div className="relative">
-                <div
-                  className={`w-2 h-2 rounded-full ${
-                    loading ? 'bg-warning' : 'bg-success'
-                  }`}
-                />
+                <div className={`w-2 h-2 rounded-full ${loading ? 'bg-warning' : 'bg-success'}`} />
                 {!loading && (
                   <div className="absolute inset-0 w-2 h-2 rounded-full bg-success animate-ping" />
                 )}
               </div>
               <span className="text-xs text-text-muted">
-                {loading ? 'Updating...' : 'Live monitoring'}
+                {loading
+                  ? 'Updating...'
+                  : isLiveMode
+                  ? 'XGBoost monitoring'
+                  : 'Rule-based monitoring'}
               </span>
             </div>
 
@@ -370,14 +441,12 @@ function FatiguePredictor({ tripId = null, days = [] }) {
               className="flex items-center gap-1.5 text-xs text-text-muted hover:text-accent-primary transition-colors disabled:opacity-50"
               title="Refresh now"
             >
-              <RefreshCw
-                className={`w-3 h-3 ${loading ? 'animate-spin' : ''}`}
-              />
+              <RefreshCw className={`w-3 h-3 ${loading ? 'animate-spin' : ''}`} />
               {secondsUntilRefresh > 0 ? `${secondsUntilRefresh}s` : 'now'}
             </button>
           </div>
 
-          {/* Cooldown progress bar */}
+          {/* Cooldown progress */}
           <div className="mt-2 w-full h-0.5 rounded-full bg-accent-primary/10 overflow-hidden">
             <motion.div
               className="h-full bg-accent-primary/40"
@@ -387,7 +456,7 @@ function FatiguePredictor({ tripId = null, days = [] }) {
           </div>
         </motion.div>
 
-        {/* ─── Recommendations Card ─── */}
+        {/* ─── Recommendations Card ──────────────────────────────────── */}
         <motion.div
           layout
           className="glass-card shadow-soft border border-[#DDD3C5] p-6 sm:p-8"
@@ -412,9 +481,7 @@ function FatiguePredictor({ tripId = null, days = [] }) {
               >
                 <div className="flex items-center gap-2 mb-2">
                   <StatusIcon className={`w-4 h-4 ${FATIGUE_TEXT[level]}`} />
-                  <span
-                    className={`text-sm font-semibold ${FATIGUE_TEXT[level]}`}
-                  >
+                  <span className={`text-sm font-semibold ${FATIGUE_TEXT[level]}`}>
                     {FATIGUE_LABEL[level]}
                   </span>
                 </div>
@@ -442,25 +509,19 @@ function FatiguePredictor({ tripId = null, days = [] }) {
                   className="flex items-start gap-3 p-3 rounded-lg bg-accent-primary/5"
                 >
                   <div className="w-5 h-5 rounded-full bg-accent-primary/15 flex items-center justify-center shrink-0 mt-0.5">
-                    <span className="text-xs font-bold text-accent-primary">
-                      {i + 1}
-                    </span>
+                    <span className="text-xs font-bold text-accent-primary">{i + 1}</span>
                   </div>
-                  <p className="text-sm text-text-secondary leading-relaxed">
-                    {tip}
-                  </p>
+                  <p className="text-sm text-text-secondary leading-relaxed">{tip}</p>
                 </motion.div>
               ))}
             </motion.div>
           </AnimatePresence>
 
-          {/* Footer info */}
+          {/* Footer */}
           <div className="mt-5 pt-4 border-t border-border-subtle space-y-2">
             <div className="flex items-center gap-2">
               <Clock className="w-4 h-4 text-text-muted" />
-              <span className="text-xs text-text-muted">
-                {currentRec.nextBreak}
-              </span>
+              <span className="text-xs text-text-muted">{currentRec.nextBreak}</span>
             </div>
             {lastUpdated && (
               <div className="flex items-center gap-2">
@@ -479,13 +540,26 @@ function FatiguePredictor({ tripId = null, days = [] }) {
         </motion.div>
       </div>
 
-      {/* ---- Engine Note ---- */}
+      {/* ── Engine note ─────────────────────────────────────────────── */}
       <div className="text-center pt-2">
         <p className="text-xs text-text-muted">
-          Fatigue Engine v1 (rule-based) ·{' '}
-          <span className="italic">XGBoost integration coming soon</span>
+          {isXGBoost
+            ? 'Powered by XGBoost · 200 trees · 13 features · Live GPS data'
+            : 'Fatigue Engine v1 (rule-based) · Planning mode'}
         </p>
       </div>
+    </div>
+  );
+}
+
+// ─── Metric tile sub-component ────────────────────────────────────────────────
+
+function MetricTile({ icon: Icon, label, value }) {
+  return (
+    <div className="rounded-xl bg-white/50 border border-success/20 p-3 text-center">
+      <Icon className="w-4 h-4 text-success mx-auto mb-1" />
+      <p className="text-sm font-bold text-text-primary">{value}</p>
+      <p className="text-xs text-text-muted">{label}</p>
     </div>
   );
 }
