@@ -1,0 +1,309 @@
+{
+  "version": 1,
+  "description": "Controlled vocabulary for SafeRoute AI Hyderabad knowledge base. All Place entries must use only terms from these lists.",
+
+  "categories": [
+    "attractions",
+    "food",
+    "culture",
+    "nature",
+    "nightlife",
+    "adventure",
+    "history",
+    "shopping",
+    "relaxation"
+  ],
+
+  "subcategories": {
+    "attractions": [
+      "fort",
+      "monument",
+      "palace",
+      "tomb",
+      "viewpoint",
+      "lake",
+      "garden",
+      "amusement_park",
+      "film_studio",
+      "zoo",
+      "religious_site"
+    ],
+    "food": [
+      "fine_dining",
+      "casual_restaurant",
+      "biryani_house",
+      "street_food",
+      "cafe",
+      "irani_chai",
+      "sweet_shop",
+      "vegetarian_restaurant",
+      "south_indian_restaurant",
+      "rooftop_restaurant",
+      "food_court"
+    ],
+    "culture": [
+      "bazaar",
+      "art_gallery",
+      "crafts_village",
+      "performing_arts_venue",
+      "heritage_walk_area",
+      "religious_complex",
+      "cultural_centre"
+    ],
+    "nature": [
+      "national_park",
+      "wildlife_sanctuary",
+      "lake",
+      "hill_station",
+      "waterfall",
+      "biodiversity_site",
+      "botanical_garden"
+    ],
+    "nightlife": [
+      "rooftop_bar",
+      "lounge",
+      "microbrewery",
+      "nightclub",
+      "live_music_venue",
+      "night_market",
+      "sound_and_light_show",
+      "evening_promenade"
+    ],
+    "adventure": [
+      "trekking_trail",
+      "rock_climbing_spot",
+      "cycling_route",
+      "water_sports",
+      "adventure_park",
+      "go_karting",
+      "boating_spot"
+    ],
+    "history": [
+      "fort",
+      "palace",
+      "tomb_complex",
+      "museum",
+      "heritage_walk",
+      "colonial_building",
+      "ancient_temple",
+      "archaeological_site"
+    ],
+    "shopping": [
+      "traditional_bazaar",
+      "pearl_market",
+      "crafts_market",
+      "wholesale_market",
+      "mall",
+      "bookstore_district",
+      "textile_emporium",
+      "exhibition_fair"
+    ],
+    "relaxation": [
+      "spa",
+      "park",
+      "lake",
+      "morning_walk_spot",
+      "hammam",
+      "hill_retreat",
+      "boat_ride"
+    ]
+  },
+
+  "interests": [
+    "culture",
+    "food",
+    "nature",
+    "nightlife",
+    "shopping",
+    "history",
+    "photography",
+    "adventure",
+    "relaxation"
+  ],
+
+  "tags": [
+    "iconic",
+    "must_visit",
+    "hidden_gem",
+    "local_favourite",
+    "tourist_friendly",
+
+    "indoor",
+    "outdoor",
+    "rooftop",
+    "underground",
+
+    "morning",
+    "afternoon",
+    "evening",
+    "night",
+    "sunset_view",
+    "sunrise_view",
+
+    "vegetarian_friendly",
+    "non_vegetarian",
+    "vegan_options",
+    "halal",
+    "jain_food",
+
+    "fine_dining",
+    "street_food",
+    "budget_friendly",
+    "premium_experience",
+
+    "heritage",
+    "qutb_shahi",
+    "nizam_era",
+    "british_era",
+    "ancient",
+    "modern",
+    "colonial",
+
+    "architecture",
+    "intricate_carvings",
+    "minarets",
+    "domes",
+    "stucco_work",
+    "tile_work",
+
+    "wildlife",
+    "birding",
+    "trekking",
+    "boating",
+    "biodiversity",
+    "monsoon_special",
+    "post_monsoon_special",
+
+    "live_music",
+    "craft_beer",
+    "cocktails",
+    "dancing",
+
+    "shopping_bangles",
+    "shopping_pearls",
+    "shopping_handicrafts",
+    "shopping_textiles",
+    "shopping_spices",
+    "shopping_books",
+
+    "biryani",
+    "haleem",
+    "kebabs",
+    "irani_chai",
+    "south_indian_breakfast",
+    "andhra_meals",
+    "hyderabadi_cuisine",
+    "street_chaat",
+
+    "wheelchair_accessible",
+    "child_friendly_play_area",
+    "senior_friendly_low_walking",
+    "group_activity_suitable",
+    "solo_safe_daytime",
+    "couple_romantic",
+
+    "old_city",
+    "hitech_city",
+    "banjara_hills",
+    "jubilee_hills",
+    "secunderabad",
+    "abids",
+
+    "photography_friendly",
+    "instagram_worthy",
+    "panoramic_views",
+
+    "religious",
+    "spiritual",
+    "meditation",
+
+    "free_entry",
+    "ticketed_entry",
+    "advance_booking",
+    "guided_tour_available",
+
+    "long_walking_required",
+    "many_steps",
+    "easy_terrain",
+
+    "high_crowd_weekends",
+    "peaceful_weekday",
+
+    "near_old_city",
+    "near_hitech_city",
+    "near_hussain_sagar",
+    "near_charminar",
+    "near_golconda",
+
+    "ramzan_special",
+    "festival_special",
+    "winter_best",
+    "summer_avoid",
+
+    "stunt_show",
+    "amusement_rides",
+    "boat_ride",
+    "horse_carriage",
+
+    "luxury_hotel",
+    "heritage_hotel",
+
+    "day_trip",
+    "weekend_getaway",
+    "overnight_stay_option"
+  ],
+
+  "neighborhoods": [
+    "Old City",
+    "Charminar Area",
+    "Patthargatti",
+    "Laad Bazaar",
+    "Shalibanda",
+    "Tolichowki",
+    "Abids",
+    "Nampally",
+    "Himayatnagar",
+    "Public Gardens",
+    "Banjara Hills",
+    "Jubilee Hills",
+    "Madhapur",
+    "Hitech City",
+    "Gachibowli",
+    "Kondapur",
+    "Kompally",
+    "Secunderabad",
+    "Begumpet",
+    "Ameerpet",
+    "Hyderguda",
+    "Santoshnagar",
+    "Ibrahim Bagh",
+    "Naubath Pahad",
+    "Necklace Road",
+    "Lumbini Park",
+    "Hussain Sagar",
+    "Durgam Cheruvu",
+    "KBR National Park",
+    "Vikarabad",
+    "Ananthagiri Hills",
+    "Medak District",
+    "Nalgonda District",
+    "Warangal",
+    "Sangareddy",
+    "Patancheru",
+    "Shamirpet",
+    "Chevella"
+  ],
+
+  "crowd_levels": ["low", "moderate", "high", "variable"],
+
+  "weather_preferences": [
+    "any",
+    "outdoor_dry",
+    "indoor",
+    "avoid_extreme_heat",
+    "best_after_rain",
+    "monsoon_special"
+  ],
+
+  "popularity_levels": ["iconic", "popular", "lesser_known", "hidden_gem"]
+}
