@@ -1,6 +1,7 @@
 import logging
 import secrets
 from functools import lru_cache
+from pathlib import Path
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import Field, field_validator
 from typing import Literal
@@ -8,9 +9,12 @@ from typing import Literal
 
 logger = logging.getLogger(__name__)
 
+# Resolve the backend root directory (where this settings.py lives → config/ → backend/)
+_BACKEND_ROOT = Path(__file__).resolve().parent.parent
+
 
 class Settings(BaseSettings):
-        # ─── Knowledge Base Version ───
+    # ─── Knowledge Base Version ───
     knowledge_base_version: Literal["v1", "v2"] = Field(
         default="v1",
         description=(
@@ -20,6 +24,7 @@ class Settings(BaseSettings):
             "Allows A/B testing and instant rollback."
         ),
     )
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
@@ -27,7 +32,7 @@ class Settings(BaseSettings):
         extra="ignore",
     )
 
-    # Groq — primary LLM
+    # ─── Groq — primary LLM ───
     groq_api_key: str = Field(..., description="Groq API key")
     groq_base_url: str = Field(
         default="https://api.groq.com/openai/v1",
@@ -38,7 +43,7 @@ class Settings(BaseSettings):
         description="Groq model identifier",
     )
 
-    # OpenRouter — fallback LLM
+    # ─── OpenRouter — fallback LLM ───
     openrouter_api_key: str = Field(..., description="OpenRouter API key")
     openrouter_base_url: str = Field(
         default="https://openrouter.ai/api/v1",
@@ -49,8 +54,7 @@ class Settings(BaseSettings):
         description="OpenRouter fallback model",
     )
 
-    # ── NEW ──────────────────────────────────────────────────────────────
-    # JWT — used to sign and verify access tokens
+    # ─── JWT ───
     jwt_secret: str = Field(
         default="",
         description=(
@@ -58,28 +62,32 @@ class Settings(BaseSettings):
             "Set JWT_SECRET in backend/.env — must be a long random string."
         ),
     )
-    # ─────────────────────────────────────────────────────────────────────
 
-    # App
+    # ─── Fatigue ML Model ───
+    fatigue_model_path: str = Field(
+        default=str(_BACKEND_ROOT / "ml_models" / "fatigue_model.json"),
+        description=(
+            "Absolute path to the XGBoost fatigue model JSON file. "
+            "Override via FATIGUE_MODEL_PATH in backend/.env if needed."
+        ),
+    )
+
+    # ─── App ───
     app_name: str = Field(default="SafeRoute AI Tour Planner")
     app_version: str = Field(default="1.0.0")
     debug: bool = Field(default=False)
 
-    # CORS
+    # ─── CORS ───
     allowed_origins: str = Field(
         default="http://localhost:5173",
         description="Comma-separated list of allowed origins",
     )
 
-    # ── NEW ──────────────────────────────────────────────────────────────
+    # ─── Validators ───
+
     @field_validator("jwt_secret", mode="after")
     @classmethod
     def ensure_jwt_secret(cls, v: str) -> str:
-        """
-        If JWT_SECRET is not set in .env, generate a random one.
-        This keeps the app running in development but prints a clear warning.
-        In production, always set JWT_SECRET explicitly.
-        """
         if not v or not v.strip():
             generated = secrets.token_hex(32)
             logger.warning(
@@ -90,7 +98,6 @@ class Settings(BaseSettings):
             )
             return generated
         return v.strip()
-    # ─────────────────────────────────────────────────────────────────────
 
     @field_validator("groq_api_key")
     @classmethod
@@ -128,9 +135,11 @@ class Settings(BaseSettings):
 def get_settings() -> Settings:
     settings = Settings()
     logger.info(
-        "Settings loaded | groq_model=%s | openrouter_model=%s | debug=%s",
+        "Settings loaded | groq_model=%s | openrouter_model=%s | debug=%s | "
+        "fatigue_model_path=%s",
         settings.groq_model,
         settings.openrouter_model,
         settings.debug,
+        settings.fatigue_model_path,
     )
     return settings
