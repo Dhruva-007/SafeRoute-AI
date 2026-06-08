@@ -1,51 +1,79 @@
+"""
+Semantic Retrieval Service for SafeRoute AI.
+
+Queries ChromaDB (populated by ingest.py from places.json)
+using sentence-transformer embeddings for semantic search.
+
+ChromaDB v0.6.0 compatible.
+"""
+
 import json
 import logging
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from services.embeddings import get_embedding_service
 
 logger = logging.getLogger(__name__)
 
-# ---------------------------------------------------------------------------
-# How many documents to retrieve per query
-# ---------------------------------------------------------------------------
 DEFAULT_N_RESULTS = 10
-MAX_N_RESULTS = 20
+MAX_N_RESULTS = 30
 
 
 @dataclass
 class RetrievedDocument:
     """
-    A single document retrieved from ChromaDB with its metadata and
-    relevance score.
+    A single document retrieved from ChromaDB.
+    Now includes the full rich metadata from places.json ingestion.
     """
-    doc_id: str
-    name: str
-    category: str
-    description: str
-    budget_level: str
+    doc_id:                     str
+    place_id:                   str
+    name:                       str
+    category:                   str
+    subcategory:                str
+    description:                str
+    budget_level:               str
     recommended_duration_hours: float
-    best_time: str
-    tags: list[str]
-    relevance_score: float  # lower cosine distance = more relevant
+    best_time:                  str
+    tags:                       list[str]
+    interests:                  list[str]
+    neighborhood:               str
+    lat:                        float
+    lon:                        float
+    indoor:                     bool
+    weather_preference:         str
+    recommendation_tier:        str
+    walking_intensity:          str
+    must_visit:                 bool
+    rating:                     float
+    nearby_place_ids:           list[str]
+    pair_well_with:             list[str]
+    highlights:                 list[str]
+    relevance_score:            float
 
 
 class RetrieverService:
     """
     Semantic retrieval service over the Hyderabad tourism ChromaDB collection.
-
-    Given a natural language query, it embeds the query using the same
-    sentence-transformers model used during ingestion, queries ChromaDB
-    for the nearest neighbours, and returns structured RetrievedDocument
-    objects ready for prompt injection.
+    Compatible with ChromaDB v0.6.0+.
     """
 
     def __init__(self) -> None:
         self._svc = get_embedding_service()
+        count = self._svc.collection_count()
         logger.info(
-            "RetrieverService initialised | collection_size=%d",
-            self._svc.collection_count(),
+            "RetrieverService initialised | collection_size=%d", count
         )
+        if count == 0:
+            logger.warning(
+                "ChromaDB collection is EMPTY. "
+                "Run: python scripts/ingest.py --rebuild"
+            )
+        elif count < 79:
+            logger.warning(
+                "ChromaDB has only %d documents, expected 79. "
+                "Run: python scripts/ingest.py --rebuild",
+                count,
+            )
 
     def retrieve(
         self,
@@ -55,15 +83,13 @@ class RetrieverService:
         filter_budget: str | None = None,
     ) -> list[RetrievedDocument]:
         """
-        Retrieve the most semantically relevant tourism documents.
+        Retrieve most semantically relevant tourism documents.
 
         Args:
             query:             Natural language query string.
             n_results:         Number of documents to return.
-            filter_categories: Optional list of categories to restrict
-                               results to e.g. ['food', 'nature'].
-            filter_budget:     Optional budget level filter:
-                               'budget', 'mid-range', or 'premium'.
+            filter_categories: Optional category filter list.
+            filter_budget:     Optional budget level filter.
 
         Returns:
             List of RetrievedDocument sorted by relevance (best first).
@@ -73,44 +99,34 @@ class RetrieverService:
 
         n_results = min(n_results, MAX_N_RESULTS)
 
-        logger.info(
-            "Retrieving | query=%r | n=%d | categories=%s | budget=%s",
-            query,
-            n_results,
-            filter_categories,
-            filter_budget,
-        )
-
-        # Build ChromaDB where filter
         where_filter = self._build_where_filter(
             filter_categories, filter_budget
         )
 
-        # Embed the query
         query_embedding = self._svc.embed_single(query)
 
-        # Query ChromaDB
         try:
-            results = self._svc.collection.query(
+            kwargs = dict(
                 query_embeddings=[query_embedding],
                 n_results=n_results,
-                where=where_filter,
                 include=["metadatas", "distances", "documents"],
             )
+            if where_filter is not None:
+                kwargs["where"] = where_filter
+
+            results = self._svc.collection.query(**kwargs)
+
         except Exception as exc:
             logger.exception(
                 "ChromaDB query failed for query=%r: %s", query, exc
             )
-            raise RuntimeError(
-                f"Retrieval failed: {str(exc)}"
-            ) from exc
+            raise RuntimeError(f"Retrieval failed: {str(exc)}") from exc
 
         documents = self._parse_results(results)
 
         logger.info(
             "Retrieved %d documents for query=%r",
-            len(documents),
-            query,
+            len(documents), query,
         )
 
         return documents
@@ -122,58 +138,31 @@ class RetrieverService:
         n_results: int = DEFAULT_N_RESULTS,
     ) -> list[RetrievedDocument]:
         """
-        Retrieve documents relevant to a user's travel interests and budget.
-
-        Builds a rich query string from the interests list and optionally
-        filters by budget level. Designed to be called by the planner
-        before itinerary generation.
-
-        Args:
-            interests:  List of interest strings e.g.
-                        ['food', 'history', 'nature'].
-            budget:     User budget string: 'budget', 'mid-range',
-                        or 'premium'.
-            n_results:  Number of documents to return.
-
-        Returns:
-            List of RetrievedDocument sorted by relevance.
+        Retrieve documents relevant to user travel interests and budget.
         """
         if not interests:
             raise ValueError("Interests list cannot be empty")
 
-        # Map user-facing interest labels to category names and
-        # query keywords for richer semantic search
         interest_query_map = {
-            "culture":      "cultural heritage arts craft tradition",
-            "food":         "restaurant food dining biryani street food",
-            "nature":       "nature park lake wildlife outdoor green",
+            "culture":      "cultural heritage arts craft tradition festival",
+            "food":         "restaurant food dining biryani street food haleem",
+            "nature":       "nature park lake wildlife outdoor green garden",
             "nightlife":    "nightlife bars evening entertainment show",
-            "shopping":     "shopping market bazaar mall craft souvenirs",
-            "history":      "history fort palace monument museum heritage",
-            "photography":  "photography scenic viewpoint architecture",
-            "adventure":    "adventure trekking outdoor sports activities",
-            "relaxation":   "relaxation spa wellness peaceful calm lake",
+            "shopping":     "shopping market bazaar mall craft souvenirs laad",
+            "history":      "history fort palace monument museum heritage qutb",
+            "photography":  "photography scenic viewpoint architecture panoramic",
+            "adventure":    "adventure trekking outdoor sports activities climbing",
+            "relaxation":   "relaxation spa wellness peaceful calm lake resort",
+            "architecture": "architecture design monument heritage building dome",
         }
 
-        # Build composite query from all interests
         query_parts = [
-            interest_query_map.get(interest.lower(), interest)
-            for interest in interests
+            interest_query_map.get(i.lower(), i)
+            for i in interests
         ]
-        composite_query = (
-            f"Hyderabad tourism: {' '.join(query_parts)}"
-        )
+        composite_query = f"Hyderabad tourism: {' '.join(query_parts)}"
 
-        # Map budget to allowed budget levels
         budget_filter = self._normalise_budget(budget)
-
-        logger.info(
-            "Interest-based retrieval | interests=%s | budget=%s | "
-            "composite_query=%r",
-            interests,
-            budget_filter,
-            composite_query,
-        )
 
         return self.retrieve(
             query=composite_query,
@@ -189,17 +178,7 @@ class RetrieverService:
     ) -> list[RetrievedDocument]:
         """
         Run one retrieval query per interest and merge results.
-
-        This ensures representation from each interest category
-        even when some interests have fewer matching documents.
-
-        Args:
-            interests:    List of interest strings.
-            budget:       User budget level.
-            n_per_query:  Documents to retrieve per interest query.
-
-        Returns:
-            Deduplicated list of RetrievedDocument sorted by relevance.
+        Ensures representation from each interest category.
         """
         if not interests:
             raise ValueError("Interests list cannot be empty")
@@ -209,8 +188,7 @@ class RetrieverService:
         all_documents: list[RetrievedDocument] = []
 
         for interest in interests:
-            query = f"Hyderabad {interest} tourism places activities"
-
+            query = f"Hyderabad {interest} tourism places activities attractions"
             try:
                 docs = self.retrieve(
                     query=query,
@@ -228,18 +206,15 @@ class RetrieverService:
                     seen_ids.add(doc.doc_id)
                     all_documents.append(doc)
 
-        # Sort merged results by relevance score ascending
         all_documents.sort(key=lambda d: d.relevance_score)
 
         logger.info(
-            "Multi-query retrieval | interests=%s | "
-            "total_unique_docs=%d",
-            interests,
-            len(all_documents),
+            "Multi-query retrieval | interests=%s | unique_docs=%d",
+            interests, len(all_documents),
         )
 
         return all_documents
-    
+
     def get_alternatives(
         self,
         place_name: str,
@@ -249,44 +224,26 @@ class RetrieverService:
     ) -> list[RetrievedDocument]:
         """
         Find alternative places similar to the given one.
-        Useful for the "swap activity" feature.
-
-        Args:
-            place_name: Current place name to find alternatives for
-            category:   Optional category to restrict alternatives to
-                        ('food', 'attractions', etc.)
-            budget:     Optional budget filter
-            n_results:  Number of alternatives to return
-
-        Returns:
-            List of RetrievedDocument excluding the original place.
+        Used by the activity swap feature.
         """
         if not place_name.strip():
             raise ValueError("place_name cannot be empty")
 
-        logger.info(
-            "Finding alternatives | place=%r | category=%s | budget=%s",
-            place_name, category, budget,
-        )
-
-        # Build query — semantic search will find similar places
         query = f"Hyderabad places similar to {place_name}"
-
         categories_list = [category] if category else None
 
         docs = self.retrieve(
             query=query,
-            n_results=n_results + 5,  # fetch extra to filter out the original
+            n_results=n_results + 5,
             filter_categories=categories_list,
             filter_budget=budget,
         )
 
-        # Filter out the original place (case-insensitive name match)
         original_lower = place_name.lower().strip()
         filtered = [
             d for d in docs
-            if d.name.lower().strip() not in original_lower
-            and original_lower not in d.name.lower().strip()
+            if original_lower not in d.name.lower()
+            and d.name.lower() not in original_lower
         ]
 
         return filtered[:n_results]
@@ -301,8 +258,8 @@ class RetrieverService:
         budget: str | None,
     ) -> dict | None:
         """
-        Build a ChromaDB where filter dict from optional category and
-        budget constraints.
+        Build ChromaDB where filter from optional constraints.
+        Returns None if no filters (avoids passing empty where dict).
         """
         conditions = []
 
@@ -311,20 +268,14 @@ class RetrieverService:
             if len(normalised) == 1:
                 conditions.append({"category": {"$eq": normalised[0]}})
             else:
-                conditions.append(
-                    {"category": {"$in": normalised}}
-                )
+                conditions.append({"category": {"$in": normalised}})
 
         if budget:
-            allowed_budgets = self._budget_to_allowed_levels(budget)
-            if len(allowed_budgets) == 1:
-                conditions.append(
-                    {"budget_level": {"$eq": allowed_budgets[0]}}
-                )
+            allowed = self._budget_to_allowed_levels(budget)
+            if len(allowed) == 1:
+                conditions.append({"budget_level": {"$eq": allowed[0]}})
             else:
-                conditions.append(
-                    {"budget_level": {"$in": allowed_budgets}}
-                )
+                conditions.append({"budget_level": {"$in": allowed}})
 
         if not conditions:
             return None
@@ -333,45 +284,32 @@ class RetrieverService:
         return {"$and": conditions}
 
     def _budget_to_allowed_levels(self, budget: str) -> list[str]:
-        """
-        Map a user budget string to allowed ChromaDB budget_level values.
-
-        Budget tiers are inclusive downward:
-          - 'budget'    → only 'budget'
-          - 'mid-range' → 'budget' and 'mid-range'
-          - 'premium'   → all levels
-        """
-        budget_lower = budget.lower().strip()
-        if budget_lower in ("budget", "low", "cheap"):
-            return ["budget"]
-        if budget_lower in ("mid-range", "mid", "medium", "moderate"):
-            return ["budget", "mid-range"]
-        if budget_lower in ("premium", "luxury", "high"):
-            return ["budget", "mid-range", "premium"]
-        # Unknown budget — allow all
-        logger.warning(
-            "Unknown budget value '%s', allowing all budget levels", budget
-        )
-        return ["budget", "mid-range", "premium"]
+        """Map user budget to allowed ChromaDB budget_level values."""
+        b = budget.lower().strip()
+        if b in ("budget", "low", "cheap"):
+            return ["free", "budget"]
+        if b in ("mid-range", "mid", "medium", "moderate"):
+            return ["free", "budget", "mid-range"]
+        if b in ("premium", "luxury", "high"):
+            return ["free", "budget", "mid-range", "premium"]
+        logger.warning("Unknown budget '%s', allowing all levels", budget)
+        return ["free", "budget", "mid-range", "premium"]
 
     def _normalise_budget(self, budget: str) -> str:
-        """
-        Normalise various budget strings to a canonical form.
-        """
-        budget_lower = budget.lower().strip()
-        if budget_lower in ("budget", "low", "cheap"):
+        """Normalise budget strings to canonical form."""
+        b = budget.lower().strip()
+        if b in ("budget", "low", "cheap"):
             return "budget"
-        if budget_lower in ("mid-range", "mid", "medium", "moderate"):
+        if b in ("mid-range", "mid", "medium", "moderate"):
             return "mid-range"
-        if budget_lower in ("premium", "luxury", "high"):
+        if b in ("premium", "luxury", "high"):
             return "premium"
         return "mid-range"
 
-    def _parse_results(
-        self, results: dict
-    ) -> list[RetrievedDocument]:
+    def _parse_results(self, results: dict) -> list[RetrievedDocument]:
         """
         Parse raw ChromaDB query results into RetrievedDocument objects.
+        Handles missing fields gracefully.
         """
         documents: list[RetrievedDocument] = []
 
@@ -385,18 +323,59 @@ class RetrieverService:
             except (json.JSONDecodeError, TypeError):
                 tags = []
 
+            try:
+                interests = json.loads(meta.get("interests", "[]"))
+            except (json.JSONDecodeError, TypeError):
+                interests = []
+
+            try:
+                nearby = json.loads(meta.get("nearby_place_ids", "[]"))
+            except (json.JSONDecodeError, TypeError):
+                nearby = []
+
+            try:
+                pairs = json.loads(meta.get("pair_well_with", "[]"))
+            except (json.JSONDecodeError, TypeError):
+                pairs = []
+
+            try:
+                highlights = json.loads(meta.get("highlights", "[]"))
+            except (json.JSONDecodeError, TypeError):
+                highlights = []
+
             documents.append(
                 RetrievedDocument(
                     doc_id=doc_id,
-                    name=meta.get("name", ""),
-                    category=meta.get("category", ""),
-                    description=meta.get("description", ""),
-                    budget_level=meta.get("budget_level", ""),
+                    place_id=str(meta.get("place_id", "")),
+                    name=str(meta.get("name", "")),
+                    category=str(meta.get("category", "")),
+                    subcategory=str(meta.get("subcategory", "")),
+                    description=str(meta.get("description", "")),
+                    budget_level=str(meta.get("budget_level", "")),
                     recommended_duration_hours=float(
                         meta.get("recommended_duration_hours", 1.0)
                     ),
-                    best_time=meta.get("best_time", ""),
+                    best_time=str(meta.get("best_time", "")),
                     tags=tags,
+                    interests=interests,
+                    neighborhood=str(meta.get("neighborhood", "")),
+                    lat=float(meta.get("lat", 0.0)),
+                    lon=float(meta.get("lon", 0.0)),
+                    indoor=bool(meta.get("indoor", False)),
+                    weather_preference=str(
+                        meta.get("weather_preference", "any")
+                    ),
+                    recommendation_tier=str(
+                        meta.get("recommendation_tier", "C")
+                    ),
+                    walking_intensity=str(
+                        meta.get("walking_intensity", "moderate")
+                    ),
+                    must_visit=bool(meta.get("must_visit", False)),
+                    rating=float(meta.get("rating", 4.0)),
+                    nearby_place_ids=nearby,
+                    pair_well_with=pairs,
+                    highlights=highlights,
                     relevance_score=float(distance),
                 )
             )
@@ -405,17 +384,14 @@ class RetrieverService:
 
 
 # ---------------------------------------------------------------------------
-# Singleton accessor
+# Singleton
 # ---------------------------------------------------------------------------
 
 _retriever_instance: RetrieverService | None = None
 
 
 def get_retriever() -> RetrieverService:
-    """
-    Returns a singleton RetrieverService instance.
-    Initialised once on first call.
-    """
+    """Returns singleton RetrieverService. Initialised once on first call."""
     global _retriever_instance
     if _retriever_instance is None:
         _retriever_instance = RetrieverService()

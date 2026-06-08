@@ -3,12 +3,23 @@ import secrets
 from functools import lru_cache
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import Field, field_validator
+from typing import Literal
 
 
 logger = logging.getLogger(__name__)
 
 
 class Settings(BaseSettings):
+        # ─── Knowledge Base Version ───
+    knowledge_base_version: Literal["v1", "v2"] = Field(
+        default="v1",
+        description=(
+            "Which knowledge base version to use for RAG. "
+            "v1 = legacy hyderabad/ directory. "
+            "v2 = enriched hyderabad_v2/places.json. "
+            "Allows A/B testing and instant rollback."
+        ),
+    )
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
