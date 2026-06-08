@@ -18,6 +18,7 @@ from routes.trips import router as trips_router
 from routes.auth import router as auth_router
 from routes.weather import router as weather_router
 from services.fatigue import get_fatigue_service
+from services.model_manager import get_model_manager
 from services.planner import get_planner
 from services.retriever import get_retriever
 from services.translator import get_translator
@@ -67,6 +68,7 @@ def _log_architecture() -> None:
     logger.info("  Weather   : Open Meteo (free, no key required)")
     logger.info("  LLM       : Groq (primary) → OpenRouter (fallback)")
     logger.info("  Vectors   : ChromaDB + Sentence Transformers")
+    logger.info("  Fatigue   : XGBoost (live tour) + Rule-based (planning)")
     logger.info("=" * 65)
 
 
@@ -91,10 +93,36 @@ async def lifespan(app: FastAPI):
     get_planner()
     logger.info("Planner ready")
 
-    # Pre-warm fatigue service
-    logger.info("Pre-warming fatigue service...")
+    # Pre-warm rule-based fatigue service (planning-time scoring)
+    logger.info("Pre-warming rule-based fatigue service...")
     get_fatigue_service()
-    logger.info("Fatigue service ready")
+    logger.info("Rule-based fatigue service ready")
+
+    # Load XGBoost fatigue model (live tour monitoring)
+    logger.info("Loading XGBoost fatigue model...")
+    model_manager = get_model_manager()
+    try:
+        model_manager.load()
+        health = model_manager.health_check()
+        logger.info(
+            "XGBoost fatigue model ready | trees=%s | test_score=%s | test_level=%s",
+            health.get("trees", "?"),
+            health.get("test_score", "?"),
+            health.get("test_level", "?"),
+        )
+    except FileNotFoundError:
+        logger.error(
+            "XGBoost fatigue model file not found at: %s\n"
+            "Live fatigue prediction will be unavailable.\n"
+            "Place fatigue_model.json in backend/ml_models/ and restart.",
+            settings.fatigue_model_path,
+        )
+    except Exception as exc:
+        logger.error(
+            "XGBoost fatigue model failed to load: %s\n"
+            "Live fatigue prediction will be unavailable.",
+            exc,
+        )
 
     # Pre-warm weather service
     logger.info("Pre-warming weather service...")
@@ -129,7 +157,8 @@ app = FastAPI(
     description=(
         "SafeRoute AI — Tour Planner backend. "
         "Provides RAG-powered itinerary generation for Hyderabad. "
-        "Weather-aware, fatigue-aware, hallucination-free."
+        "Weather-aware, fatigue-aware, hallucination-free. "
+        "XGBoost live fatigue monitoring during active tours."
     ),
     docs_url="/docs",
     redoc_url="/redoc",
@@ -214,6 +243,14 @@ async def health_planner() -> JSONResponse:
     except Exception as exc:
         checks["planner"] = f"error: {exc}"
 
+    # XGBoost fatigue model
+    try:
+        manager = get_model_manager()
+        ml_health = manager.health_check()
+        checks["xgboost_fatigue_model"] = ml_health.get("status", "unknown")
+    except Exception as exc:
+        checks["xgboost_fatigue_model"] = f"error: {exc}"
+
     all_ok = all(v == "ok" for v in checks.values())
 
     return JSONResponse(
@@ -225,6 +262,7 @@ async def health_planner() -> JSONResponse:
                 "dataset_places":           79,
                 "weather_aware":            True,
                 "fatigue_aware":            True,
+                "fatigue_ml_live":          True,
                 "validated":                True,
                 "hallucination_prevention": True,
             },
