@@ -1,3 +1,26 @@
+"""
+SafeRoute AI — FastAPI application entry point.
+
+Startup sequence (lifespan):
+  1. Log architecture summary
+  2. Pre-warm planner (recommendation engine + cluster engine + day builder)
+  3. Pre-warm rule-based fatigue service
+  4. Load XGBoost fatigue model
+  5. Pre-warm weather service
+  6. Pre-warm translator service
+  7. Pre-warm retriever + embeddings  ← Issue 5 fix: was missing entirely
+  8. Initialise user database
+
+Issue 5 fix: get_retriever() added to lifespan pre-warm sequence.
+             The embedding model now loads at startup (2–3s with offline mode)
+             instead of on the first user request (was 52s cold load).
+
+Issue 6 fix: TRANSFORMERS_OFFLINE is set inside EmbeddingService.__init__
+             before the model loads. No need to set it here at module level
+             because embeddings.py handles it before SentenceTransformer
+             resolves the model path.
+"""
+
 import logging
 import sys
 import time
@@ -39,7 +62,7 @@ logger = logging.getLogger(__name__)
 
 
 # ---------------------------------------------------------------------------
-# Phase 10 — Architecture Summary Log
+# Architecture Summary Log
 # ---------------------------------------------------------------------------
 
 def _log_architecture() -> None:
@@ -67,7 +90,7 @@ def _log_architecture() -> None:
     logger.info("Services:")
     logger.info("  Weather   : Open Meteo (free, no key required)")
     logger.info("  LLM       : Groq (primary) → OpenRouter (fallback)")
-    logger.info("  Vectors   : ChromaDB + Sentence Transformers")
+    logger.info("  Vectors   : ChromaDB + Sentence Transformers (offline mode)")
     logger.info("  Fatigue   : XGBoost (live tour) + Rule-based (planning)")
     logger.info("=" * 65)
 
@@ -85,20 +108,19 @@ async def lifespan(app: FastAPI):
     logger.info("LLM model   : %s", settings.openrouter_model)
     logger.info("CORS origins: %s", settings.get_allowed_origins())
 
-    # Phase 10: print full architecture
     _log_architecture()
 
-    # Pre-warm planner
+    # ── 1. Pre-warm planner ───────────────────────────────────────────
     logger.info("Pre-warming planner service...")
     get_planner()
     logger.info("Planner ready")
 
-    # Pre-warm rule-based fatigue service (planning-time scoring)
+    # ── 2. Pre-warm rule-based fatigue service ────────────────────────
     logger.info("Pre-warming rule-based fatigue service...")
     get_fatigue_service()
     logger.info("Rule-based fatigue service ready")
 
-    # Load XGBoost fatigue model (live tour monitoring)
+    # ── 3. Load XGBoost fatigue model ────────────────────────────────
     logger.info("Loading XGBoost fatigue model...")
     model_manager = get_model_manager()
     try:
@@ -124,20 +146,44 @@ async def lifespan(app: FastAPI):
             exc,
         )
 
-    # Pre-warm weather service
+    # ── 4. Pre-warm weather service ───────────────────────────────────
     logger.info("Pre-warming weather service...")
     get_weather_service()
     logger.info("Weather service ready")
 
-    # Pre-warm translator service
+    # ── 5. Pre-warm translator service ───────────────────────────────
     logger.info("Pre-warming translator service...")
     get_translator()
     logger.info("Translator service ready")
 
+    # ── 6. Pre-warm retriever + embeddings ───────────────────────────
+    # Issue 5 fix: this was missing, causing the first user to hit /retrieve
+    # to wait ~52s for the embedding model to load from disk.
+    # With TRANSFORMERS_OFFLINE=1 (set in embeddings.py) the model loads
+    # from local cache in ~2-3 seconds instead of contacting HuggingFace.
+    logger.info("Pre-warming retriever and embedding model...")
+    try:
+        retriever = get_retriever()
+        logger.info(
+            "Retriever ready | collection_size=%d",
+            retriever._svc.collection_count(),
+        )
+    except Exception as exc:
+        # Non-fatal: retriever failure should not prevent the planner
+        # from starting. The /retrieve endpoint will surface the error
+        # when called.
+        logger.error(
+            "Retriever pre-warm failed: %s\n"
+            "Semantic search will be unavailable until resolved.",
+            exc,
+        )
+
+    # ── 7. Initialise user database ───────────────────────────────────
     logger.info("Initialising user database...")
     init_user_db()
     logger.info("User database ready")
 
+    logger.info("Server startup complete")
     logger.info("=" * 60)
 
     yield
@@ -191,9 +237,9 @@ async def health_check() -> JSONResponse:
     """Basic liveness probe."""
     return JSONResponse(
         content={
-            "status": "ok",
-            "app": settings.app_name,
-            "version": settings.app_version,
+            "status":    "ok",
+            "app":       settings.app_name,
+            "version":   settings.app_version,
             "timestamp": int(time.time()),
         }
     )
@@ -208,34 +254,24 @@ async def health_planner() -> JSONResponse:
     """
     checks: dict[str, str] = {}
 
-    # Phase 7 — Weather Optimizer
     try:
-        from services.weather_optimizer import (
-            optimize_for_weather,
-            WeatherClass,
-        )
+        from services.weather_optimizer import optimize_for_weather, WeatherClass
         checks["weather_optimizer"] = "ok"
     except Exception as exc:
         checks["weather_optimizer"] = f"error: {exc}"
 
-    # Phase 8 — Fatigue Optimizer
     try:
-        from services.fatigue_optimizer import (
-            optimise_trip_fatigue,
-            score_activity_fatigue,
-        )
+        from services.fatigue_optimizer import optimise_trip_fatigue, score_activity_fatigue
         checks["fatigue_optimizer"] = "ok"
     except Exception as exc:
         checks["fatigue_optimizer"] = f"error: {exc}"
 
-    # Phase 9 — Trip Validator
     try:
         from services.trip_validator import validate_trip
         checks["trip_validator"] = "ok"
     except Exception as exc:
         checks["trip_validator"] = f"error: {exc}"
 
-    # Phase 10 — Planner (full pipeline)
     try:
         from services.planner import get_planner as _gp
         _gp()
@@ -243,15 +279,24 @@ async def health_planner() -> JSONResponse:
     except Exception as exc:
         checks["planner"] = f"error: {exc}"
 
-    # XGBoost fatigue model
     try:
-        manager = get_model_manager()
+        manager   = get_model_manager()
         ml_health = manager.health_check()
         checks["xgboost_fatigue_model"] = ml_health.get("status", "unknown")
     except Exception as exc:
         checks["xgboost_fatigue_model"] = f"error: {exc}"
 
-    all_ok = all(v == "ok" for v in checks.values())
+    # Issue 5 fix: include retriever in health check
+    try:
+        r = get_retriever()
+        checks["retriever"] = f"ok | docs={r._svc.collection_count()}"
+    except Exception as exc:
+        checks["retriever"] = f"error: {exc}"
+
+    all_ok = all(
+        v == "ok" or v.startswith("ok |")
+        for v in checks.values()
+    )
 
     return JSONResponse(
         content={
@@ -282,20 +327,17 @@ async def openrouter_health_check() -> JSONResponse:
     payload = {
         "model": settings.openrouter_model,
         "messages": [
-            {
-                "role": "user",
-                "content": "Reply with exactly one word: connected",
-            }
+            {"role": "user", "content": "Reply with exactly one word: connected"},
         ],
-        "max_tokens": 10,
+        "max_tokens":  10,
         "temperature": 0.0,
     }
 
     headers = {
         "Authorization": f"Bearer {settings.openrouter_api_key}",
-        "Content-Type": "application/json",
-        "HTTP-Referer": "https://saferoute.ai",
-        "X-Title": "SafeRoute AI Tour Planner",
+        "Content-Type":  "application/json",
+        "HTTP-Referer":  "https://saferoute.ai",
+        "X-Title":       "SafeRoute AI Tour Planner",
     }
 
     try:
@@ -315,9 +357,9 @@ async def openrouter_health_check() -> JSONResponse:
             raise HTTPException(
                 status_code=502,
                 detail={
-                    "error": "OpenRouter API error",
+                    "error":       "OpenRouter API error",
                     "status_code": response.status_code,
-                    "body": response.text,
+                    "body":        response.text,
                 },
             )
 
@@ -338,9 +380,7 @@ async def openrouter_health_check() -> JSONResponse:
         logger.exception("OpenRouter connectivity check timed out")
         raise HTTPException(
             status_code=504,
-            detail={
-                "error": "Request to OpenRouter timed out after 30 seconds"
-            },
+            detail={"error": "Request to OpenRouter timed out after 30 seconds"},
         )
     except httpx.RequestError as exc:
         logger.exception("Network error during OpenRouter check: %s", exc)
@@ -391,9 +431,7 @@ async def retrieve_documents(
                     "name":     doc.name,
                     "category": doc.category,
                     "budget_level": doc.budget_level,
-                    "recommended_duration_hours": (
-                        doc.recommended_duration_hours
-                    ),
+                    "recommended_duration_hours": doc.recommended_duration_hours,
                     "best_time":       doc.best_time,
                     "tags":            doc.tags,
                     "relevance_score": round(doc.relevance_score, 4),
@@ -427,21 +465,6 @@ async def retrieve_documents(
 async def plan_trip(request: TripPlanRequest) -> TripPlanResponse:
     """
     Generate a complete day-by-day travel itinerary for Hyderabad.
-
-    **How it works:**
-
-    1. Validates all input fields
-    2. Retrieves relevant Hyderabad tourism documents from ChromaDB
-       using semantic search based on your interests
-    3. Builds a contextual prompt with retrieved knowledge
-    4. Sends prompt to DeepSeek V4 Flash via OpenRouter
-    5. Parses and validates the structured JSON response
-    6. Returns a complete itinerary with activities, times, and costs
-
-    **Supported destination:** Hyderabad only.
-
-    **Interests:** culture, food, nature, nightlife, shopping,
-    history, photography, adventure, relaxation
     """
     planner = get_planner()
 
@@ -468,7 +491,7 @@ async def plan_trip(request: TripPlanRequest) -> TripPlanResponse:
             raise HTTPException(
                 status_code=429,
                 detail={
-                    "error": "The AI model is temporarily rate limited.",
+                    "error":   "The AI model is temporarily rate limited.",
                     "message": (
                         "DeepSeek V4 Flash free tier is busy. "
                         "Please wait 1-2 minutes and try again."
@@ -480,11 +503,8 @@ async def plan_trip(request: TripPlanRequest) -> TripPlanResponse:
             raise HTTPException(
                 status_code=504,
                 detail={
-                    "error": "Request timed out.",
-                    "message": (
-                        "The AI model took too long to respond. "
-                        "Please try again."
-                    ),
+                    "error":   "Request timed out.",
+                    "message": "The AI model took too long to respond. Please try again.",
                 },
             )
 
@@ -492,7 +512,7 @@ async def plan_trip(request: TripPlanRequest) -> TripPlanResponse:
             raise HTTPException(
                 status_code=502,
                 detail={
-                    "error": "AI model API error.",
+                    "error":   "AI model API error.",
                     "message": error_msg,
                 },
             )
@@ -500,7 +520,7 @@ async def plan_trip(request: TripPlanRequest) -> TripPlanResponse:
         raise HTTPException(
             status_code=500,
             detail={
-                "error": "Failed to generate itinerary.",
+                "error":   "Failed to generate itinerary.",
                 "message": error_msg,
             },
         )
@@ -510,7 +530,7 @@ async def plan_trip(request: TripPlanRequest) -> TripPlanResponse:
         raise HTTPException(
             status_code=500,
             detail={
-                "error": "An unexpected error occurred.",
+                "error":   "An unexpected error occurred.",
                 "message": str(exc),
             },
         )

@@ -1,4 +1,21 @@
+"""
+Embedding Service for SafeRoute AI.
+
+Manages the SentenceTransformer model and ChromaDB client.
+Provides a single shared instance via get_embedding_service().
+
+Fixes applied:
+  Issue 6: TRANSFORMERS_OFFLINE=1 and HF_HUB_OFFLINE=1 set before model
+           load so HuggingFace is never contacted when model is cached.
+           Reduces load time from ~52s to ~2-3s.
+  Issue 7: anonymized_telemetry=False passed to ChromaDB client to
+           suppress the Posthog version-mismatch ERROR log spam.
+"""
+
+from __future__ import annotations
+
 import logging
+import os
 from functools import lru_cache
 
 import chromadb
@@ -7,9 +24,36 @@ from sentence_transformers import SentenceTransformer
 
 logger = logging.getLogger(__name__)
 
-EMBEDDING_MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
+EMBEDDING_MODEL_NAME  = "sentence-transformers/all-MiniLM-L6-v2"
 CHROMA_COLLECTION_NAME = "hyderabad_tourism"
-CHROMA_PERSIST_DIR = "./chroma_db"
+CHROMA_PERSIST_DIR     = "./chroma_db"
+
+
+def _set_offline_mode() -> None:
+    """
+    Force HuggingFace libraries to use only the local model cache.
+
+    When the model is already downloaded, these flags prevent any
+    outbound HTTP requests to huggingface.co — eliminating the 40–50
+    second HEAD-request sequence that occurred on every cold start.
+
+    Only set if not already configured so the caller can override
+    (e.g. during initial model download or CI environments).
+    """
+    if os.environ.get("TRANSFORMERS_OFFLINE") != "0":
+        os.environ["TRANSFORMERS_OFFLINE"] = "1"
+
+    if os.environ.get("HF_DATASETS_OFFLINE") != "0":
+        os.environ["HF_DATASETS_OFFLINE"] = "1"
+
+    # HF_HUB_OFFLINE is the newer canonical flag used by huggingface_hub >= 0.14
+    if os.environ.get("HF_HUB_OFFLINE") != "0":
+        os.environ["HF_HUB_OFFLINE"] = "1"
+
+    logger.debug(
+        "HuggingFace offline mode active — "
+        "TRANSFORMERS_OFFLINE=1 HF_HUB_OFFLINE=1 HF_DATASETS_OFFLINE=1"
+    )
 
 
 class EmbeddingService:
@@ -19,11 +63,18 @@ class EmbeddingService:
     """
 
     def __init__(self) -> None:
+        # Issue 6 fix: force offline mode before SentenceTransformer import
+        # resolves the model — this must happen before the model loads,
+        # not at module import time, so it is safe to set here.
+        _set_offline_mode()
+
         logger.info("Loading embedding model: %s", EMBEDDING_MODEL_NAME)
         self._model = SentenceTransformer(EMBEDDING_MODEL_NAME)
         logger.info("Embedding model loaded successfully")
 
         logger.info("Initialising ChromaDB at: %s", CHROMA_PERSIST_DIR)
+        # Issue 7 fix: anonymized_telemetry=False suppresses the Posthog
+        # capture() argument-count error that pollutes logs with ERROR lines.
         self._client = chromadb.PersistentClient(
             path=CHROMA_PERSIST_DIR,
             settings=ChromaSettings(anonymized_telemetry=False),
