@@ -195,6 +195,11 @@ Text to translate:
     # ------------------------------------------------------------------
 
     async def _call_groq(self, prompt: str) -> TranslationResult:
+        """
+        Issue 3 fix: split timeout applied.
+        connect=8.0 means DNS failure surfaces in 8s not 30s.
+        read=25.0 is sufficient — translation responses are small (<500 tokens).
+        """
         s = self._settings
         payload = {
             "model": s.groq_model,
@@ -218,7 +223,16 @@ Text to translate:
             "Content-Type": "application/json",
         }
 
-        async with httpx.AsyncClient(timeout=30.0) as client:
+        # Issue 3 fix: split timeout — fast connect failure, read is generous
+        # enough for a 1200-token translation response.
+        timeout = httpx.Timeout(
+            connect=8.0,
+            read=25.0,
+            write=5.0,
+            pool=5.0,
+        )
+
+        async with httpx.AsyncClient(timeout=timeout) as client:
             response = await client.post(
                 f"{s.groq_base_url}/chat/completions",
                 json=payload,
@@ -230,8 +244,8 @@ Text to translate:
                 f"Groq returned {response.status_code}: {response.text[:200]}"
             )
 
-        data = response.json()
-        raw = data["choices"][0]["message"]["content"].strip()
+        data   = response.json()
+        raw    = data["choices"][0]["message"]["content"].strip()
         parsed = self._parse_llm_response(raw)
         parsed.provider = "groq"
         return parsed

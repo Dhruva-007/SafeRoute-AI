@@ -76,13 +76,16 @@ function MyTrips() {
   const [shareModalOpen, setShareModalOpen] = useState(false);
 
   const { isOnline } = useOnlineStatus();
+  const hasMountedRef = React.useRef(false);
 
   useEffect(() => {
+    hasMountedRef.current = true;
     loadTrips();
   }, []);
 
   // Refresh trips automatically when coming back online
   useEffect(() => {
+    if (!hasMountedRef.current) return;
     if (isOnline) {
       loadTrips();
     }

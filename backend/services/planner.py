@@ -697,75 +697,123 @@ class PlannerService:
             fatigue_result
         )
 
-        prompt = f"""You are a Hyderabad travel writer. Your ONLY job is to write activity descriptions.
+        prompt = f"""You are a knowledgeable Hyderabad local and travel writer with deep expertise in the city's history, food, culture, and practical logistics. Your sole task is to write vivid, accurate, practically useful activity descriptions for a pre-planned itinerary.
 
-═══════════════════════════════════════════════════
-CRITICAL CONSTRAINT — READ BEFORE WRITING ANYTHING
-═══════════════════════════════════════════════════
+        ═══════════════════════════════════════════════════
+        CRITICAL CONSTRAINTS — READ BEFORE WRITING ANYTHING
+        ═══════════════════════════════════════════════════
 
-The itinerary has been algorithmically planned. You MUST NOT change it.
+        The itinerary structure is fixed. You describe what is there. You do not plan.
 
-ALLOWED PLACE NAMES — use ONLY these exact names, spelled exactly:
-{whitelist_block}
+        PERMITTED PLACE NAMES — spell these exactly, character for character:
+        {whitelist_block}
 
-ABSOLUTE PROHIBITIONS:
-✗ Do NOT invent any place not in the list above
-✗ Do NOT use generic names like "Street Food Trail" or "Heritage Walk"
-✗ Do NOT change the spelling of any place name
-✗ Do NOT add activities not in the list
-✗ Do NOT remove any activity
-✗ Do NOT change the order
-✗ Do NOT combine two places into one description
-✗ Do NOT use names like "local restaurant" or "nearby cafe"
+        ABSOLUTE PROHIBITIONS:
+        ✗ Do NOT reference any place, restaurant, shop, or attraction not listed above
+        ✗ Do NOT use invented names like "Street Food Trail", "Heritage Walk", "local eatery", "nearby cafe"
+        ✗ Do NOT alter, merge, reorder, add, or remove any activity
+        ✗ Do NOT change the spelling of any place name by even one character
 
-WHAT YOU MUST DO:
-✓ Write one vivid 2-sentence description per activity
-✓ Include one practical tip per activity (parking, best entrance, timing)
-✓ Acknowledge the day's weather condition in each day's opening
-✓ Acknowledge pacing and rest points where indicated by fatigue profile
-✓ Write one sentence day_summary per day
-✓ Write one trip_summary (2-3 sentences total)
-✓ Estimate cost in ₹ per person based on context
+        ═══════════════════════════════════════════════════
+        EXAMPLE OF CORRECT ACTIVITY DESCRIPTION
+        ═══════════════════════════════════════════════════
 
-{weather_instructions}
+        This is the quality and style to match:
 
-{fatigue_instructions}
+        Place: Charminar
+        description: "Rising over the Old City since 1591, Charminar's four 56-metre minarets frame a skyline that has defined Hyderabad for four centuries — the upper gallery offers a rare panoramic view of the surrounding bazaars below. The inner chamber contains intricate lime-plaster stucco work and an active mosque that has hosted Friday prayers without interruption since its construction."
+        tip: "Arrive before 9 AM on weekdays — the market surrounding the monument is quiet, light is flattering for photographs, and the entry queue is minimal."
+        estimated_cost: "₹25 entry per person (Indian nationals)"
 
-═══════════════════════════════════════════════════
-TRIP CONTEXT
-═══════════════════════════════════════════════════
-Destination: Hyderabad, India
-Duration: {request.trip_duration_days} days
-Budget: {request.budget}
-Interests: {', '.join(request.interests)}
-Travelers: {request.number_of_travelers}
+        Do NOT write descriptions like this:
+        "Charminar is a very famous monument in Hyderabad. It is old and has four towers. You should visit early morning. It is a must-visit place."
 
-═══════════════════════════════════════════════════
-WEATHER CONDITIONS
-═══════════════════════════════════════════════════
-{weather_block}
+        ═══════════════════════════════════════════════════
+        TRAVELER PROFILE — USE THIS TO PERSONALISE DESCRIPTIONS
+        ═══════════════════════════════════════════════════
+        Duration:   {request.trip_duration_days} days
+        Budget:     {request.budget}
+        Interests:  {', '.join(request.interests)}
+        Travelers:  {request.number_of_travelers} person(s)
+        Destination: Hyderabad, India
 
-═══════════════════════════════════════════════════
-DAILY FATIGUE PROFILE
-═══════════════════════════════════════════════════
-{fatigue_block}
+        Personalisation rules:
+        - Interests contain "history": Emphasise historical context, dates, dynasties, architectural details
+        - Interests contain "food": Mention food available at or near the venue, culinary history, local specialties
+        - Interests contain "photography": Mention best angles, lighting conditions, photogenic details
+        - Interests contain "nature": Emphasise landscape, flora, open space, sensory environment
+        - Interests contain "culture": Emphasise cultural significance, local customs, community connection
+        - Interests contain "shopping": Mention what is available to buy, crafts, local products
+        - Budget is "budget": Emphasise free elements, avoid mentioning premium experiences
+        - Budget is "luxury": Can mention premium experiences, hired guides, exclusive timings
+        - Travelers is 1: Frame as solo-friendly, mention safety and ease of navigation
+        - Travelers > 3: Frame as group-friendly, mention group logistics
 
-═══════════════════════════════════════════════════
-PRE-BUILT ITINERARY — WRITE DESCRIPTIONS FOR THESE
-═══════════════════════════════════════════════════
-{itinerary_text}
+        ═══════════════════════════════════════════════════
+        WEATHER CONDITIONS
+        ═══════════════════════════════════════════════════
+        {weather_block}
 
-═══════════════════════════════════════════════════
-OUTPUT — RETURN EXACTLY THIS JSON STRUCTURE
-═══════════════════════════════════════════════════
+        {weather_instructions}
 
-Fill in ONLY the description, day_summary, trip_summary, and estimated_cost fields.
-All other fields are pre-filled and must not be changed.
+        ═══════════════════════════════════════════════════
+        DAILY FATIGUE PROFILE
+        ═══════════════════════════════════════════════════
+        {fatigue_block}
 
-{expected_json}
+        {fatigue_instructions}
 
-Return ONLY valid JSON. No markdown. No code fences. No explanation.
-The "place" field in each activity MUST match the whitelist exactly."""
+        ═══════════════════════════════════════════════════
+        PRE-BUILT ITINERARY
+        ═══════════════════════════════════════════════════
+        {itinerary_text}
+
+        ═══════════════════════════════════════════════════
+        WRITING REQUIREMENTS PER ACTIVITY
+        ═══════════════════════════════════════════════════
+
+        For each activity write exactly:
+
+        description (2 sentences):
+        Sentence 1 — What makes this place significant, unique, or memorable. Include one specific historical fact, sensory detail, or local insight. No generic statements.
+        Sentence 2 — What the traveler will actually do or experience there. Be concrete.
+
+        tip (1 sentence):
+        One specific practical piece of advice. Choose the most important of:
+        — Best time to visit to avoid crowds or heat
+        — Which entrance or route to use
+        — What to look for that most visitors miss
+        — What NOT to bring or wear
+        Do NOT give generic advice like "carry water" or "wear comfortable shoes" unless it is specifically relevant to this venue.
+
+        estimated_cost:
+        Use the cost data provided in the itinerary above. State it clearly in ₹.
+        If the place is free, write "Free entry".
+        Do NOT invent or estimate costs independently.
+
+        day_summary (1 sentence per day):
+        Capture the geographic area covered AND the dominant mood or experience of the day.
+        Reference the weather condition for that day.
+        Example: "A morning in the ancient lanes of Old City under clear skies, ending at the museum's quiet galleries."
+
+        trip_summary (2-3 sentences total):
+        Summarise the complete trip experience.
+        Mention the cities/zones covered.
+        Reference the traveler's interests.
+        Do not list individual places.
+
+        ═══════════════════════════════════════════════════
+        OUTPUT FORMAT
+        ═══════════════════════════════════════════════════
+
+        Fill in ONLY: description, tip, day_summary, trip_summary, estimated_cost.
+        Leave all other fields exactly as provided.
+
+        {expected_json}
+
+        Return ONLY valid JSON.
+        No markdown. No code fences. No explanation before or after.
+        Every "place" field must match the whitelist character-for-character."""
 
         return prompt
 
@@ -1131,6 +1179,25 @@ The "place" field in each activity MUST match the whitelist exactly."""
             ) from exc
 
     async def _call_groq(self, prompt: str) -> str:
+        """
+        Call Groq API with a split timeout.
+
+        Issue 3 fix: replaced httpx.AsyncClient(timeout=60.0) with a
+        split timeout object:
+          - connect=8.0:  DNS + TCP handshake must complete in 8s.
+                          Previously DNS failure waited the full 60s
+                          before raising (observed: 12s on dev machine).
+                          8s gives enough headroom for slow but working
+                          connections while failing fast on no-internet.
+          - read=55.0:    Once connected, allow the model up to 55s to
+                          stream back the full response. Large prompts
+                          with 4096 token output need this headroom.
+          - write=10.0:   Sending the prompt payload (typically <8KB).
+          - pool=5.0:     Time to acquire a connection from the pool.
+
+        Total worst-case before fallback: 8 + 55 = 63s (marginal increase
+        from 60s but DNS failures now surface in 8s not 60s).
+        """
         settings = self._settings
         payload  = {
             "model": settings.groq_model,
@@ -1156,7 +1223,15 @@ The "place" field in each activity MUST match the whitelist exactly."""
             "Content-Type":  "application/json",
         }
 
-        async with httpx.AsyncClient(timeout=60.0) as client:
+        # Issue 3 fix: split timeout — fast connect failure, generous read
+        timeout = httpx.Timeout(
+            connect=8.0,
+            read=55.0,
+            write=10.0,
+            pool=5.0,
+        )
+
+        async with httpx.AsyncClient(timeout=timeout) as client:
             response = await client.post(
                 f"{settings.groq_base_url}/chat/completions",
                 json=payload,
@@ -1183,6 +1258,15 @@ The "place" field in each activity MUST match the whitelist exactly."""
         return raw
 
     async def _call_openrouter(self, prompt: str) -> str:
+        """
+        Call OpenRouter with retry logic and a split timeout.
+
+        Issue 3 fix: same split timeout pattern as _call_groq.
+        Issue 4 context: 429 from OpenRouter on the free gemma tier is
+        expected. The retry waits 3s between attempts (was already there).
+        The connect timeout is 8s so DNS failure surfaces quickly rather
+        than blocking for the full 180s that was previously configured.
+        """
         settings = self._settings
         payload  = {
             "model": settings.openrouter_model,
@@ -1209,10 +1293,19 @@ The "place" field in each activity MUST match the whitelist exactly."""
             "X-Title":       "SafeRoute AI Tour Planner",
         }
 
+        # Issue 3 fix: split timeout. Read is generous (170s) because
+        # OpenRouter free-tier models are significantly slower than Groq.
+        timeout = httpx.Timeout(
+            connect=8.0,
+            read=170.0,
+            write=10.0,
+            pool=5.0,
+        )
+
         last_error: Exception | None = None
         for attempt in range(1, 3):
             try:
-                async with httpx.AsyncClient(timeout=180.0) as client:
+                async with httpx.AsyncClient(timeout=timeout) as client:
                     response = await client.post(
                         f"{settings.openrouter_base_url}/chat/completions",
                         json=payload,
@@ -1224,6 +1317,11 @@ The "place" field in each activity MUST match the whitelist exactly."""
                         f"OpenRouter 429: {response.text}"
                     )
                     if attempt < 2:
+                        logger.warning(
+                            "OpenRouter 429 rate limit on attempt %d — "
+                            "waiting 3s before retry",
+                            attempt,
+                        )
                         await asyncio.sleep(3)
                     continue
 
