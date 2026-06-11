@@ -10,13 +10,15 @@ every day's places are geographically coherent — minimising
 unnecessary travel between distant parts of the city.
 
 Zone definitions are based on actual Hyderabad geography:
-  - Old City:       Charminar, Laad Bazaar, Mecca Masjid, Nimrah Cafe
-  - Golconda:       Golconda Fort, Qutb Shahi Tombs, Taramati Baradari
-  - Hitech City:    Shilparamam, Durgam Cheruvu, IKEA, Inorbit Mall
-  - Banjara Hills:  KBR Park, Necklace Road, Birla Mandir
-  - Secunderabad:   Railway Museum, Public Gardens, Hussain Sagar
-  - Jubilee Hills:  Film City Road, restaurants
-  - Outer/Day Trip: Ananthagiri Hills, Ramoji Film City, Wonderla
+  - Old City:        Charminar, Laad Bazaar, Mecca Masjid, Nimrah Cafe
+  - Golconda:        Golconda Fort, Qutb Shahi Tombs, Taramati Baradari
+  - Hitech City:     Shilparamam, Durgam Cheruvu, IKEA, Inorbit Mall
+  - Banjara Hills:   KBR Park, Necklace Road, Birla Mandir
+  - Secunderabad:    Railway Museum, Public Gardens, Hussain Sagar
+  - Jubilee Hills:   Film City Road, restaurants
+  - West Hyderabad:  Chilkur Balaji, Gandipet Lake, Mrugavani NP
+  - East Hyderabad:  Karmanghat, Ramoji Film City, LB Nagar
+  - Outer/Day Trip:  Ananthagiri Hills, Wonderla
 """
 
 from __future__ import annotations
@@ -37,6 +39,22 @@ logger = logging.getLogger(__name__)
 # Maps neighborhood strings (from places.json) to canonical zone IDs.
 # A zone is a logical travel area — places within a zone can be
 # comfortably visited in a single day without excessive travel.
+#
+# CHANGE LOG (Issue 1 fix):
+#   - "Chilkur" removed from GOLCONDA → moved to WEST_HYDERABAD
+#   - "Bandlaguda" removed from GOLCONDA → moved to WEST_HYDERABAD
+#     (Bandlaguda is ~14km south of Golconda, near Chilkur corridor)
+#   - "Karmanghat" removed from GOLCONDA → moved to EAST_HYDERABAD
+#     (Karmanghat is at lat 17.34, lon 78.53 — southeast, not west)
+#   - "Rajendranagar" kept in GOLCONDA (it is genuinely close to Golconda)
+#   - New zone WEST_HYDERABAD added with centroid near Gandipet reservoir
+#   - EAST_HYDERABAD expanded to include Karmanghat neighborhood
+#
+# Geographic rationale:
+#   Chilkur Balaji:       lat 17.3587, lon 78.2988  — far west, Gandipet area
+#   Karmanghat Hanuman:   lat 17.3408, lon 78.5352  — southeast
+#   Golconda Fort:        lat 17.3833, lon 78.4011  — northwest
+#   Distance Chilkur↔Karmanghat: ~25km — cannot share a zone.
 
 NEIGHBORHOOD_TO_ZONE: dict[str, str] = {
     # OLD CITY zone
@@ -55,16 +73,29 @@ NEIGHBORHOOD_TO_ZONE: dict[str, str] = {
     "Falaknuma":                    "OLD_CITY",
 
     # GOLCONDA zone
+    # Strictly the northwestern fort cluster — Ibrahim Bagh, Golconda,
+    # Tolichowki, Karwan, Langar Houz, Rajendranagar.
+    # Chilkur and Karmanghat have been removed (see change log above).
     "Ibrahim Bagh":                 "GOLCONDA",
     "Golconda":                     "GOLCONDA",
     "Golconda Fort Area":           "GOLCONDA",
     "Karwan":                       "GOLCONDA",
     "Tolichowki":                   "GOLCONDA",
     "Langar Houz":                  "GOLCONDA",
-    "Karmanghat":                   "GOLCONDA",
     "Rajendranagar":                "GOLCONDA",
-    "Chilkur":                      "GOLCONDA",
-    "Bandlaguda":                   "GOLCONDA",
+
+    # WEST HYDERABAD zone  ← NEW (Issue 1 fix)
+    # Covers the Gandipet / Chilkur / Moinabad corridor.
+    # These places are 15–20km west of the city centre, near the
+    # Osmansagar and Himayatsagar reservoirs.
+    # Pairs naturally: Chilkur Balaji + Gandipet Lake + Mrugavani NP.
+    "Chilkur":                      "WEST_HYDERABAD",
+    "Moinabad":                     "WEST_HYDERABAD",
+    "Gandipet":                     "WEST_HYDERABAD",
+    "Himayatsagar":                  "WEST_HYDERABAD",
+    "Bandlaguda":                   "WEST_HYDERABAD",
+    "Budvel":                       "WEST_HYDERABAD",
+    "Shankarpally":                 "WEST_HYDERABAD",
 
     # HITECH CITY zone
     "Madhapur":                     "HITECH_CITY",
@@ -115,12 +146,20 @@ NEIGHBORHOOD_TO_ZONE: dict[str, str] = {
     "Erragadda":                    "AMEERPET",
     "Sanathnagar":                  "AMEERPET",
 
-    # UPPAL / LB NAGAR zone (East Hyderabad)
+    # EAST HYDERABAD zone
+    # Expanded from original to include Karmanghat (Issue 1 fix).
+    # Karmanghat (lat 17.34, lon 78.53) is geographically southeast,
+    # not northwest like Golconda. Its nearest zone by coordinates
+    # is EAST_HYDERABAD.
     "Uppal":                        "EAST_HYDERABAD",
     "LB Nagar":                     "EAST_HYDERABAD",
     "Hayathnagar":                  "EAST_HYDERABAD",
     "Ramoji Film City":             "EAST_HYDERABAD",
     "Abdullapurmet":                "EAST_HYDERABAD",
+    "Karmanghat":                   "EAST_HYDERABAD",   # ← moved from GOLCONDA
+    "Saroornagar":                  "EAST_HYDERABAD",
+    "Vanasthalipuram":              "EAST_HYDERABAD",
+    "Maheshwaram":                  "EAST_HYDERABAD",
 
     # OUTER / DAY TRIPS zone
     "Vikarabad":                    "DAY_TRIP",
@@ -129,15 +168,13 @@ NEIGHBORHOOD_TO_ZONE: dict[str, str] = {
     "Kotpally":                     "DAY_TRIP",
     "Shamshabad":                   "DAY_TRIP",
     "Ibrahimpatnam":                "DAY_TRIP",
-    "Budvel":                       "DAY_TRIP",
-    "Shankarpally":                 "DAY_TRIP",
-    "Maheshwaram":                  "DAY_TRIP",
 }
 
 # Human-readable zone names for display
 ZONE_DISPLAY_NAMES: dict[str, str] = {
     "OLD_CITY":       "Old City & Heritage",
-    "GOLCONDA":       "Golconda & Surrounds",
+    "GOLCONDA":       "Golconda & Northwest",
+    "WEST_HYDERABAD": "West Hyderabad & Gandipet",   # ← NEW
     "HITECH_CITY":    "Hitech City & Gachibowli",
     "BANJARA_HILLS":  "Banjara Hills & Jubilee Hills",
     "HUSSAIN_SAGAR":  "Hussain Sagar & Necklace Road",
@@ -152,22 +189,27 @@ ZONE_DISPLAY_NAMES: dict[str, str] = {
 # cross-zone pairings for longer days or multi-zone days
 ADJACENT_ZONES: dict[str, list[str]] = {
     "OLD_CITY":       ["GOLCONDA", "HUSSAIN_SAGAR", "BANJARA_HILLS"],
-    "GOLCONDA":       ["OLD_CITY", "BANJARA_HILLS"],
-    "HITECH_CITY":    ["BANJARA_HILLS", "HUSSAIN_SAGAR"],
+    "GOLCONDA":       ["OLD_CITY", "BANJARA_HILLS", "WEST_HYDERABAD"],
+    "WEST_HYDERABAD": ["GOLCONDA", "HITECH_CITY"],                    # ← NEW
+    "HITECH_CITY":    ["BANJARA_HILLS", "HUSSAIN_SAGAR", "WEST_HYDERABAD"],
     "BANJARA_HILLS":  ["HITECH_CITY", "HUSSAIN_SAGAR", "OLD_CITY", "GOLCONDA"],
     "HUSSAIN_SAGAR":  ["OLD_CITY", "BANJARA_HILLS", "SECUNDERABAD", "HITECH_CITY"],
     "SECUNDERABAD":   ["HUSSAIN_SAGAR", "BANJARA_HILLS", "AMEERPET"],
     "AMEERPET":       ["SECUNDERABAD", "BANJARA_HILLS", "HUSSAIN_SAGAR"],
     "EAST_HYDERABAD": ["DAY_TRIP"],
-    "DAY_TRIP":       ["EAST_HYDERABAD"],
+    "DAY_TRIP":       ["EAST_HYDERABAD", "WEST_HYDERABAD"],
     "CENTRAL":        ["OLD_CITY", "HUSSAIN_SAGAR", "BANJARA_HILLS"],
 }
 
 # Approximate zone centre coordinates (lat, lon)
-# Used for fallback coordinate-based zone assignment
+# Used for fallback coordinate-based zone assignment.
+#
+# WEST_HYDERABAD centroid: midpoint of Chilkur (17.3587, 78.2988)
+# and Gandipet Lake (~17.39, 78.32) → approximately (17.374, 78.309)
 ZONE_CENTRES: dict[str, tuple[float, float]] = {
     "OLD_CITY":       (17.3604, 78.4736),
     "GOLCONDA":       (17.3833, 78.4011),
+    "WEST_HYDERABAD": (17.3740, 78.3090),   # ← NEW: Gandipet/Chilkur corridor
     "HITECH_CITY":    (17.4435, 78.3772),
     "BANJARA_HILLS":  (17.4156, 78.4347),
     "HUSSAIN_SAGAR":  (17.4239, 78.4738),
@@ -423,7 +465,7 @@ class GeographicClusterEngine:
 
             # Attach score to place dict (non-destructive copy)
             place_copy = dict(place)
-            place_copy["_score"]  = score_lookup.get(pid, 0.0)
+            place_copy["_score"]   = score_lookup.get(pid, 0.0)
             place_copy["_zone_id"] = zone_id
 
             clusters[zone_id].places.append(place_copy)
@@ -495,14 +537,18 @@ class GeographicClusterEngine:
         """
         Assign a zone to a place using the following priority:
 
-        1. Direct neighborhood → zone mapping
+        1. Direct neighborhood → zone mapping  (most authoritative)
         2. Partial neighborhood string match
         3. Coordinate-based nearest zone centre
         4. Fallback: CENTRAL
+
+        The neighborhood mapping is the single source of truth for zone
+        assignment. Coordinate fallback is only used when a place's
+        neighborhood string is not found in NEIGHBORHOOD_TO_ZONE.
         """
         neighborhood = str(place.get("neighborhood", "")).strip()
 
-        # 1. Exact match
+        # 1. Exact match — highest priority, always trust this
         if neighborhood in NEIGHBORHOOD_TO_ZONE:
             return NEIGHBORHOOD_TO_ZONE[neighborhood]
 
@@ -525,10 +571,12 @@ class GeographicClusterEngine:
                 )
                 logger.debug(
                     "Place '%s' neighborhood='%s' not in map — "
-                    "assigned to %s by coordinates",
+                    "assigned to %s by coordinates (%.4f, %.4f)",
                     place.get("name", "?"),
                     neighborhood,
                     zone,
+                    float(lat),
+                    float(lon),
                 )
                 return zone
 
@@ -567,6 +615,13 @@ class GeographicClusterEngine:
         neighborhood match), move it to the majority zone.
 
         This handles edge cases like a restaurant on a zone boundary.
+
+        IMPORTANT: This check is intentionally skipped for places that
+        have an exact neighborhood match in NEIGHBORHOOD_TO_ZONE.
+        The neighborhood mapping is authoritative and should not be
+        overridden by nearby_place_ids voting. This prevents Chilkur
+        Balaji from being dragged back into GOLCONDA just because some
+        of its nearby_place_ids happen to map there.
         """
         updated = dict(place_zone_map)
 
@@ -576,10 +631,22 @@ class GeographicClusterEngine:
                 continue
 
             neighborhood = str(place.get("neighborhood", "")).strip()
-            # Only adjust places that didn't have an exact neighborhood match
-            if neighborhood in NEIGHBORHOOD_TO_ZONE:
-                continue  # Exact match — trust it
 
+            # Skip: exact neighborhood match is authoritative
+            if neighborhood in NEIGHBORHOOD_TO_ZONE:
+                continue
+
+            # Skip: partial neighborhood match is also reasonably authoritative
+            neighborhood_lower = neighborhood.lower()
+            partial_matched = any(
+                key.lower() in neighborhood_lower
+                or neighborhood_lower in key.lower()
+                for key in NEIGHBORHOOD_TO_ZONE
+            )
+            if partial_matched:
+                continue
+
+            # Only adjust places that fell through to coordinate assignment
             nearby_ids = place.get("nearby_place_ids", [])
             if not nearby_ids:
                 continue
@@ -594,14 +661,11 @@ class GeographicClusterEngine:
             if not zone_votes:
                 continue
 
-            # Find the majority zone among nearby places
-            majority_zone = max(zone_votes, key=lambda z: zone_votes[z])
+            majority_zone  = max(zone_votes, key=lambda z: zone_votes[z])
             majority_count = zone_votes[majority_zone]
-            current_zone = updated.get(pid, "CENTRAL")
+            current_zone   = updated.get(pid, "CENTRAL")
 
-            # If majority is different and strong, switch
-            if (majority_zone != current_zone
-                    and majority_count >= 2):
+            if majority_zone != current_zone and majority_count >= 2:
                 logger.debug(
                     "Consistency: moving '%s' from %s → %s "
                     "(nearby majority votes: %d)",
@@ -650,7 +714,7 @@ class GeographicClusterEngine:
             reverse=True,
         ):
             logger.info(
-                "  %-20s | places=%2d | top_tier=%2d | "
+                "  %-25s | places=%2d | top_tier=%2d | "
                 "must_visit=%s | centre=(%.4f, %.4f)",
                 cluster.display_name,
                 cluster.place_count,
@@ -673,7 +737,7 @@ def _haversine_km(
     Calculate great-circle distance between two coordinates in km.
     Used for coordinate-based zone assignment fallback.
     """
-    R = 6371.0  # Earth radius in km
+    R    = 6371.0
     phi1 = math.radians(lat1)
     phi2 = math.radians(lat2)
     dphi = math.radians(lat2 - lat1)
